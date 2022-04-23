@@ -6,7 +6,7 @@ from smart_scheduler.envs import (
     KubeBinpackingEnv,
 )
 # dfined by the user
-DATA_PATH = "/Users/saeid/Codes/smart-vpa/mobile-kube/data"
+DATA_PATH = "/Users/saeid/Codes/smart-vpa/smart-scheduler/data"
 
 # generated baesd on the users' path
 DATASETS_PATH = os.path.join(DATA_PATH, "datasets")

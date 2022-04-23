@@ -12,6 +12,7 @@ from pprint import PrettyPrinter
 # matplotlib.use("Agg")
 pp = PrettyPrinter(indent=4)
 
+
 # get an absolute path to the directory that contains parent files
 project_dir = os.path.dirname(os.path.join(os.getcwd(), __file__))
 sys.path.append(os.path.normpath(os.path.join(project_dir, '..', '..')))
