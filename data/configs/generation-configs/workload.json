@@ -1,0 +1,12 @@
+{
+    "notes": "resoure usage",
+    "dataset_id": 7,
+    "timesteps": 10000,
+    "services_types": 1,
+    "workloads_var" : {
+        "steps_unit":[[0, 0]],
+        "max_steps":[[1, 1]]
+    },
+    "plot_smoothing":301,
+    "seed":42
+}

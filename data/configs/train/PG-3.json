@@ -1,0 +1,41 @@
+{
+    "env_config_base": {
+        "obs_elements": ["services_nodes"],
+        "penalty_illegal": -1,
+        "penalty_move": 0,
+        "penalty_variance": 0,
+        "penalty_consolidated": 10,
+        "penalty_latency": 2,
+        "episode_length": 10,
+        "latency_lower": 0.75,
+        "latency_upper": 2,
+        "consolidation_lower": 0,
+        "consolidation_upper": 0.6,
+        "no_action_on_overloaded": false,
+        "seed": 1,
+        "kube":{
+            "admin_config": "~/.kube/config",
+            "service_image": "sdghafouri/service",
+            "namespace": "consolidation",
+            "clean_after_exit": true,
+            "utilization_image": "sdghafouri/utilization-server"
+        }
+    },
+    "run_or_experiment": "PG",
+    "learn_config": {
+        "train_batch_size": 1000,
+        "num_gpus": 0.5,
+        "model": {
+            "fcnet_hiddens": [64, 64],
+            "fcnet_activation": "linear"
+        },
+        "gamma": 0.99,
+        "lr": 0.0003,
+        "num_workers": 6,
+        "observation_filter": "NoFilter",
+        "seed": 203
+    },
+    "stop": {
+        "timesteps_total": 2000000
+    }
+}
