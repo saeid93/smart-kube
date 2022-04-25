@@ -29,7 +29,7 @@ torch, nn = try_import_torch()
 
 
 def learner(*, config_file_path: str, config: Dict[str, Any],
-            series: int, type_env: str, dataset_id: int,
+            series: int, type_env: str, cluster_id: int,
             workload_id: int, network_id: int, trace_id: int,
             use_callback: bool, checkpoint_freq: int,
             local_mode: bool):
@@ -50,7 +50,7 @@ def learner(*, config_file_path: str, config: Dict[str, Any],
         - results path:
           data/results/
         - environment info:
-          env/<env_id>/datasets/<dataset_id>/workloads/<workload_id>
+          env/<env_id>/clusters/<cluster_id>/workloads/<workload_id>
           /experiments/<experiment_id>
         - rllib:
           <name_of_algorithm>/<trial>
@@ -65,7 +65,7 @@ def learner(*, config_file_path: str, config: Dict[str, Any],
     # add the additional nencessary arguments to the edge config
     env_config = add_path_to_config_edge(
         config=env_config_base,
-        dataset_id=dataset_id,
+        cluster_id=cluster_id,
         workload_id=workload_id,
         network_id=network_id,
         trace_id=trace_id
@@ -80,12 +80,12 @@ def learner(*, config_file_path: str, config: Dict[str, Any],
         ray_config = {"env": type_env}
 
     # generate the path
-    # folder formats: <environmet>/datasets/<dataset>/workloads/<workload>
-    # example:        env1/dataset/1/workloads/3
+    # folder formats: <environmet>/clusters/<cluster>/workloads/<workload>
+    # example:        env1/cluster/1/workloads/3
     experiments_folder = os.path.join(TRAIN_RESULTS_PATH,
                                       "series",     str(series),
                                       "envs",       str(type_env),
-                                      "datasets",   str(dataset_id),
+                                      "clusters",   str(cluster_id),
                                       "workloads",  str(workload_id),
                                       "networks",   str(network_id),
                                       "traces",     str(trace_id),
@@ -147,17 +147,17 @@ def learner(*, config_file_path: str, config: Dict[str, Any],
 @click.option('--config-file', type=str, default='final-DQN')
 @click.option('--series', required=True, type=int, default=70)
 @click.option('--type-env', required=True,
-              type=click.Choice(['sim-edge', 'sim-binpacking', 'sim-edge-greedy',
+              type=click.Choice(['sim-scheduler', 'sim-binpacking', 'sim-scheduler-greedy',
                                  'CartPole-v0', 'Pendulum-v0']),
-              default='sim-edge')
-@click.option('--dataset-id', required=True, type=int, default=6)
+              default='sim-scheduler')
+@click.option('--cluster-id', required=True, type=int, default=6)
 @click.option('--workload-id', required=True, type=int, default=0)
 @click.option('--network-id', required=False, type=int, default=0)
 @click.option('--trace-id', required=False, type=int, default=0)
 @click.option('--use-callback', required=True, type=bool, default=True)
 @click.option('--checkpoint-freq', required=False, type=int, default=1000)
 def main(local_mode: bool, config_file: str, series: int,
-         type_env: str, dataset_id: int, workload_id: int, network_id: int,
+         type_env: str, cluster_id: int, workload_id: int, network_id: int,
          trace_id: int, use_callback: bool, checkpoint_freq: int):
     """[summary]
 
@@ -166,11 +166,11 @@ def main(local_mode: bool, config_file: str, series: int,
         config_file (str): name of the config folder (only used in real mode)
         use_callback (bool): whether to use callbacks or storing and visualising
         checkpoint_freq (int): checkpoint the ml model at each (n-th) step
-        series (int): to gather a series of datasets in a folder
+        series (int): to gather a series of clusters in a folder
         type_env (str): the type of the used environment
-        dataset_id (int): used cluster dataset
-        workload_id (int): the workload used in that dataset
-        network_id (int): edge network of some dataset
+        cluster_id (int): used cluster cluster
+        workload_id (int): the workload used in that cluster
+        network_id (int): edge network of some cluster
         trace_id (int): user movement traces
     """
     config_file_path = os.path.join(
@@ -184,7 +184,7 @@ def main(local_mode: bool, config_file: str, series: int,
 
     learner(config_file_path=config_file_path,
             config=config, series=series,
-            type_env=type_env, dataset_id=dataset_id,
+            type_env=type_env, cluster_id=cluster_id,
             workload_id=workload_id, network_id=network_id,
             trace_id=trace_id, use_callback=use_callback,
             checkpoint_freq=checkpoint_freq, local_mode=local_mode)

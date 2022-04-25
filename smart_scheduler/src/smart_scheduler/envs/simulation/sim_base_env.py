@@ -73,18 +73,18 @@ class SimBaseEnv(gym.Env):
         # observation elements
         self.obs_elements: List[str] = config['obs_elements']
 
-        # path of the dataset and workload
-        self.dataset_path = config['dataset_path']
+        # path of the cluster and workload
+        self.cluster_path = config['cluster_path']
         self.workload_path = config['workload_path']
 
         # node, services resources and workload
-        self.dataset = load_object(self.dataset_path)
+        self.cluster = load_object(self.cluster_path)
         self.workload = load_object(self.workload_path)
 
-        self.nodes_resources_cap: np.array = self.dataset['nodes_resources_cap']
-        self.services_resources_request: np.array = self.dataset[
+        self.nodes_resources_cap: np.array = self.cluster['nodes_resources_cap']
+        self.services_resources_request: np.array = self.cluster[
             'services_resources_request']
-        self.services_types: np.array = self.dataset['services_types']
+        self.services_types: np.array = self.cluster['services_types']
 
         # find the number of nodes, services, service types and timesteps
         self.num_resources: int = self.nodes_resources_cap.shape[1]
@@ -98,7 +98,7 @@ class SimBaseEnv(gym.Env):
         self.workload = self.workload[:, 0:stop_timestep, :]
 
         # initial states
-        self.initial_services_nodes: np.array = self.dataset['services_nodes']
+        self.initial_services_nodes: np.array = self.cluster['services_nodes']
 
         # reward penalties
         self.penalty_illegal: float = config['penalty_illegal']

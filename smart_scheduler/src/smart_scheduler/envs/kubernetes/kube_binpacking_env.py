@@ -19,9 +19,9 @@ from smart_scheduler.util import (
     load_object
 )
 
-from .kube_edge_env import KubeEdgeEnv
+from .kube_scheduler_env import KubeSchedulerEnv
 
-class KubeBinpackingEnv(KubeEdgeEnv):
+class KubeBinpackingEnv(KubeSchedulerEnv):
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, int, bool, dict]:
         """
         General overivew:

@@ -317,7 +317,7 @@ class Action(BaseFunctionalities):
             ObjectAPI: CustomObjectsApi,
             namespace: str,
             workloads_path: str,
-            dataset_path: str,
+            cluster_path: str,
             utilization_server_image: str,
             node: V1Node,
             cleaning_after_exiting: bool = False,
@@ -337,8 +337,8 @@ class Action(BaseFunctionalities):
         :param workloads_path: str
             path of workloads
 
-        :param dataset_path: str
-            path of dataset
+        :param cluster_path: str
+            path of cluster
 
         :param utilization_server_image: str
             using this image for utilization server
@@ -360,7 +360,7 @@ class Action(BaseFunctionalities):
 
         self.workloads_path: str = workloads_path
 
-        self.dataset_path: str = dataset_path
+        self.cluster_path: str = cluster_path
 
         if self.cleaning_after_exiting:
             self._setup_signal()
@@ -464,10 +464,10 @@ class Action(BaseFunctionalities):
             self.clean(self.namespace)
             exit(1)
 
-        # upload dataset file into container
+        # upload cluster file into container
         self.copy_file_inside_pod(
             pod_name=name,
-            src_path=self.dataset_path,
+            src_path=self.cluster_path,
             dest_path=self.DATA_DESTINATION,
             namespace=self.namespace
         )
@@ -902,7 +902,7 @@ class Cluster:
             config_file: str = None,
             namespace: str = None,
             workloads_path: str = None,
-            dataset_path: str = None,
+            cluster_path: str = None,
             utilization_server_image: str = None,
             cleaning_after_exiting: bool = False,
             using_auxiliary_server: bool = False,
@@ -916,10 +916,10 @@ class Cluster:
             using namespace
 
         :param workloads_path: str (default: './workloads.pickle')
-            path of workloads dataset
+            path of workloads cluster
 
-        :param dataset_path: str (default: './dataset.pickle')
-            path of workloads dataset
+        :param cluster_path: str (default: './cluster.pickle')
+            path of workloads cluster
 
         :param utilization_server_image: str
             using this image to start utilization server (default: 'r0ot/utilization-server')
@@ -942,12 +942,12 @@ class Cluster:
             namespace = 'consolidation'
 
         if workloads_path is None:
-            # set default value for dataset_path
+            # set default value for cluster_path
             workloads_path = './workloads.pickle'
 
-        if dataset_path is None:
-            # set default value for dataset_path
-            workloads_path = './dataset.pickle'
+        if cluster_path is None:
+            # set default value for cluster_path
+            workloads_path = './cluster.pickle'
 
         if utilization_server_image is None:
             # set default value for utilization server image
@@ -962,8 +962,8 @@ class Cluster:
         # define workloads path
         self.workloads_path: str = workloads_path
 
-        # define dataset path
-        self.dataset_path: str = dataset_path
+        # define cluster path
+        self.cluster_path: str = cluster_path
 
         # using auxiliary server
         self.using_auxiliary_server: bool = using_auxiliary_server
@@ -1000,7 +1000,7 @@ class Cluster:
             self._object_api,
             self.namespace,
             self.workloads_path,
-            self.dataset_path,
+            self.cluster_path,
             self.utilization_server_image,
             nodes[0],
             self.cleaning_after_exiting,

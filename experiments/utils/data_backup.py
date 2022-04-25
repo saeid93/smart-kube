@@ -12,14 +12,14 @@ project_dir = os.path.dirname(os.path.join(os.getcwd(), __file__))
 sys.path.append(os.path.normpath(os.path.join(project_dir, '..', '..')))
 
 from experiments.utils.constants import (
-    DATASETS_PATH,
+    CLUSTERS_PATH,
     TRAIN_RESULTS_PATH,
     DATA_PATH,
     BACKUP_PATH
 )
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--backup', type=str, default='dataset')
+parser.add_argument('--backup', type=str, default='cluster')
 args = parser.parse_args()
 
 
@@ -42,9 +42,9 @@ def get_all_file_paths(directory):
 def main():
 
     # path to folder which needs to be zipped
-    if args.backup == 'dataset':
-        directory = DATASETS_PATH
-        saved_file_path = os.path.join(BACKUP_PATH, 'dataset.zip')
+    if args.backup == 'cluster':
+        directory = CLUSTERS_PATH
+        saved_file_path = os.path.join(BACKUP_PATH, 'cluster.zip')
     elif args.backup == 'results':
         directory = TRAIN_RESULTS_PATH
         saved_file_path = os.path.join(BACKUP_PATH, 'results.zip')

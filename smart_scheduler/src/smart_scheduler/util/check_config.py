@@ -11,12 +11,12 @@ def check_config(config: Dict[str, Any]):
                      'penalty_variance', 'penalty_latency',
                      'penalty_consolidated',
                      'episode_length',
-                     'compute_greedy_num_consolidated', 'seed', 'dataset',
+                     'compute_greedy_num_consolidated', 'seed', 'cluster',
                      'workload', 'nodes_cap_rng', 'services_request_rng',
                      'num_users', 'num_stations', 'network', 'normalise_latency',
-                     'trace', 'from_dataset', 'edge_simulator_config',
+                     'trace', 'from_cluster', 'edge_simulator_config',
                      'action_method', 'step_method', 'kube',
-                     'dataset_path', 'workload_path', 'network_path', 'trace_path',
+                     'cluster_path', 'workload_path', 'network_path', 'trace_path',
                      'no_action_on_overloaded', 'latency_reward_option',
                      'latency_lower', 'latency_upper', 'consolidation_lower',
                      'consolidation_upper', 'placement_reset',
@@ -41,7 +41,7 @@ def check_config(config: Dict[str, Any]):
     for item in lists:
         assert type(config[item]) == list, f"<{item}> must be a list"
 
-    strs = ['dataset_path', 'workload_path', 'network_path', 'trace_path']
+    strs = ['cluster_path', 'workload_path', 'network_path', 'trace_path']
     for item in strs:
         with suppress(KeyError):
             assert type(config[item]) == str, f"<{item}> must be a string"
@@ -65,7 +65,7 @@ def check_config(config: Dict[str, Any]):
                        "services_nodes",
                        "utilization_image",
                        "workload_path",
-                       "dataset_path"]
+                       "cluster_path"]
 
     assert set(config['kube']).issubset(
         set(kube)), "wrong input for the kube"

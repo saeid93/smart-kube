@@ -1,6 +1,5 @@
 """base class of edge enviornments
 """
-from random import seed
 import numpy as np
 from copy import deepcopy
 from typing import (
@@ -24,15 +23,11 @@ from smart_scheduler.util import (
     logger
 )
 
-from .sim_base_env import SimBaseEnv
+from .kube_base_env import KubeBaseEnv
 
-class SimEdgeEnv(SimBaseEnv):
+class KubeSchedulerEnv(KubeBaseEnv):
     def __init__(self, config: Dict[str, Any]):
-        # the network for edge simulators
-        edge_simulator_config = load_object(config['network_path'])
-        trace = load_object(config['trace_path'])
-
-        # self.latency_reward_option = config['latency_reward_option']
+        # the network for edge simulatoirs
         self.latency_lower = config['latency_lower']
         self.latency_upper = config['latency_upper']
         self.consolidation_lower = config['consolidation_lower']
@@ -43,9 +38,9 @@ class SimEdgeEnv(SimBaseEnv):
 
         self.observation_space, self.action_space =\
             self._setup_space()
-        _ = self.reset()
+        # _ = self.reset()
 
-    @override(SimBaseEnv)
+    @override(KubeBaseEnv)
     def _setup_space(self):
         """
         States:
@@ -92,6 +87,7 @@ class SimEdgeEnv(SimBaseEnv):
 
         # add the one hot endoded users_stations
         # number of elements
+        obs_size += (self.num_users) * self.num_stations
 
         higher_bound = 10 # TODO TEMP just for test - find a cleaner way
         # generate observation and action spaces
@@ -107,9 +103,6 @@ class SimEdgeEnv(SimBaseEnv):
         else:
             action_space = MultiDiscrete(np.ones(self.num_services) *
                                         self.num_nodes, seed=self._env_seed)
-        # action_space = Box(
-        #     low=0, high=self.num_nodes-1, shape=(
-        #         self.num_services,), dtype=int, seed=self._env_seed)
 
         return observation_space, action_space
 
@@ -119,7 +112,8 @@ class SimEdgeEnv(SimBaseEnv):
         depeiding on the observation (state) definition
         """
         prep = Preprocessor(self.nodes_resources_cap,
-                            self.services_resources_request)
+                            self.services_resources_request,
+                            self.num_stations)
         obs = prep.transform(obs)
         return obs
 
@@ -130,9 +124,10 @@ class SimEdgeEnv(SimBaseEnv):
         in the config input through obs_elements
         """
         observation = super().raw_observation
+        observation.update({'users_stations': self.users_stations})
         return observation
 
-    @override(SimBaseEnv)
+    @override(KubeBaseEnv)
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, int, bool, dict]:
         """
         edge servers here
@@ -147,29 +142,39 @@ class SimEdgeEnv(SimBaseEnv):
         if self.discrete_actions:
             action = self.discrete_action_converter[action]
 
-        # TODO not possible to roll back in the real world
-        # take the action in the real world only if possible
-        # simulation therefore should co-exist
         self.services_nodes = deepcopy(action)
         if self.no_action_on_overloaded and self.num_overloaded > 0:
             print("overloaded state, reverting back ...")
             self.services_nodes = deepcopy(prev_services_nodes)
 
+        # add migraion here
+        self.services_nodes_obj =  self.nodes[action]
+        self._migrate(self.services_nodes_obj)
+
         # move to the next timestep
         self.global_timestep += 1
         self.timestep = self.global_timestep % self.workload.shape[1]
+
+        # make user movements --> network parts
+        self.users_stations = self.edge_simulator.sample_users_stations(
+            timestep=self.timestep)
+        users_distances = self.edge_simulator.users_distances
+        # update network with the new placements
+        self.edge_simulator.update_services_nodes(self.services_nodes)
 
         num_moves = len(np.where(
             self.services_nodes != prev_services_nodes)[0])
 
         reward, rewards = self._reward(
             num_overloaded=self.num_overloaded,
+            users_distances=users_distances,
             num_moves=num_moves
             )
 
         info = {'num_consolidated': self.num_consolidated,
                 'num_moves': num_moves,
                 'num_overloaded': self.num_overloaded,
+                'users_distances': np.sum(users_distances),
                 'total_reward': reward,
                 'timestep': self.timestep,
                 'global_timestep': self.global_timestep,

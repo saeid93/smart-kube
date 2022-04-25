@@ -106,8 +106,8 @@ class WorkLoads:
         )
 
 
-class Dataset:
-    """Dataset Model"""
+class Cluster:
+    """Cluster Model"""
 
     def __init__(self, data: dict):
         self.data = data

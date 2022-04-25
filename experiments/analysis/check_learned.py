@@ -4,6 +4,9 @@ based-on:
 https://github.com/ray-project/ray/issues/9123
 https://github.com/ray-project/ray/issues/7983
 """
+
+# TODO add kubernetes
+
 import os
 import sys
 import numpy as np
@@ -42,19 +45,19 @@ from experiments.utils import (
 torch, nn = try_import_torch()
 
 
-def learner(*, series: int, type_env: str, dataset_id: int,
+def learner(*, series: int, type_env: str, cluster_id: int,
             workload_id: int, network_id: int, trace_id: int,
             checkpoint: str, experiment_id: int,
             local_mode: bool, episode_length: int,
             workload_id_test: int, trace_id_test: int):
     """
     """
-    path_env = type_env if type_env != 'kube-edge' else 'sim-edge'    
+    path_env = type_env if type_env != 'kube-scheduler' else 'sim-scheduler'    
     experiments_config_path = os.path.join(
         TRAIN_RESULTS_PATH,
         "series",      str(series),
         "envs",        path_env,
-        "datasets",    str(dataset_id),
+        "clusters",    str(cluster_id),
         "workloads",   str(workload_id),
         "networks",    str(network_id),
         "traces",      str(trace_id),
@@ -82,7 +85,7 @@ def learner(*, series: int, type_env: str, dataset_id: int,
     # add the additional nencessary arguments to the edge config
     env_config = add_path_to_config_edge(
         config=env_config_base,
-        dataset_id=dataset_id,
+        cluster_id=cluster_id,
         workload_id=workload_id_test,
         network_id=network_id,
         trace_id=trace_id_test
@@ -93,7 +96,7 @@ def learner(*, series: int, type_env: str, dataset_id: int,
     # other types of agent
     if type_env not in ['CartPole-v0', 'Pendulum-v0']:
         env = gym.make(ENVSMAP[type_env], config=env_config)
-        ray_config = {"env": make_env_class('sim-edge'),
+        ray_config = {"env": make_env_class('sim-scheduler'),
                     "env_config": env_config}
         ray_config.update(learn_config)
     else:
@@ -101,11 +104,11 @@ def learner(*, series: int, type_env: str, dataset_id: int,
         env = gym.make(type_env)
         ray_config.update(learn_config)
 
-    path_env = type_env if type_env != 'kube-edge' else 'sim-edge'
+    path_env = type_env if type_env != 'kube-scheduler' else 'sim-scheduler'
     experiments_folder = os.path.join(TRAIN_RESULTS_PATH,
                                       "series",      str(series),
                                       "envs",        path_env,
-                                      "datasets",    str(dataset_id),
+                                      "clusters",    str(cluster_id),
                                       "workloads",   str(workload_id),
                                       "networks",    str(network_id),
                                       "traces",      str(trace_id),
@@ -180,10 +183,10 @@ def learner(*, series: int, type_env: str, dataset_id: int,
 @click.option('--local-mode', type=bool, default=True)
 @click.option('--series', required=True, type=int, default=44)
 @click.option('--type-env', required=True,
-              type=click.Choice(['sim-edge', 'kube-edge',
+              type=click.Choice(['sim-scheduler', 'kube-scheduler',
                                  'CartPole-v0', 'Pendulum-v0']),
-              default='sim-edge')
-@click.option('--dataset-id', required=True, type=int, default=6)
+              default='sim-scheduler')
+@click.option('--cluster-id', required=True, type=int, default=6)
 @click.option('--workload-id', required=True, type=int, default=0)
 @click.option('--network-id', required=False, type=int, default=5)
 @click.option('--trace-id', required=False, type=int, default=2)
@@ -193,7 +196,7 @@ def learner(*, series: int, type_env: str, dataset_id: int,
 @click.option('--workload-id-test', required=False, type=int, default=0)
 @click.option('--trace-id-test', required=False, type=int, default=0)
 def main(local_mode: bool, series: int,
-         type_env: str, dataset_id: int, workload_id: int, network_id: int,
+         type_env: str, cluster_id: int, workload_id: int, network_id: int,
          trace_id: int, experiment_id: int,
 	     checkpoint: int, episode_length: int,
          workload_id_test: int, trace_id_test: int):
@@ -203,16 +206,16 @@ def main(local_mode: bool, series: int,
         config_folder (str): name of the config folder (only used in real mode)
         use_callback (bool): whether to use callbacks or storing and visualising
         checkpoint (int): selected checkpoint to test
-        series (int): to gather a series of datasets in a folder
+        series (int): to gather a series of clusters in a folder
         type_env (str): the type of the used environment
-        dataset_id (int): used cluster dataset
-        workload_id (int): the workload used in that dataset
-        network_id (int): edge network of some dataset
+        cluster_id (int): used cluster cluster
+        workload_id (int): the workload used in that cluster
+        network_id (int): edge network of some cluster
         trace_id (int): user movement traces
     """
 
     learner(series=series, type_env=type_env,
-            dataset_id=dataset_id, workload_id=workload_id,
+            cluster_id=cluster_id, workload_id=workload_id,
             network_id=network_id, trace_id=trace_id, 
             experiment_id=experiment_id, checkpoint=checkpoint,
             local_mode=local_mode, episode_length=episode_length,

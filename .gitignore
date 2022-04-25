@@ -238,7 +238,7 @@ data/experiments
 data/test-results
 data/train-results
 data/plots
-data/datasets
+data/clusters
 data.zip
 
 reward_scaling_samples_1

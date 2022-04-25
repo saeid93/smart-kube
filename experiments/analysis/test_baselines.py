@@ -1,6 +1,9 @@
 """
 Testing phase of the experiments on the test data
 """
+
+# TODO add kubernetes
+
 import os
 import sys
 import pickle
@@ -33,9 +36,10 @@ from experiments.utils import (
 torch, nn = try_import_torch()
 
 
+
 def run_experiments(
     *, test_series: int, train_series: int, type_env: str,
-    dataset_id: int, workload_id: int, network_id: int,
+    cluster_id: int, workload_id: int, network_id: int,
     trace_id: int, trace_id_test: int,
     comp_experiment_id: int, episode_length):
     """
@@ -43,8 +47,8 @@ def run_experiments(
     experiments_config_folder = os.path.join(
         TRAIN_RESULTS_PATH,
         "series",      str(train_series),
-        "envs",        'sim-edge',
-        "datasets",    str(dataset_id),
+        "envs",        'sim-scheduler',
+        "clusters",    str(cluster_id),
         "workloads",   str(workload_id),
         "networks",    str(network_id),
         "traces",      str(trace_id),
@@ -77,7 +81,7 @@ def run_experiments(
     # add the additional nencessary arguments to the edge config
     env_config = add_path_to_config_edge(
         config=env_config_base,
-        dataset_id=dataset_id,
+        cluster_id=cluster_id,
         workload_id=workload_id,
         network_id=network_id,
         trace_id=trace_id_test
@@ -105,7 +109,7 @@ def run_experiments(
     states = pd.DataFrame(states)
     print(f"episode reward: {episode_reward}")
     info = {
-        'dataset_id': dataset_id,
+        'cluster_id': cluster_id,
         'workload_id': workload_id,
         'network_id': network_id,
         'trace_id': trace_id,
@@ -170,7 +174,7 @@ def fix_grid_searches(config):
               type=click.Choice(['sim-binpacking', 'sim-greedy',
                                  'kube-binpacking', 'kube-greedy']),
               default='sim-greedy')
-@click.option('--dataset-id', required=True, type=int, default=6)
+@click.option('--cluster-id', required=True, type=int, default=6)
 @click.option('--workload-id', required=True, type=int, default=0)
 @click.option('--network-id', required=False, type=int, default=7)
 @click.option('--trace-id', required=False, type=int, default=2)
@@ -178,7 +182,7 @@ def fix_grid_searches(config):
 @click.option('--comp-experiment-id', required=True, type=int, default=0)
 @click.option('--episode-length', required=False, type=int, default=3453)
 def main(test_series: int, comp_train_series: int, type_env: str,
-         dataset_id: int, workload_id: int, network_id: int,
+         cluster_id: int, workload_id: int, network_id: int,
          trace_id: int, trace_id_test: int, comp_experiment_id: int,
          episode_length: int):
     """[summary]
@@ -188,9 +192,9 @@ def main(test_series: int, comp_train_series: int, type_env: str,
         comp-train-series (int): series of the trainining phase for loading config
         test-series (int): testing series to save
         type_env (str): the type of the used environment
-        dataset_id (int): used cluster dataset
-        workload_id (int): the workload used in that dataset
-        network_id (int): edge network of some dataset
+        cluster_id (int): used cluster cluster
+        workload_id (int): the workload used in that cluster
+        network_id (int): edge network of some cluster
         trace_id (int): user movement traces
         comp-experiment-id (int): the trained agent experiment-id
                     that we want to compare against
@@ -200,7 +204,7 @@ def main(test_series: int, comp_train_series: int, type_env: str,
     run_experiments(
         test_series=test_series,
         train_series=comp_train_series, type_env=type_env,
-        dataset_id=dataset_id, workload_id=workload_id,
+        cluster_id=cluster_id, workload_id=workload_id,
         network_id=network_id, trace_id=trace_id,
         trace_id_test=trace_id_test,
         comp_experiment_id=comp_experiment_id,

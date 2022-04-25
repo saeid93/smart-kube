@@ -1,5 +1,5 @@
 """
-read datasets, workloads etc
+read clusters, workloads etc
 """
 import os
 import pickle
@@ -7,11 +7,11 @@ import pickle
 
 def load_object(path: str):
     """
-    read the dataset, workload and network from the disk
+    read the cluster, workload and network from the disk
     and their path
     """
 
-    # load dataset
+    # load cluster
     if not os.path.isfile(path):
         raise FileNotFoundError(f"no data at <{path}>")
     with open(path, 'rb') as in_pickle:

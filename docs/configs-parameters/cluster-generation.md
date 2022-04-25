@@ -1,6 +1,6 @@
 ```
 {
-    "notes":[str] // "some note about the dataset",
+    "notes":[str] // "some note about the cluster",
     "nums": {
         "nodes":[int], //number of nodes in the simulation
         "services" [int], //number of services in the simulations

@@ -3,5 +3,5 @@ for network in ${networks[@]}
 do
    /homes/sg324/.conda/envs/central/bin/python \
    /homes/sg324/mobile-kube/experiments/training/train.py \
-   --series $1 --config-file final-$2 --dataset-id 6 --network-id $network --trace-id 2
+   --series $1 --config-file final-$2 --cluster-id 6 --network-id $network --trace-id 2
 done

@@ -1,9 +1,9 @@
 """
    scripts is used to generate
-   initial dataset for the experiments
+   initial cluster for the experiments
    it uses functions implemented in
-   the gym_edgesimulator.dataset module to
-   generate a dataset with given specs
+   the gym_edgesimulator.cluster module to
+   generate a cluster with given specs
 """
 import os
 import sys
@@ -14,56 +14,56 @@ from copy import deepcopy
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=4)
 
-from smart_scheduler.dataset import DatasetGenerator
+from smart_scheduler.cluster import ClusterGenerator
 
 # get an absolute path to the directory that contains parent files
 project_dir = os.path.dirname(os.path.join(os.getcwd(), __file__))
 sys.path.append(os.path.normpath(os.path.join(project_dir, '..', '..')))
 
 from experiments.utils.constants import (
-    DATASETS_PATH,
+    CLUSTERS_PATH,
     CONFIGS_PATH
 )
-from experiments.utils import config_dataset_generation_check
+from experiments.utils import config_cluster_generation_check
 
 
-def generate_dataset(config):
+def generate_cluster(config):
     """
         use the random_initializer.py and random_state_initializer.py
         to make and save initial_states
     """
-    # generate the dataset
+    # generate the cluster
     generator_config = deepcopy(config)
     del generator_config['notes']
-    dataset_generator = DatasetGenerator(**generator_config)
-    dataset = dataset_generator.make_dataset()
+    cluster_generator = ClusterGenerator(**generator_config)
+    cluster = cluster_generator.make_cluster()
 
     # fix the paths to save the newly generated datset
-    content = os.listdir(DATASETS_PATH)
-    new_dataset = len(content)
-    dir2save = os.path.join(DATASETS_PATH, str(new_dataset))
+    content = os.listdir(CLUSTERS_PATH)
+    new_cluster = len(content)
+    dir2save = os.path.join(CLUSTERS_PATH, str(new_cluster))
     os.mkdir(dir2save)
 
-    # information of the generated dataset
+    # information of the generated cluster
     info = config
     info['capacities'] = {}
     info['capacities']['nodes_resources'] = \
-        dataset['nodes_resources_cap'].tolist()
+        cluster['nodes_resources_cap'].tolist()
     info['capacities']['services_resources'] = \
-        dataset['services_resources_request'].tolist()
+        cluster['services_resources_request'].tolist()
     info['services_nodes'] = \
-        dataset['services_nodes'].tolist()
+        cluster['services_nodes'].tolist()
 
-    # save the info and dataset in the folder
+    # save the info and cluster in the folder
     with open(os.path.join(dir2save, 'info.json'), 'x') as out_file:
         json.dump(info, out_file, indent=4)
-    with open(os.path.join(dir2save, 'dataset.pickle'), 'wb') as out_pickle:
-        pickle.dump(dataset, out_pickle)
+    with open(os.path.join(dir2save, 'cluster.pickle'), 'wb') as out_pickle:
+        pickle.dump(cluster, out_pickle)
     print(f"\n\nGenerated data saved in <{dir2save}>\n\n")
 
     # empty folder for the workload and networks
     os.mkdir(os.path.join(dir2save, 'workloads'))
-    os.mkdir(os.path.join(dir2save, 'networks'))
+    # os.mkdir(os.path.join(dir2save, 'networks'))
 
 
 def main():
@@ -71,13 +71,13 @@ def main():
     config_file_path = os.path.join(
         CONFIGS_PATH,
         'generation-configs',
-        'dataset.json')
+        'cluster.json')
     with open(config_file_path) as cf:
         config = json.loads(cf.read())
-    print('generating dataset from the following config:')
+    print('generating cluster from the following config:')
     pp.pprint(config)
-    config_dataset_generation_check(config)
-    generate_dataset(config)
+    config_cluster_generation_check(config)
+    generate_cluster(config)
 
 
 if __name__ == "__main__":

@@ -1,16 +1,16 @@
 from gym.envs.registration import register
 
 register(
-    id='SimEdgeEnv-v0',
-    entry_point='smart_scheduler.envs:SimEdgeEnv',
+    id='SimSchedulerEnv-v0',
+    entry_point='smart_scheduler.envs:SimSchedulerEnv',
 )
 register(
     id='SimBinpackingEnv-v0',
     entry_point='smart_scheduler.envs:SimBinpackingEnv',
 )
 register(
-    id='KubeEdgeEnv-v0',
-    entry_point='smart_scheduler.envs:KubeEdgeEnv',
+    id='KubeSchedulerEnv-v0',
+    entry_point='smart_scheduler.envs:KubeSchedulerEnv',
 )
 register(
     id='KubeBinpackingEnv-v0',

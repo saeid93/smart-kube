@@ -1,8 +1,8 @@
 from .simulation import (
-    SimEdgeEnv,
+    SimSchedulerEnv,
     SimBinpackingEnv,
 )
 from .kubernetes import (
-    KubeEdgeEnv,
+    KubeSchedulerEnv,
     KubeBinpackingEnv,
 )

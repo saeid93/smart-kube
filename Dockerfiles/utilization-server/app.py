@@ -1,4 +1,4 @@
-from models import WorkLoads, Dataset
+from models import WorkLoads, Cluster
 from flask import jsonify
 from flask import Flask
 import schedule
@@ -27,9 +27,9 @@ CURRENT_TIME_STEP = 0
 
 # WorkLoads
 WORKLOAD_PATH = '/workload.pickle'
-DATASET_PATH = '/dataset.pickle'
+CLUSTER_PATH = '/cluster.pickle'
 WORKLOADS: WorkLoads
-DATASET: Dataset
+CLUSTER: Cluster
 
 # Services
 SERVICES = dict()
@@ -70,7 +70,7 @@ def update(previous: str, new: str):
 
 @app.route('/metrics/<string:hostname>/', methods=['GET'])
 def metrics(hostname: str):
-    global WORKLOADS, DATASET, CURRENT_TIME_STEP, SERVICES, MOVED_SERVICES, IS_ENABLED_SCHEDULER, INTERVAL
+    global WORKLOADS, CLUSTER, CURRENT_TIME_STEP, SERVICES, MOVED_SERVICES, IS_ENABLED_SCHEDULER, INTERVAL
     """Register a hostname and return him current metrics
 
         Firstly, it's searching for hostname, if it's not present, so it will be created
@@ -93,8 +93,8 @@ def metrics(hostname: str):
         logging.info('service "{}" does not exist, so its resources will be allocated'.format(hostname))
         # logging.info('services: {}'.format(SERVICES))
         # logging.info('moved services: {}'.format(MOVED_SERVICES))
-        # logging.info('services_types: {}'.format(DATASET.data.get('services_types')))
-        service_type = DATASET.data.get('services_types')[len(SERVICES)]
+        # logging.info('services_types: {}'.format(CLUSTER.data.get('services_types')))
+        service_type = CLUSTER.data.get('services_types')[len(SERVICES)]
         INIT_RAM, INIT_CPU = WORKLOADS.data[service_type, CURRENT_TIME_STEP, :]
 
         service = {
@@ -172,8 +172,8 @@ if __name__ == '__main__':
             with open(WORKLOAD_PATH, 'rb') as file:
                 WORKLOADS = WorkLoads(pickle.load(file))
 
-            with open(DATASET_PATH, 'rb') as file:
-                DATASET = Dataset(pickle.load(file))
+            with open(CLUSTER_PATH, 'rb') as file:
+                CLUSTER = Cluster(pickle.load(file))
 
             break
         except Exception as e:
@@ -181,7 +181,7 @@ if __name__ == '__main__':
                 'looking for file "{}" and "{}", '
                 'in order to run web server, you need to upload them: {}'.format(
                     WORKLOAD_PATH,
-                    DATASET_PATH,
+                    CLUSTER_PATH,
                     e
                 ))
         time.sleep(1)

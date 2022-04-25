@@ -19,9 +19,9 @@ from smart_scheduler.util import (
     load_object
 )
 
-from .sim_edge_env import SimEdgeEnv
+from .sim_scheduler_env import SimSchedulerEnv
 
-class SimBinpackingEnv(SimEdgeEnv):
+class SimBinpackingEnv(SimSchedulerEnv):
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, int, bool, dict]:
         """
         General overivew:

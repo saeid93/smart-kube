@@ -16,7 +16,6 @@
         "episode_length": [int],
         "timestep_reset": [bool],
         "placement_reset": [bool],
-        "from_dataset": [bool],
         "normalise_latency": [bool],
         "compute_greedy_num_consolidated": [bool],
         "seed": [int]

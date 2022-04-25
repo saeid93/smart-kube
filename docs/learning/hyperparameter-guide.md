@@ -26,7 +26,7 @@ Description:
 Description:
 "metadata":{
     "type_env": 0, // type of the used environment -- mandatory
-    "dataset_id": 0, // used dataset -- mandatory
+    "cluster_id": 0, // used cluster -- mandatory
     "workload_id": 0 // workload used for the experiments -- mandatory
 }
 ```

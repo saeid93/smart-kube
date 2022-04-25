@@ -45,18 +45,18 @@ torch, nn = try_import_torch()
 
 def run_experiments(
     *, test_series: int, train_series: int, type_env: str,
-    dataset_id: int, workload_id: int, network_id: int,
+    cluster_id: int, workload_id: int, network_id: int,
     trace_id: int, experiment_id: int, local_mode: bool,
     episode_length, num_episodes: int, workload_id_test: int,
     trace_id_test: int, checkpoint_to_load: str):
     """
     """
-    path_env = type_env if type_env != 'kube-edge' else 'sim-edge'    
+    path_env = type_env if type_env != 'kube-scheduler' else 'sim-scheduler'    
     experiments_config_folder = os.path.join(
         TRAIN_RESULTS_PATH,
         "series",      str(train_series),
         "envs",        path_env,
-        "datasets",    str(dataset_id),
+        "clusters",    str(cluster_id),
         "workloads",   str(workload_id),
         "networks",    str(network_id),
         "traces",      str(trace_id),
@@ -69,7 +69,7 @@ def run_experiments(
     # fix the grid searches
     algorithm, env_configs, learn_configs, num_workers = fix_grid_searches(
         config=config,
-        dataset_id=dataset_id,
+        cluster_id=cluster_id,
         workload_id_test=workload_id_test,
         network_id=network_id,
         trace_id_test=trace_id_test,
@@ -98,20 +98,18 @@ def run_experiments(
     # # add the additional nencessary arguments to the edge config
     # env_config = add_path_to_config_edge(
     #     config=env_config_base,
-    #     dataset_id=dataset_id,
+    #     cluster_id=cluster_id,
     #     workload_id=workload_id_test,
     #     network_id=network_id,
     #     trace_id=trace_id_test
     # )
 
-    path_env = type_env if type_env != 'kube-edge' else 'sim-edge'
+    path_env = type_env if type_env != 'kube-scheduler' else 'sim-scheduler'
     experiments_folder = os.path.join(TRAIN_RESULTS_PATH,
                                       "series",       str(train_series),
                                       "envs",         path_env,
-                                      "datasets",     str(dataset_id),
+                                      "clusters",     str(cluster_id),
                                       "workloads",    str(workload_id),
-                                      "networks",     str(network_id),
-                                      "traces",       str(trace_id),
                                       "experiments",  str(experiment_id),
                                       algorithm)
 
@@ -131,7 +129,7 @@ def run_experiments(
         if type_env not in ['CartPole-v0', 'Pendulum-v0']:
             env = gym.make(ENVSMAP[type_env], config=env_config)
             # reset the env at the beginning of each episode
-            ray_config = {"env": make_env_class('sim-edge'),
+            ray_config = {"env": make_env_class('sim-scheduler'),
                         "env_config": env_config}
             ray_config.update(learn_config)
         else:
@@ -177,7 +175,7 @@ def run_experiments(
             )
             checkpoint_to_load_info = int(checkpoint_to_load)
 
-        alg_env = make_env_class('sim-edge')
+        alg_env = make_env_class('sim-scheduler')
         if algorithm == 'PPO':
             agent = ppo.PPOTrainer(
                 config=ray_config,
@@ -226,18 +224,14 @@ def run_experiments(
         info = {
             'type_env': type_env,
             'series': train_series,
-            'dataset_id': dataset_id,
+            'cluster_id': cluster_id,
             'workload_id': workload_id,
-            'network_id': network_id,
-            'trace_id': trace_id,
-            'trace_id_test': trace_id_test,
             'checkpoint': checkpoint_to_load_info,
             'experiment_str': experiment_str,
             'experiments': experiment_id,
             'episode_length': episode_length,
             'num_episodes': num_episodes,
             'algorithm': algorithm,
-            'penalty_latency': env_config['penalty_latency'],
             'penalty_consolidated': env_config['penalty_consolidated'],
             'num_workers': num_workers
         }
@@ -264,13 +258,9 @@ def run_experiments(
 def flatten(raw_obs, action, reward, info):
     return {
         'action': action,
-        'services_nodes': raw_obs['services_nodes'],
-        'users_stations': raw_obs['users_stations'],
         'num_consolidated': info['num_consolidated'],
         'num_moves': info['num_moves'],
         'num_overloaded': info['num_overloaded'],
-        'users_distances': info['users_distances'],
-        'reward_latency': info['rewards']['reward_latency'],
         'reward_move': info['rewards']['reward_move'],
         'reward_illegal': info['rewards']['reward_illegal'],
         'reward_variance': info['rewards']['reward_variance'],
@@ -278,7 +268,7 @@ def flatten(raw_obs, action, reward, info):
     }
 
 def fix_grid_searches(
-    config, dataset_id, workload_id_test, network_id,
+    config, cluster_id, workload_id_test, network_id,
     trace_id_test, episode_length):
     """
     This function is used to fix the grid searches.
@@ -321,7 +311,7 @@ def fix_grid_searches(
             # add the additional nencessary arguments to the edge config
             env_config = add_path_to_config_edge(
                 config=env_config_base_copy,
-                dataset_id=dataset_id,
+                cluster_id=cluster_id,
                 workload_id=workload_id_test,
                 network_id=network_id,
                 trace_id=trace_id_test
@@ -340,7 +330,7 @@ def fix_grid_searches(
         # add the additional nencessary arguments to the edge config
         env_config = add_path_to_config_edge(
             config=env_config_base,
-            dataset_id=dataset_id,
+            cluster_id=cluster_id,
             workload_id=workload_id_test,
             network_id=network_id,
             trace_id=trace_id_test
@@ -356,9 +346,9 @@ def fix_grid_searches(
 @click.option('--test-series', required=True, type=int, default=74)
 @click.option('--train-series', required=True, type=int, default=74)
 @click.option('--type-env', required=True,
-              type=click.Choice(['sim-edge', 'kube-edge']),
-              default='kube-edge')
-@click.option('--dataset-id', required=True, type=int, default=6)
+              type=click.Choice(['sim-scheduler', 'kube-scheduler']),
+              default='kube-scheduler')
+@click.option('--cluster-id', required=True, type=int, default=6)
 @click.option('--workload-id', required=True, type=int, default=0)
 @click.option('--network-id', required=False, type=int, default=1)
 @click.option('--trace-id', required=False, type=int, default=2)
@@ -369,7 +359,7 @@ def fix_grid_searches(
 @click.option('--trace-id-test', required=False, type=int, default=0)
 @click.option('--checkpoint-to-load', required=False, type=str, default='last')
 def main(local_mode: bool, test_series: int, train_series: int,
-         type_env: str, dataset_id: int, workload_id: int,
+         type_env: str, cluster_id: int, workload_id: int,
          network_id: int, trace_id: int, experiment_id: int,
          num_episodes: int, episode_length: int,
          workload_id_test: int, trace_id_test: int,
@@ -381,9 +371,9 @@ def main(local_mode: bool, test_series: int, train_series: int,
         test-series (int): series of the tests
         train-series (int): series of the trainining phase
         type_env (str): the type of the used environment
-        dataset_id (int): used cluster dataset
-        workload_id (int): the workload used in that dataset
-        network_id (int): edge network of some dataset
+        cluster_id (int): used cluster cluster
+        workload_id (int): the workload used in that cluster
+        network_id (int): edge network of some cluster
         trace_id (int): user movement traces
         checkpoint (int): training checkpoint to load
         experiment-id (int): the trained agent experiment id
@@ -393,7 +383,7 @@ def main(local_mode: bool, test_series: int, train_series: int,
     run_experiments(
         test_series=test_series,
         train_series=train_series, type_env=type_env,
-        dataset_id=dataset_id, workload_id=workload_id,
+        cluster_id=cluster_id, workload_id=workload_id,
         network_id=network_id, trace_id=trace_id,
         experiment_id=experiment_id,
         num_episodes=num_episodes, episode_length=episode_length,

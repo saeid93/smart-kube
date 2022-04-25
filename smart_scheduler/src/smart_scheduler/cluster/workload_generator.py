@@ -5,16 +5,16 @@ from smart_scheduler.util import plot_workload
 
 
 class WorkloadGenerator:
-    def __init__(self, dataset, workloads_var, timesteps, services_types,
+    def __init__(self, cluster, workloads_var, timesteps, services_types,
                  start_workloads, plot_smoothing, seed):
         """
-            dataset generator
+            cluster generator
         """
         self.seed = seed
         np.random.seed(self.seed)
         random.seed(seed)
 
-        self.num_resources = dataset['nodes_resources_cap'].shape[1]
+        self.num_resources = cluster['nodes_resources_cap'].shape[1]
         self.timesteps = timesteps
         self.num_services_types = services_types
 
@@ -94,4 +94,4 @@ class WorkloadGenerator:
             figs.append(fig)
         return workloads, figs
         # TODO option 2: resource usage from normal distribution
-        # TODO option 3: from dataset
+        # TODO option 3: from cluster

@@ -84,18 +84,18 @@ class KubeBaseEnv(gym.Env):
         # observation elements
         self.obs_elements: List[str] = config['obs_elements']
 
-        # path of the dataset and workload
-        self.dataset_path = config['dataset_path']
+        # path of the cluster and workload
+        self.cluster_path = config['cluster_path']
         self.workload_path = config['workload_path']
 
         # node, services resources and workload
-        self.dataset = load_object(self.dataset_path)
+        self.cluster = load_object(self.cluster_path)
         self.workload = load_object(self.workload_path)
 
-        self.nodes_resources_cap: np.array = self.dataset['nodes_resources_cap']
-        self.services_resources_request: np.array = self.dataset[
+        self.nodes_resources_cap: np.array = self.cluster['nodes_resources_cap']
+        self.services_resources_request: np.array = self.cluster[
             'services_resources_request']
-        self.services_types: np.array = self.dataset['services_types']
+        self.services_types: np.array = self.cluster['services_types']
 
         # find the number of nodes, services, service types and timesteps
         self.num_resources: int = self.nodes_resources_cap.shape[1]
@@ -109,7 +109,7 @@ class KubeBaseEnv(gym.Env):
         self.workload = self.workload[:, 0:stop_timestep, :]
 
         # initial states
-        self.initial_services_nodes: np.array = self.dataset['services_nodes']
+        self.initial_services_nodes: np.array = self.cluster['services_nodes']
 
         # reward penalties
         self.penalty_illegal: float = config['penalty_illegal']
@@ -160,7 +160,7 @@ class KubeBaseEnv(gym.Env):
             self.kube_config_file,
             self.namespace,
             self.workload_path,
-            self.dataset_path,
+            self.cluster_path,
             self.utilization_image,
             self.clean_after_exit,
             self.using_auxiliary_server,
@@ -170,7 +170,7 @@ class KubeBaseEnv(gym.Env):
         self.nodes, self.aux_server = self._cluster.monitor.get_nodes()
 
         # check if the number of nodes in the cluster equals to
-        # the number of nodes in the dataset
+        # the number of nodes in the cluster
         self.nodes = np.array([
             Node(id, node) for id, node in enumerate(self.nodes)
         ])
@@ -182,10 +182,10 @@ class KubeBaseEnv(gym.Env):
         assert len(self.nodes) == self.num_nodes, \
             (f"number of nodes in the cluster <{len(self.nodes)}>"
              " is not consistent with"
-             f" the number of nodes in the dataset <{self.num_nodes}>")
+             f" the number of nodes in the cluster <{self.num_nodes}>")
 
         self.services_nodes_obj: np.array = np.array([
-            self.nodes[id] for id in self.dataset['services_nodes']
+            self.nodes[id] for id in self.cluster['services_nodes']
         ])
 
     @property

@@ -53,10 +53,10 @@ class CloudCallback(DefaultCallbacks):
                          episode: MultiAgentEpisode,
                          env_index: int, **kwargs):
 
-        # timestep of the dataset
+        # timestep of the cluster
         episode.user_data["timestep"] = []
         episode.hist_data["timestep"] = []
-        # global timestep of the dataset
+        # global timestep of the cluster
         episode.user_data["global_timestep"] = []
         episode.hist_data["global_timestep"] = []
         # num_consolidated placeholder lists

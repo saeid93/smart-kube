@@ -30,16 +30,13 @@ from experiments.utils import (
 
 
 def check_env(*, config: Dict[str, Any], type_env: str,
-              dataset_id: int, workload_id: int,
-              network_id: int, trace_id: int):
+              cluster_id: int, workload_id: int):
 
     env_config_base = config["env_config_base"]
     env_config = add_path_to_config_edge(
         config=env_config_base,
-        dataset_id=dataset_id,
+        cluster_id=cluster_id,
         workload_id=workload_id,
-        network_id=network_id,
-        trace_id=trace_id
     )
     if type_env not in ['CartPole-v0', 'Pendulum-v0']:
         type_env = ENVSMAP[type_env]
@@ -72,24 +69,19 @@ def check_env(*, config: Dict[str, Any], type_env: str,
 
 @click.command()
 @click.option('--type-env', required=True,
-              type=click.Choice(['sim-edge', 'sim-binpacking',
-                                 'kube-edge', 'kube-binpacking',
+              type=click.Choice(['sim-scheduler', 'sim-binpacking',
+                                 'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
-              default='sim-edge')
-@click.option('--dataset-id', required=True, type=int, default=6)
+              default='sim-scheduler')
+@click.option('--cluster-id', required=True, type=int, default=0)
 @click.option('--workload-id', required=True, type=int, default=0)
-@click.option('--network-id', required=False, type=int, default=1)
-@click.option('--trace-id', required=False, type=int, default=0)
-def main(type_env: str, dataset_id: int,
-         workload_id: int, network_id: int, trace_id: int):
+def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]
 
     Args:
         type_env (str): the type of the used environment
-        dataset_id (int): used cluster dataset
-        workload_id (int): the workload used in that dataset
-        network_id (int): edge network of some dataset
-        trace_id (int): user movement traces
+        cluster_id (int): used cluster cluster
+        workload_id (int): the workload used in that cluster
     """
     config_file_path = os.path.join(
         CONFIGS_PATH, 'check',
@@ -100,10 +92,8 @@ def main(type_env: str, dataset_id: int,
     config_check_env_check(config)
     check_env(config=config,
               type_env=type_env,
-              dataset_id=dataset_id,
-              workload_id=workload_id,
-              network_id=network_id,
-              trace_id=trace_id)
+              cluster_id=cluster_id,
+              workload_id=workload_id)
 
 
 if __name__ == "__main__":

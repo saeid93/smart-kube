@@ -1,7 +1,7 @@
 ```
 {
     "notes": "constant resoure usage",
-    "dataset_id": [int],
+    "cluster_id": [int],
     "timesteps": [int],
     "services_types": [int],
     "workloads_var" : {

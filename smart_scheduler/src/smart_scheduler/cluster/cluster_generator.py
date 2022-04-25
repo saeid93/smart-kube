@@ -3,11 +3,11 @@ import itertools
 import random
 
 
-class DatasetGenerator:
+class ClusterGenerator:
     def __init__(self, nums, metrics, nodes_cap_rng,
                  services_request_rng, start_workload,
                  cutoff, seed):
-        """dataset generator
+        """cluster generator
         """
         self.seed = seed
         np.random.seed(self.seed)
@@ -54,7 +54,7 @@ class DatasetGenerator:
         self.services_nodes = np.ones(self.num_services, dtype=int) * (-1)
 
 
-    def make_dataset(self):
+    def make_cluster(self):
         """combining state initilizer for consolidation
             and latency to make the real initial configuration
 
@@ -93,7 +93,7 @@ class DatasetGenerator:
         self._make_capacities()
         self._make_nodes_services()
 
-        dataset = {
+        cluster = {
             'nodes_resources_cap': self.nodes_resources_cap,
             'services_resources_request': self.services_resources_request,
             'services_nodes': self.services_nodes,
@@ -101,7 +101,7 @@ class DatasetGenerator:
             'start_workload': self.start_workload
         }
 
-        return dataset
+        return cluster
 
     def _make_capacities(self):
         """make random initialization of nodes and contianers capacities

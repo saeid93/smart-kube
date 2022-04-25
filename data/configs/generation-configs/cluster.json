@@ -1,5 +1,5 @@
 {
-    "notes":"small dataset to fix the namings",
+    "notes":"small cluster to fix the namings",
     "nums": {
         "nodes": 8,
         "services": 32,

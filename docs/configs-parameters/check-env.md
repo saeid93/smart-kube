@@ -1,3 +1,4 @@
+TODO fix based on the final version
 ```
 {
     "env_config_base": {
@@ -14,7 +15,7 @@
         "episode_length": [int],
         "timestep_reset": [bool],
         "placement_reset": [bool],
-        "from_dataset": [bool],
+        "from_cluster": [bool],
         "normalise_latency": [bool],
         "seed": [int] // seed for generating reproducible results
     }

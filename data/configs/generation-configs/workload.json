@@ -1,6 +1,6 @@
 {
     "notes": "resoure usage",
-    "dataset_id": 7,
+    "cluster_id": 0,
     "timesteps": 10000,
     "services_types": 1,
     "workloads_var" : {
