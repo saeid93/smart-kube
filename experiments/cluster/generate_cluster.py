@@ -14,7 +14,8 @@ from copy import deepcopy
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=4)
 
-from smart_scheduler.cluster_generator import ClusterGenerator
+from smart_scheduler.cluster_generator import\
+    ClusterGeneratorRandom
 
 # get an absolute path to the directory that contains parent files
 project_dir = os.path.dirname(os.path.join(os.getcwd(), __file__))
@@ -35,7 +36,7 @@ def generate_cluster(config):
     # generate the cluster
     generator_config = deepcopy(config)
     del generator_config['notes']
-    cluster_generator = ClusterGenerator(**generator_config)
+    cluster_generator = ClusterGeneratorRandom(**generator_config)
     cluster = cluster_generator.make_cluster()
 
     # fix the paths to save the newly generated datset

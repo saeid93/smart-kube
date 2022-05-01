@@ -41,7 +41,11 @@ from gym.spaces import (
     Discrete
 )
 
-
+from smart_scheduler.util import (
+    Service,
+    Node,
+    get_random_string
+)
 
 class SimSchedulerEnv(gym.Env):
     """
@@ -150,6 +154,30 @@ class SimSchedulerEnv(gym.Env):
         self.consolidation_lower = config['consolidation_lower']
         self.consolidation_upper = config['consolidation_upper']
 
+        # TODO could be cleaner - come back to it if necessary
+        services: List[Service] = []
+        nodes: List[Node] = []
+
+        # make services objects
+        for service_id in range(self.num_services):
+            service_workload = self.workload[
+                :, :, self.services_types[0]] * np.reshape(
+                    self.services_resources_request[0], (2,1))
+            services.append(Service(
+                service_id=service_id,
+                service_name=get_random_string(6),
+                requests=self.services_resources_request[service_id],
+                limits=self.services_resources_request[service_id],
+                workload=service_workload,
+                duration=np.random.randint(
+                    5, service_workload.shape[1])
+            ))
+        for node_id in range(self.num_nodes):
+            nodes.append(Node(
+                node_id=node_id,
+                capacities=self.nodes_resources_cap[node_id], 
+            ))
+
         self.observation_space, self.action_space =\
             self._setup_space()
         _ = self.reset()
@@ -191,6 +219,8 @@ class SimSchedulerEnv(gym.Env):
 
         if self.discrete_actions:
             action = self.discrete_action_converter[action]
+
+        # TODO clock tick for nodes (services are updated inside)
 
         # TODO not possible to roll back in the real world
         # take the action in the real world only if possible
@@ -262,6 +292,7 @@ class SimSchedulerEnv(gym.Env):
     @property
     @rounding
     def services_resources_usage(self) -> np.ndarray:
+        # TODO query them from the nodes
         """return the fraction of resource usage for each node
         workload at current timestep e.g. at time step 0.
                          ram cpu
@@ -545,6 +576,7 @@ class SimSchedulerEnv(gym.Env):
                               nodes
             services [                   ]
         """
+        # TODO change action-space to arriving services
         # numuber of elements based on the obs in the observation space
         obs_size = 0
         for elm in self.obs_elements:

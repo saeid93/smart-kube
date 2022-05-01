@@ -1,11 +1,12 @@
 {
     "notes":"small cluster to fix the namings",
+    "fixed_size_cluster": true,
     "nums": {
-        "nodes": 8,
-        "services": 32,
+        "nodes": 3,
+        "services": 6,
         "resources": 2,
-        "services_types": 1,
-        "services_types_map": [32]
+        "services_types": 3,
+        "services_types_map": [2, 2, 2]
     },
     "metrics": {
         "ram":"mb",
@@ -30,7 +31,7 @@
     "services_request_rng": {
         "0":
             {
-            "num": 32,
+            "num": 6,
             "ram": {
                 "min": 250,
                 "max": 250,
@@ -43,7 +44,7 @@
             }
         }
     },
-    "start_workload":[[0.5, 0.5]],
+    "start_workload":[[0.5, 0.5], [0.5, 0.5], [0.5, 0.5]],
     "cluster_start_time": 0,
     "cluster_end_time": 5000,
     "seed": 42

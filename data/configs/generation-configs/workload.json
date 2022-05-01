@@ -1,11 +1,11 @@
 {
     "notes": "resoure usage",
-    "cluster_id": 0,
-    "timesteps": 10000,
-    "services_types": 1,
+    "cluster_id": 2,
+    "timesteps": 100,
+    "services_types": 3,
     "workloads_var" : {
-        "steps_unit":[[0, 0]],
-        "max_steps":[[1, 1]]
+        "steps_unit":[[0, 0], [0, 0], [0, 0]],
+        "max_steps":[[1, 1], [1, 1], [1, 1]]
     },
     "plot_smoothing":301,
     "seed":42

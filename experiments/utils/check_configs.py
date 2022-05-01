@@ -19,7 +19,8 @@ def config_cluster_generation_check(config: Dict[str, Any]):
     """
     allowed_items = ['notes', 'nums', 'metrics', 'nodes_cap_rng',
                      'services_request_rng', 'cutoff', 'start_workload',
-                     'cluster_start_time', 'cluster_end_time', 'seed']
+                     'cluster_start_time', 'cluster_end_time', 'seed',
+                     'fixed_size_cluster']
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the environment config")
@@ -49,58 +50,6 @@ def config_workload_generation_check(config: Dict[str, Any]):
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the workload generation config")
-
-def config_network_generation_check(config: Dict[str, Any]):
-    allowed_items = ['notes', 'cluster_id', 'num_users', 'num_stations',
-                     'width', 'length', 'speed_limit', 'from_cluster',
-                     'users_services_distributions', 'cluster_metadata',
-                     'nodes_stations_con', 'nodes_selection', 'nodes_list',
-                     'seed', 'colocated']
-    for key, _ in config.items():
-        assert key in allowed_items, (f"<{key}> is not an allowed items for"
-                                      " the network generation config")
-    # type checks
-    floats = ['width', 'length']
-    for item in floats:
-        assert type(config[item]) == float, f"<{item}> must be an float"
-    ints = ['cluster_id', 'num_users', 'num_stations',
-            'speed_limit', 'cluster_metadata',
-            'nodes_stations_con', 'seed']
-    for item in ints:
-        assert type(config[item]) == int, f"<{item}> must be an integer"
-    strs = ['notes', 'users_services_distributions', 'nodes_selection']
-    for item in strs:
-        assert type(config[item]) == str, f"<{item}> must be an string"
-    bools = ['from_cluster', 'colocated']
-    for item in bools:
-        assert type(config[item]) == bool, f"<{item}> must be an boolean"
-    lists = ['nodes_list']
-    for item in lists:
-        assert type(config[item]) == list, f"<{item}> must be an list"
-
-    # option checks
-    assert config['users_services_distributions'] in ['random', 'equal'],\
-        ("Unkown users_services_distributions option:"
-         f" <{config['users_services_distributions']}>")
-    assert config['nodes_selection'] in ["ordered", "random", "node_list"],\
-        ("Unkown node_selection option:"
-         f" <{config['nodes_selection']}>")
-
-def config_trace_generation_check(config: Dict[str, Any]):
-    allowed_items = ['cluster_id', 'network_id', 'speed', 'timesteps',
-                     'from_cluster', 'seed']
-    for key, _ in config.items():
-        assert key in allowed_items, (f"<{key}> is not an allowed items for"
-                                      " the network generation config")
-    # type checks
-    ints = ['cluster_id', 'network_id', 'speed', 'timesteps'
-            , 'cluster_start_time', 'cluster_end_time', 'seed']
-    for item in ints:
-        assert type(config[item]) == int, f"<{item}> must be an integer"
-    bools = ['from_cluster']
-    for item in bools:
-        assert type(config[item]) == bool, f"<{item}> must be an boolean"
-
 
 def env_config_base_check(config: Dict[str, Any]):
     """

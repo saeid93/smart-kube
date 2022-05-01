@@ -1,22 +1,38 @@
 import numpy as np
 import random
 from tqdm import tqdm
-from smart_scheduler.util import plot_workload
+from smart_scheduler.util import (
+    plot_workload,
+    Node,
+    Service,
+    service,
+    rounding)
+import random
+import string
+from typing import List
 
 
-class WorkloadGenerator:
-    def __init__(self, cluster, workloads_var, timesteps, services_types,
+class WorkloadGeneratorRandom:
+    def __init__(self, cluster, workloads_var, timesteps, num_services_types,
                  start_workloads, plot_smoothing, seed):
         """
             cluster generator
         """
+        self.cluster = cluster
         self.seed = seed
         np.random.seed(self.seed)
         random.seed(seed)
+        self.services_types: np.array = self.cluster['services_types']
 
         self.num_resources = cluster['nodes_resources_cap'].shape[1]
         self.timesteps = timesteps
-        self.num_services_types = services_types
+        self.num_services_types = num_services_types
+
+        self.services_resources_request: np.array = self.cluster[
+            'services_resources_request']
+        self.num_services: int = self.services_resources_request.shape[0]
+        self.nodes_resources_cap: np.array = self.cluster['nodes_resources_cap']
+        self.num_nodes: int = self.nodes_resources_cap.shape[0]
 
         self.start_workloads = np.transpose(np.array(start_workloads))
         self.workloads_steps_units = \
@@ -93,5 +109,4 @@ class WorkloadGenerator:
                                 self.plot_smoothing, i)
             figs.append(fig)
         return workloads, figs
-        # TODO option 2: resource usage from normal distribution
-        # TODO option 3: from cluster
+

@@ -14,7 +14,8 @@ from typing import List
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=4)
 
-from smart_scheduler.cluster_generator import WorkloadGenerator
+from smart_scheduler.cluster_generator import\
+    WorkloadGeneratorRandom
 
 # get an absolute path to the directory that contains parent files
 project_dir = os.path.dirname(os.path.join(os.getcwd(), __file__))
@@ -57,13 +58,14 @@ def generate_workload(notes: str, cluster_id: int,
     os.mkdir(dir2save)
 
     # generate the workload
-    workload_generator = WorkloadGenerator(cluster=cluster,
-                                           workloads_var=workloads_var,
-                                           timesteps=timesteps,
-                                           services_types=services_types,
-                                           start_workloads=start_workloads,
-                                           plot_smoothing=plot_smoothing,
-                                           seed=seed)
+    workload_generator = WorkloadGeneratorRandom(
+        cluster=cluster,
+        workloads_var=workloads_var,
+        timesteps=timesteps,
+        num_services_types=services_types,
+        start_workloads=start_workloads,
+        plot_smoothing=plot_smoothing,
+        seed=seed)
     workloads, figs = workload_generator.make_workloads()
 
     # information of the generated workload

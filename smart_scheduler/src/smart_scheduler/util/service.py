@@ -1,15 +1,31 @@
 import numpy as np
+from pendulum import duration
 
 class Service:
-    def __init__(self, service_id: int, requests: np.array,
-                 limits: np.array, workload: np.array,
-                 service_start_time: int, duration: int) -> None:
+    def __init__(self, service_id: int,
+                 service_name: str, requests: np.ndarray,
+                 limits: np.ndarray, workload: np.ndarray,
+                 duration: int,
+                 service_start_time: int = 0) -> None:
         self.service_id = service_id
+        self.service_name = service_name
         self.requests = requests
         self.limits = limits
         self.workload = workload
         self.service_start_time = service_start_time
         self.duration = duration
+        self.time = service_start_time
 
-    def container_usage(self, time):
-        return self.workload[self.service_start_time - time]
+    def clock_tick(self, time):
+        if time < self.service_start_time\
+            or time > self.service_start_time + self.duration:
+            raise ValueError('Invalid time!')
+        self.time = time
+
+    @property
+    def usage(self):
+        return self.workload[self.time]
+
+    @property
+    def slack(self):
+        return self.requests - self.usage

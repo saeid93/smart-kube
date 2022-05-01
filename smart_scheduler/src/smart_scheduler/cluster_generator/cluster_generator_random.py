@@ -4,11 +4,12 @@ import random
 from smart_scheduler.util import Service
 from typing import List
 
-class ClusterGenerator:
-    def __init__(self, nums, metrics, nodes_cap_rng,
-                 services_request_rng, start_workload,
-                 cutoff, cluster_start_time, cluster_end_time,
-                 seed):
+
+class ClusterGeneratorRandom:
+    def __init__(self, nums: dict, metrics: dict, nodes_cap_rng: dict,
+                 services_request_rng: dict, start_workload: np.ndarray,
+                 cutoff: dict, cluster_start_time: int, cluster_end_time: int,
+                 fixed_size_cluster: bool, seed: int):
         """cluster generator
         """
         self.seed = seed
@@ -66,9 +67,9 @@ class ClusterGenerator:
         self.cluster_end_time = cluster_end_time
         assert self.cluster_end_time - self.cluster_start_time > 0
 
-        self.services_nodes = np.ones(self.num_services, dtype=int) * (-1) # TODO to be a decorator
+        self.services_nodes = np.ones(self.num_services, dtype=int) * (-1) # TODO to be removed
 
-        self.services: List[Service] = []
+        self.fixed_size_cluster = fixed_size_cluster
 
 
 
@@ -118,7 +119,6 @@ class ClusterGenerator:
             'services_types': self.services_types,
             'start_workload': self.start_workload
         }
-
         return cluster
 
     def _make_capacities(self):
@@ -148,7 +148,6 @@ class ClusterGenerator:
                                                       axis=1)
 
             # 3. generate contaienrs
-            # HERE TODO
             size_type_len = len(self.services_rng_ram)
             for i in range(size_type_len):
                 number = self.services_rng_num[i]
@@ -203,9 +202,10 @@ class ClusterGenerator:
                 break
         else:  # no-break
             raise RuntimeError((f"tried <{tries_limit}> times to make"
-                                "memory allocations , memeory allocation"
-                                " is to tight, try eiher smaller range for"
-                                " services or larger range for nodes"))
+                                "an allocations , servers are small"
+                                " for the containers, try"
+                                " eiher smaller range for services"
+                                " or larger range for nodes"))
 
     def _make_nodes_services(self):
 
