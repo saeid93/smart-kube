@@ -18,7 +18,8 @@ def config_cluster_generation_check(config: Dict[str, Any]):
     check the structure of the cluster generation
     """
     allowed_items = ['notes', 'nums', 'metrics', 'nodes_cap_rng',
-                     'services_request_rng', 'cutoff', 'start_workload', 'seed']
+                     'services_request_rng', 'cutoff', 'start_workload',
+                     'cluster_start_time', 'cluster_end_time', 'seed']
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the environment config")
@@ -92,7 +93,8 @@ def config_trace_generation_check(config: Dict[str, Any]):
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the network generation config")
     # type checks
-    ints = ['cluster_id', 'network_id', 'speed', 'timesteps', 'seed']
+    ints = ['cluster_id', 'network_id', 'speed', 'timesteps'
+            , 'cluster_start_time', 'cluster_end_time', 'seed']
     for item in ints:
         assert type(config[item]) == int, f"<{item}> must be an integer"
     bools = ['from_cluster']
@@ -131,11 +133,6 @@ def env_config_base_check(config: Dict[str, Any]):
     for item in floats:
         assert type(config[item])==float or type(config[item])==int,\
             f"[{item}] must be a float"
-    # bools = ['placement_reset']
-    # for item in bools:
-    #     assert type(config[item]) == bool, f"<{item}> must be a boolean"
-    # assert type(config['obs_elements']) == list,\
-    #     "obs_elements' must be a list"
 
     # observation checks
     all_obs_elements: List[str] = ["services_resources_usage",

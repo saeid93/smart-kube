@@ -1,5 +1,7 @@
 """base class for non learning environments
 """
+
+# TODO polish and separate completely
 import numpy as np
 from copy import deepcopy
 from typing import (

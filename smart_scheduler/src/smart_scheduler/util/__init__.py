@@ -14,3 +14,4 @@ from .constants import (
     ACTION_MAX,
     PRECISION
 )
+from .service import Service

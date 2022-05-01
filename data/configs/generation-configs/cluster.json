@@ -44,5 +44,7 @@
         }
     },
     "start_workload":[[0.5, 0.5]],
+    "cluster_start_time": 0,
+    "cluster_end_time": 5000,
     "seed": 42
 }
