@@ -6,26 +6,26 @@ class Service:
                  service_name: str, requests: np.ndarray,
                  limits: np.ndarray, workload: np.ndarray,
                  duration: int,
-                 service_start_time: int = 0) -> None:
+                 start_time: int = 0) -> None:
         self.service_id = service_id
         self.service_name = service_name
         self.requests = requests
         self.limits = limits
         self.workload = workload
-        self.service_start_time = service_start_time
+        self.start_time = start_time
         self.duration = duration
-        self.time = service_start_time
+        self.time = start_time
 
     def clock_tick(self, time):
-        if time < self.service_start_time\
-            or time > self.service_start_time + self.duration:
+        if time < self.start_time\
+            or time > self.start_time + self.duration:
             raise ValueError('Invalid time!')
         self.time = time
 
     @property
-    def usage(self):
-        return self.workload[self.time]
+    def usages(self):
+        return self.workload[:, self.time]
 
     @property
     def slack(self):
-        return self.requests - self.usage
+        return self.requests - self.usages

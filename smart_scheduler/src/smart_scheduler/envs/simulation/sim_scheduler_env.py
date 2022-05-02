@@ -155,15 +155,15 @@ class SimSchedulerEnv(gym.Env):
         self.consolidation_upper = config['consolidation_upper']
 
         # TODO could be cleaner - come back to it if necessary
-        services: List[Service] = []
-        nodes: List[Node] = []
+        self.pending_services: List[Service] = []
+        self.nodes: List[Node] = []
 
         # make services objects
         for service_id in range(self.num_services):
             service_workload = self.workload[
                 :, :, self.services_types[0]] * np.reshape(
                     self.services_resources_request[0], (2,1))
-            services.append(Service(
+            self.pending_services.append(Service(
                 service_id=service_id,
                 service_name=get_random_string(6),
                 requests=self.services_resources_request[service_id],
@@ -173,10 +173,27 @@ class SimSchedulerEnv(gym.Env):
                     5, service_workload.shape[1])
             ))
         for node_id in range(self.num_nodes):
-            nodes.append(Node(
+            self.nodes.append(Node(
                 node_id=node_id,
                 capacities=self.nodes_resources_cap[node_id], 
             ))
+        # TODO start HERE
+        # TEMP
+        self.schedule(
+            service_id=0,
+            node_id=0
+        )
+        self.schedule(
+            service_id=1,
+            node_id=0
+        )
+        a1 = self.nodes[0].nodes_usage
+        a2 = self.nodes[0].requests
+        a3 = self.nodes[0].resources_available
+        a4 = self.nodes[0].add_service
+        a5 = self.nodes[0].services_ids
+        a5 = self.nodes[0].services_names
+        a6 = self.nodes[0].requests_available
 
         self.observation_space, self.action_space =\
             self._setup_space()
@@ -287,7 +304,53 @@ class SimSchedulerEnv(gym.Env):
                                         plot_length=80)
             print(Style.RESET_ALL)
 
-    # ------------------ common properties ------------------
+
+    def schedule(self, service_id: int, node_id: int) -> bool:
+        """schedule one of the services on a target node
+
+        Args:
+            service_id (int): id of the service
+                to be scheduled
+            node_id (int): id of the node
+                to be scheduled
+
+        Returns:
+            bool: returns whether the service
+                has been scheduled or not
+        """
+        if not service_id in self.pending_services_ids:
+            raise ValueError('Service {} does not exists'.format(
+                service_id
+            ))
+        service_index = self.pending_services_ids.index(service_id)
+        # check if the node has enough request
+        if np.alltrue(self.nodes[
+            node_id].requests_available < self.pending_services[
+                service_index].requests):
+            return False
+        # check if the node has enough resource available
+        if np.alltrue(
+            self.nodes[
+                node_id].resources_available < np.zeros((2,1))):
+            return False
+        # schedule the service on the node
+        self.nodes[node_id].add_service(
+            self.pending_services[service_index])
+        # remove the service from the pending services
+        self.pending_services.pop(service_index)
+        # return true if successful
+        return True
+
+
+    # ------------------ new properties ------------------
+    @property
+    def pending_services_ids(self) -> List[int]:
+        ids = list(
+            map(
+                lambda service: service.service_id, self.pending_services))
+        return ids
+
+    # ------------------ old properties TODO to be changed ------------------
 
     @property
     @rounding
