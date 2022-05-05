@@ -383,10 +383,9 @@ class SimSchedulerEnv(gym.Env):
         obs = prep.transform(obs)
         return obs
 
-    def _setup_space(self): # TODO change based on new need
+    def _setup_space(self):
         """
         """
-        # TODO change action-space to arriving services
         # numuber of elements based on the obs in the observation space
         obs_size = 0
         for elm in self.obs_elements:
