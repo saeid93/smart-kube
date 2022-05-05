@@ -1,7 +1,6 @@
 import numpy as np
 import itertools
 import random
-from smart_scheduler.util import Service
 from typing import List
 
 

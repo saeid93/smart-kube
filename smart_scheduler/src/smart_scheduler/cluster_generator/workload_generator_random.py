@@ -3,9 +3,6 @@ import random
 from tqdm import tqdm
 from smart_scheduler.util import (
     plot_workload,
-    Node,
-    Service,
-    service,
     rounding)
 import random
 import string

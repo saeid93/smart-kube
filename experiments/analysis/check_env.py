@@ -77,7 +77,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
 @click.option('--cluster-id', required=True, type=int, default=2)
-@click.option('--workload-id', required=True, type=int, default=0)
+@click.option('--workload-id', required=True, type=int, default=1)
 @click.option('--job-arrival-mode', required=True, type=str, default='fixed')
 @click.option('--time-resolution', required=True, type=int, default=0)
 def main(type_env: str, cluster_id: int, workload_id: int,

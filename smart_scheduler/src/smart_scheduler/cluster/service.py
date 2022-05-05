@@ -6,7 +6,7 @@ class Service:
     def __init__(self, service_id: int,
                  service_name: str, requests: np.ndarray,
                  limits: np.ndarray, workload: np.ndarray,
-                 duration: int,
+                 serving_time: int,
                  start_time: int = 0) -> None:
         self.service_id = service_id
         self.service_name = service_name
@@ -14,7 +14,7 @@ class Service:
         self.limits = limits
         self.workload = workload
         self.start_time = start_time
-        self.duration = duration
+        self.duration = serving_time
         self.time = start_time
 
     def clock_tick(self, time):

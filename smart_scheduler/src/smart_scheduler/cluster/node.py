@@ -31,6 +31,18 @@ class Node:
             if service.done:
                 self.deschedule(service_index)
 
+    def add_service(self, service: Service) -> bool:
+        # add if there is enough request available
+        if np.alltrue(
+            self.requests_available < service.requests):
+            return False
+        # check if the node has enough resource available
+        if np.alltrue(
+            self.resources_unused < service.requests): # TODO check against k8s
+            return False
+        self.services.append(service)
+        return True
+
     def deschedule(self, service_index):
         # TODO debug
         # schedule the service on the node
@@ -39,28 +51,40 @@ class Node:
         self.services.pop(service_index)
 
     @property
-    def nodes_usage(self):
-        # TODO calculate from the services
-        a = 1
-        return np.array([0, 0])
+    def usages(self):
+        usages = sum(
+            list(map(
+                lambda service: service.usages, self.services)))
+        if type(usages) == int:
+            return np.zeros(2)
+        return usages
 
     @property
     def requests(self):
-        # TODO calculate from the services
-        a = 1
-        return np.array([100000, 100000])
+        requests = sum(
+            list(map(
+                lambda service: service.requests, self.services)))
+        if type(requests) == int:
+            return np.zeros(2)
+        return requests
 
     @property
-    def resources_available(self):
-        # TODO calculate from the usage and capacities
-        a = 1
-        return np.array([100000, 100000])
+    def requests_available(self):
+        """total available resource request on the node
+        """
+        return self.capacities - self.requests
 
-    def add_service(self, service: Service) -> bool:
-        # TODO check for available resources
-        # add if there is enough request available
-        self.services.append(service)
-        return True
+    @property
+    def resources_unused(self):
+        """total available resource on the node
+        """
+        return self.capacities - self.usages
+
+    @property
+    def slack(self):
+        """total unused requested resources
+        """
+        return self.requests - self.usages
 
     @property
     def services_ids(self):
@@ -73,9 +97,3 @@ class Node:
         services_names = list(
             map(lambda l: l.service_name, self.services))
         return services_names
-
-    @property
-    def requests_available(self):
-        # TODO calculate from the request and capacities
-        a = 1
-        return np.array([100000, 100000])

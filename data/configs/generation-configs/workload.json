@@ -1,4 +1,5 @@
 {
+    "workload_type": "random",
     "notes": "resoure usage",
     "cluster_id": 2,
     "timesteps": 100,

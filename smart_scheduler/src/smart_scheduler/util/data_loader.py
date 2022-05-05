@@ -1,8 +1,13 @@
 """
 read clusters, workloads etc
 """
+from typing import (
+    Dict,
+    Union
+)
 import os
 import pickle
+import numpy as np
 
 
 def load_object(path: str):

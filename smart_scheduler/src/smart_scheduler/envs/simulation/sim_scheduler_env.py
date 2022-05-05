@@ -18,6 +18,8 @@ from colorama import (
 import gym
 from gym.utils import seeding
 import types
+from pendulum import duration
+from smart_scheduler import cluster
 
 from smart_scheduler.util import (
     Preprocessor,
@@ -47,6 +49,7 @@ from smart_scheduler.util import (
 from smart_scheduler.cluster import (
     Service,
     Node,
+    Cluster
 )
 
 class SimSchedulerEnv(gym.Env):
@@ -83,7 +86,6 @@ class SimSchedulerEnv(gym.Env):
 
         # initialize seed to ensure reproducible resutls
         self.seed(config['seed'])
-
         check_config(config)
 
         # observation elements
@@ -94,34 +96,27 @@ class SimSchedulerEnv(gym.Env):
         self.workload_path = config['workload_path']
 
         # node, services resources and workload
-        self.cluster = load_object(self.cluster_path)
-        self.workload = load_object(self.workload_path)
+        cluster_schema = load_object(self.cluster_path)
+        self.workload_save = load_object(self.workload_path)
 
-        self.nodes_resources_cap: np.array = self.cluster['nodes_resources_cap']
-        self.services_resources_request: np.array = self.cluster[
-            'services_resources_request']
-        self.services_types: np.array = self.cluster['services_types']
+        # TODO different for other types of data
+        sim_type = self.workload_save['workload_type']
+        self.workload = self.workload_save['workloads']
 
-        # find the number of nodes, services, service types and timesteps
-        self.num_resources: int = self.nodes_resources_cap.shape[1]
-        self.num_nodes: int = self.nodes_resources_cap.shape[0]
-        self.num_services: int = self.services_resources_request.shape[0]
-        self.num_services_types: int = self.workload.shape[2]
+        self.cluster = Cluster(cluster_schema)
+
         self.total_timesteps: int = self.workload.shape[1]
 
-        # start and stop timestep
-        stop_timestep: int = self.total_timesteps
-        self.workload = self.workload[:, 0:stop_timestep, :]
 
-        # initial states
-        self.initial_services_nodes: np.array = self.cluster['services_nodes']
+        self.services_resources_request: np.ndarray = cluster_schema[
+            'services_resources_request']
+        self.services_types: np.ndarray = cluster_schema['services_types']
+        self.total_num_services: int = self.services_resources_request.shape[0]
 
         # reward penalties
         self.penalty_illegal: float = config['penalty_illegal']
         self.penalty_move: float = config['penalty_move']
-        self.penalty_variance: float = config['penalty_variance']
         self.penalty_consolidated: float = config['penalty_consolidated']
-        self.penalty_latency: float = config['penalty_latency']
 
         # episode length
         self.episode_length: int = config['episode_length']
@@ -137,7 +132,6 @@ class SimSchedulerEnv(gym.Env):
             self.placement_reset: bool = False
         self.global_timestep: int = 0
         self.timestep: int = 0
-        self.services_nodes = deepcopy(self.initial_services_nodes)
 
         # set the reward method
         self._reward = types.MethodType(_reward, self)
@@ -156,46 +150,44 @@ class SimSchedulerEnv(gym.Env):
         self.consolidation_lower = config['consolidation_lower']
         self.consolidation_upper = config['consolidation_upper']
 
-        # TODO could be cleaner - come back to it if necessary
         self.pending_services: List[Service] = []
-        self.nodes: List[Node] = []
 
         # make services objects
-        for service_id in range(self.num_services):
-            service_workload = self.workload[ # TODO an if statement here for check with random and real
-                :, :, self.services_types[0]] * np.reshape(
-                    self.services_resources_request[0], (2,1))
+        for service_id in range(self.total_num_services):
+            if sim_type=='alibaba' or sim_type=='arabesque':
+                pass # TODO
+            else:
+                service_workload = self.workload[
+                    :, :, self.services_types[0]] * np.reshape(
+                        self.services_resources_request[0], (2,1))
+                service_name = get_random_string(6)
+                serving_time = np.random.randint(
+                    5, service_workload.shape[1])
             self.pending_services.append(Service(
                 service_id=service_id,
-                service_name=get_random_string(6),
+                service_name=service_name,
                 requests=self.services_resources_request[service_id],
                 limits=self.services_resources_request[service_id],
                 workload=service_workload,
-                duration=np.random.randint(
-                    5, service_workload.shape[1])
-            ))
-        for node_id in range(self.num_nodes):
-            self.nodes.append(Node(
-                node_id=node_id,
-                capacities=self.nodes_resources_cap[node_id], 
-            ))
+                serving_time=serving_time))
         # TODO start HERE
         # TEMP
-        self.schedule(
+        self.schedule( # TODO send the service itself
             service_id=0,
             node_id=0
         )
         self.schedule(
-            service_id=1,
+            service_id=2,
             node_id=0
         )
-        a1 = self.nodes[0].nodes_usage
-        a2 = self.nodes[0].requests
-        a3 = self.nodes[0].resources_available
-        a5 = self.nodes[0].services_ids
-        a5 = self.nodes[0].services_names
-        a6 = self.nodes[0].requests_available
-
+        self.schedule(
+            service_id=3,
+            node_id=1
+        )
+        self.schedule(
+            service_id=4,
+            node_id=1
+        )
         self.observation_space, self.action_space =\
             self._setup_space()
         _ = self.reset()
@@ -306,7 +298,7 @@ class SimSchedulerEnv(gym.Env):
             print(Style.RESET_ALL)
 
 
-    def schedule(self, service_id: int, node_id: int) -> bool:
+    def schedule(self, service_id: int, node_id: int) -> bool: # TODO part of cluster's logic move the rest to the step function
         """schedule one of the services on a target node
 
         Args:
@@ -320,27 +312,20 @@ class SimSchedulerEnv(gym.Env):
                 has been scheduled or not
         """
         if not service_id in self.pending_services_ids:
-            raise ValueError('Service {} does not exists'.format(
+            raise ValueError(
+                'Service {} does not exists in pending services'.format(
                 service_id
             ))
         service_index = self.pending_services_ids.index(service_id)
-        # check if the node has enough request
-        if np.alltrue(self.nodes[
-            node_id].requests_available < self.pending_services[
-                service_index].requests):
-            return False
-        # check if the node has enough resource available
-        if np.alltrue(
-            self.nodes[
-                node_id].resources_available < np.zeros((2,1))):
-            return False
-        # schedule the service on the node
-        self.nodes[node_id].add_service(
-            self.pending_services[service_index])
-        # remove the service from the pending services
-        self.pending_services.pop(service_index)
+        schedule_success = self.cluster.schedule(
+            service=self.pending_services[service_index],
+            node_id=node_id
+        )
+        # remove the service from the pending services if successful
+        if schedule_success:
+            self.pending_services.pop(service_index)
         # return true if successful
-        return True
+        return schedule_success
 
 
     # ------------------ new properties ------------------
@@ -353,220 +338,6 @@ class SimSchedulerEnv(gym.Env):
 
     # ------------------ old properties TODO to be changed ------------------
 
-    @property
-    @rounding
-    def services_resources_usage(self) -> np.ndarray:
-        # TODO query them from the nodes
-        """return the fraction of resource usage for each node
-        workload at current timestep e.g. at time step 0.
-                         ram cpu
-                        |       |
-            services    |       |
-                        |       |
-            range:
-                row inidices: (0, num_services]
-                columns indices: (0, num_resources]
-                enteries: [0, node_resource_cap] type: float
-        """
-        services_resources_usage = (self.services_resources_usage_frac *
-                                      self.services_resources_request)
-        return services_resources_usage
-
-    @property
-    def nodes_resources_usage(self): # TODO have two version for request and usage separately
-        """return the amount of resource usage
-        on each node
-                     ram - cpu
-                    |         |
-            nodes   |         |
-                    |         |
-
-            range:
-                row inidices: (0, num_nodes]
-                columns indices: (0, num_resources]
-                enteries: [0, node_resource_cap] type: float
-        """
-        nodes_resources_usage = []
-        for node in range(self.num_nodes):
-            services_in_node = np.where(self.services_nodes == node)[0]
-            node_resources_usage = sum(self.services_resources_usage[
-                services_in_node])
-            if type(node_resources_usage) != np.ndarray:
-                node_resources_usage = np.zeros(self.num_resources)
-            nodes_resources_usage.append(node_resources_usage)
-        return np.array(nodes_resources_usage)
-
-    @property
-    def nodes_resources_request(self): # TODO have two version for request and usage separately
-        """return the amount of resource usage
-        on each node
-        """
-        nodes_resources_request = []
-        for node in range(self.num_nodes):
-            services_in_node = np.where(
-                self.services_nodes == node)[0]
-            node_resources_usage = sum(
-                self.services_resources_request[services_in_node])
-            if type(node_resources_usage) != np.ndarray:
-                node_resources_usage = np.zeros(self.num_resources)
-            nodes_resources_request.append(node_resources_usage)
-        return np.array(nodes_resources_request)
-
-    @property
-    def services_resources_remained(self) -> np.ndarray:  # TODO have two version for request and usage separately
-        return self.services_resources_request - self.services_resources_usage
-
-    @property
-    def nodes_resources_remained(self):  # TODO have two version for request and usage separately
-        # The amount of acutally used resources
-        # on the nodes
-        return self.nodes_resources_cap - self.nodes_resources_usage
-
-    @property
-    def nodes_resources_available(self):
-        # The amount of the available
-        # non-requested resources on the nodes
-        return self.nodes_resources_cap - self.nodes_resources_request
-
-    @property
-    @rounding
-    def services_types_usage(self) -> np.ndarray:
-        """each service type resource usage
-
-                                 ram  cpu
-                                |        |
-            services_types      |        |
-                                |        |
-        """
-        services_types_usage = np.transpose(self.workload[
-            :, self.timestep, :])
-        return services_types_usage
-
-    @property
-    @rounding
-    def services_resources_usage_frac(self) -> np.ndarray:
-        """fraction of usage:
-
-                         ram - cpu
-                        |         |
-            services    |         |
-                        |         |
-
-            range:
-                row inidices: (0, num_services]
-                columns indices: (0, num_resources]
-                enteries: [0, 1] type: float
-        """
-        workload_services_types = self.workload[:, self.timestep, :]
-        services_resources_usage_frac = list(map(lambda service_type:
-                                                   workload_services_types
-                                                   [:, service_type],
-                                                   self.services_types))
-        services_resources_usage_frac = np.array(
-            services_resources_usage_frac)
-        return services_resources_usage_frac
-
-    @property
-    @rounding
-    def nodes_resources_usage_frac(self) -> np.ndarray:
-        """returns the resource usage of
-        each node
-                     ram - cpu
-                    |         |
-            nodes   |         |
-                    |         |
-
-            range:
-                row inidices: (0, num_nodes]
-                columns indices: (0, num_resources]
-                enteries: [0, 1] type: float
-        """
-        return self.nodes_resources_usage / self.nodes_resources_cap
-
-    @property
-    @rounding
-    def nodes_resources_request_frac(self):
-        """returns the resource requested on
-        each node
-                     ram - cpu
-                    |         |
-            nodes   |         |
-                    |         |
-
-            range:
-                row inidices: (0, num_nodes]
-                columns indices: (0, num_resources]
-                enteries: [0, 1] type: float
-        """
-        return self.nodes_resources_request / self.nodes_resources_cap
-
-    @property
-    def num_consolidated(self) -> int:
-        """returns the number of consolidated nodes
-        """
-        return self._num_consolidated(self.services_nodes)
-
-    @property
-    def num_overloaded(self) -> int:
-        """return the number of resource exceeding nodes
-        """
-        overloaded_nodes = np.unique(np.where(
-            self.nodes_resources_request_frac > 1)[0])
-        return len(overloaded_nodes)
-
-    @property
-    def nodes_services(self) -> np.ndarray:
-        """change the representation of placements from:
-             contianer_id   contianer_id          contianer_id
-            [node_id,       node_id,    , ... ,   node_id     ]
-        to:
-                node_id                    node_id
-            [[service_id, service_id], ...,[service_id]]
-        """
-        nodes_services = []
-        for node in range(self.num_nodes):
-            services_in_node = np.where(self.services_nodes ==
-                                          node)[0].tolist()
-            nodes_services.append(services_in_node)
-        return nodes_services
-
-    @property
-    def nodes_resources_remained_frac(self):
-        return self.nodes_resources_remained / self.nodes_resources_cap
-
-    @property
-    def nodes_resources_available_frac(self):
-        return self.nodes_resources_available / self.nodes_resources_cap
-
-    @property
-    def nodes_resources_remained_frac_avg(self):
-        return np.average(self.nodes_resources_remained_frac, axis=1)
-
-    @property
-    def nodes_resources_available_frac_avg(self):
-        return np.average(self.nodes_resources_available_frac, axis=1)
-
-    @property
-    def done(self):
-        """check at every step that if we have reached the
-        final state of the simulation of not
-        """
-        done = True if self.timestep % self.episode_length == 0 else False
-        return done
-
-    @property
-    def complete_raw_observation(self) -> Dict[str, np.ndarray]:
-        """complete observation with all the available elements
-        """
-        observation = {
-                "services_resources_usage": self.services_resources_usage,
-                "nodes_resources_usage": self.nodes_resources_usage,
-                "services_resources_usage_frac":
-                self.services_resources_usage_frac,
-                "nodes_resources_usage_frac": self.nodes_resources_usage_frac,
-                "services_nodes": self.services_nodes
-        }
-        return observation
 
     @property
     def raw_observation(self) -> Dict[str, np.ndarray]:
@@ -593,14 +364,6 @@ class SimSchedulerEnv(gym.Env):
         obs = np.array(list(map(int, obs)))
         return obs
 
-    def _num_consolidated(self, services_nodes) -> int:
-        """functional version of num_services
-        returns the number of consolidated nodes
-        """
-        a = set(services_nodes)
-        b = set(np.arange(self.num_nodes))
-        intersect = b - a
-        return len(intersect)
 
     def preprocessor(self, obs):
         """
@@ -612,7 +375,7 @@ class SimSchedulerEnv(gym.Env):
         obs = prep.transform(obs)
         return obs
 
-    def _setup_space(self):
+    def _setup_space(self): # TODO change based on new need
         """
         States:
             the whole or a subset of the following dictionary:
@@ -645,17 +408,17 @@ class SimSchedulerEnv(gym.Env):
         obs_size = 0
         for elm in self.obs_elements:
             if elm == "services_resources_usage":
-                obs_size += self.num_services * self.num_resources
+                obs_size += self.total_num_services * self.num_resources
             elif elm == "nodes_resources_usage":
                 obs_size += self.num_nodes * self.num_resources
             elif elm == "services_resources_usage_frac":
-                obs_size += self.num_services * self.num_resources
+                obs_size += self.total_num_services * self.num_resources
             elif elm == "nodes_resources_usage_frac":
                 obs_size += self.num_nodes * self.num_resources
             elif elm == "services_nodes":
                 # add the one hot endoded services_resources
                 # number of elements
-                obs_size += (self.num_nodes) * self.num_services
+                obs_size += (self.num_nodes) * self.total_num_services
 
         # add the one hot endoded users_stations
         # number of elements
@@ -668,11 +431,11 @@ class SimSchedulerEnv(gym.Env):
 
         if self.discrete_actions:
             action_space = Discrete(
-                self.num_nodes**self.num_services, seed=self._env_seed)
+                self.num_nodes**self.total_num_services, seed=self._env_seed)
             self.discrete_action_converter = Discrete2MultiDiscrete(
-                self.num_nodes, self.num_services)
+                self.num_nodes, self.total_num_services)
         else:
-            action_space = MultiDiscrete(np.ones(self.num_services) *
+            action_space = MultiDiscrete(np.ones(self.total_num_services) *
                                         self.num_nodes, seed=self._env_seed)
         # action_space = Box(
         #     low=0, high=self.num_nodes-1, shape=(

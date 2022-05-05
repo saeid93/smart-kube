@@ -78,12 +78,12 @@ class SimBinpackingEnv(SimSchedulerEnv):
             5. if not possible to allocate it to the node with the largest
                remaining resources (already the last popped node)
         """
-        self.services_nodes = np.ones(self.num_services, dtype=int) * (-1)
+        self.services_nodes = np.ones(self.total_num_services, dtype=int) * (-1)
         nodes = list(np.arange(self.num_nodes))
         popped_nodes = []
         node_id = nodes.pop()
         popped_nodes.append(node_id)
-        for service_id in range(self.num_services):
+        for service_id in range(self.total_num_services):
             try:
                 # iterate through the currently popped nodes
                 # remmaining resources

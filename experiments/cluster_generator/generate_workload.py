@@ -32,7 +32,7 @@ from experiments.utils import config_workload_generation_check
 def generate_workload(notes: str, cluster_id: int,
                       workloads_var: List[List], timesteps: int,
                       services_types: int, plot_smoothing: int,
-                      seed: int):
+                      workload_type: str, seed: int):
     """
         generate a random workload
     """
@@ -76,14 +76,19 @@ def generate_workload(notes: str, cluster_id: int,
         'services_types': services_types,
         'workload_var': workloads_var,
         'plot_smoothing': plot_smoothing,
+        'workload_type': workload_type,
         'seed': seed
     }
 
+    workloads_save = {
+        'workload_type': workload_type,
+        'workloads': workloads
+    }
     # save the information and workload in the folder
     with open(os.path.join(dir2save, 'info.json'), 'x') as out_file:
         json.dump(info, out_file, indent=4)
     with open(os.path.join(dir2save, 'workload.pickle'), 'wb') as out_pickle:
-        pickle.dump(workloads, out_pickle)
+        pickle.dump(workloads_save, out_pickle)
     print(f"\n\nGenerated data saved in <{dir2save}>\n\n")
 
     # save figs
