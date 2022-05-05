@@ -1,3 +1,4 @@
+from turtle import done
 import numpy as np
 from pendulum import duration
 
@@ -29,3 +30,11 @@ class Service:
     @property
     def slack(self):
         return self.requests - self.usages
+    
+    @property
+    def done(self):
+        if self.start_time + self.duration == self.time:
+            return True
+        else:
+            return False
+

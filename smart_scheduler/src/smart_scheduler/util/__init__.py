@@ -14,6 +14,4 @@ from .constants import (
     ACTION_MAX,
     PRECISION
 )
-from .service import Service
-from .node import Node
 from .generate_random_string import get_random_string

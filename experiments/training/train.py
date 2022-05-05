@@ -10,6 +10,8 @@ from ray import tune
 from ray.rllib.utils.framework import try_import_torch
 import pprint
 
+# TODO Refine completely based on the new paper
+
 # get an absolute path to the directory that contains parent files
 project_dir = os.path.dirname(os.path.join(os.getcwd(), __file__))
 sys.path.append(os.path.normpath(os.path.join(project_dir, '..', '..')))
@@ -20,7 +22,7 @@ from experiments.utils.constants import (
     ENVSMAP
 )
 from experiments.utils import (
-    add_path_to_config_edge,
+    add_path_to_config,
     make_env_class,
     CloudCallback
 )
@@ -63,12 +65,10 @@ def learner(*, config_file_path: str, config: Dict[str, Any],
     # type_env = ENVSMAP[type_env]
 
     # add the additional nencessary arguments to the edge config
-    env_config = add_path_to_config_edge(
+    env_config = add_path_to_config(
         config=env_config_base,
         cluster_id=cluster_id,
-        workload_id=workload_id,
-        network_id=network_id,
-        trace_id=trace_id
+        workload_id=workload_id
     )
 
     # generate the ray_config
@@ -152,8 +152,6 @@ def learner(*, config_file_path: str, config: Dict[str, Any],
               default='sim-scheduler')
 @click.option('--cluster-id', required=True, type=int, default=6)
 @click.option('--workload-id', required=True, type=int, default=0)
-@click.option('--network-id', required=False, type=int, default=0)
-@click.option('--trace-id', required=False, type=int, default=0)
 @click.option('--use-callback', required=True, type=bool, default=True)
 @click.option('--checkpoint-freq', required=False, type=int, default=1000)
 def main(local_mode: bool, config_file: str, series: int,

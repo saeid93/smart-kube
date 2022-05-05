@@ -25,6 +25,7 @@ import pandas as pd
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=4)
 
+# TODO Refine completely based on the new paper
 
 # get an absolute path to the directory that contains parent files
 project_dir = os.path.dirname(os.path.join(os.getcwd(), __file__))
@@ -36,7 +37,7 @@ from experiments.utils.constants import (
     ENVSMAP
 )
 from experiments.utils import (
-    add_path_to_config_edge,
+    add_path_to_config,
     make_env_class
 )
 
@@ -309,7 +310,7 @@ def fix_grid_searches(
             })
             learn_config.update({"num_workers": num_workers})
             # add the additional nencessary arguments to the edge config
-            env_config = add_path_to_config_edge(
+            env_config = add_path_to_config(
                 config=env_config_base_copy,
                 cluster_id=cluster_id,
                 workload_id=workload_id_test,
@@ -328,7 +329,7 @@ def fix_grid_searches(
         })
         learn_config.update({"num_workers": num_workers})
         # add the additional nencessary arguments to the edge config
-        env_config = add_path_to_config_edge(
+        env_config = add_path_to_config(
             config=env_config_base,
             cluster_id=cluster_id,
             workload_id=workload_id_test,

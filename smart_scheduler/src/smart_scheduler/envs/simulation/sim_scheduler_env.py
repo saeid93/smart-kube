@@ -42,9 +42,11 @@ from gym.spaces import (
 )
 
 from smart_scheduler.util import (
+    get_random_string
+)
+from smart_scheduler.cluster import (
     Service,
     Node,
-    get_random_string
 )
 
 class SimSchedulerEnv(gym.Env):
@@ -160,7 +162,7 @@ class SimSchedulerEnv(gym.Env):
 
         # make services objects
         for service_id in range(self.num_services):
-            service_workload = self.workload[
+            service_workload = self.workload[ # TODO an if statement here for check with random and real
                 :, :, self.services_types[0]] * np.reshape(
                     self.services_resources_request[0], (2,1))
             self.pending_services.append(Service(
@@ -190,7 +192,6 @@ class SimSchedulerEnv(gym.Env):
         a1 = self.nodes[0].nodes_usage
         a2 = self.nodes[0].requests
         a3 = self.nodes[0].resources_available
-        a4 = self.nodes[0].add_service
         a5 = self.nodes[0].services_ids
         a5 = self.nodes[0].services_names
         a6 = self.nodes[0].requests_available

@@ -2,7 +2,7 @@
 Testing phase of the experiments on the test data
 """
 
-# TODO add kubernetes
+# TODO Refine completely based on the new paper
 
 import os
 import sys
@@ -29,7 +29,7 @@ from experiments.utils.constants import (
     ENVSMAP
 )
 from experiments.utils import (
-    add_path_to_config_edge,
+    add_path_to_config,
     make_env_class
 )
 
@@ -79,7 +79,7 @@ def run_experiments(
     })
 
     # add the additional nencessary arguments to the edge config
-    env_config = add_path_to_config_edge(
+    env_config = add_path_to_config(
         config=env_config_base,
         cluster_id=cluster_id,
         workload_id=workload_id,

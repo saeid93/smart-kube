@@ -15,7 +15,7 @@ sys.path.append(os.path.normpath(os.path.join(project_dir, '..', '..')))
 from experiments.utils.constants import CLUSTERS_PATH
 
 
-def add_path_to_config_edge(
+def add_path_to_config(
     config: Dict[str, Any], cluster_id: int, workload_id: int) -> Dict[str, Any]:
 
     cluster_path = os.path.join(CLUSTERS_PATH, str(cluster_id))
