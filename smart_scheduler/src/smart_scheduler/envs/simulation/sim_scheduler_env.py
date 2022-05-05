@@ -170,9 +170,11 @@ class SimSchedulerEnv(gym.Env):
                 limits=self.services_resources_request[service_id],
                 workload=service_workload,
                 serving_time=serving_time))
-        # TODO start HERE
-        # TEMP
-        self.schedule( # TODO send the service itself
+
+        self.backlog = config['backlog']
+
+        # TODO TEMP remove
+        self.schedule(
             service_id=0,
             node_id=0
         )
@@ -328,7 +330,6 @@ class SimSchedulerEnv(gym.Env):
         return schedule_success
 
 
-    # ------------------ new properties ------------------
     @property
     def pending_services_ids(self) -> List[int]:
         ids = list(
@@ -336,22 +337,29 @@ class SimSchedulerEnv(gym.Env):
                 lambda service: service.service_id, self.pending_services))
         return ids
 
-    # ------------------ old properties TODO to be changed ------------------
-
-
     @property
     def raw_observation(self) -> Dict[str, np.ndarray]:
         """returns only the raw observations requested by the user
         in the config input through obs_elements
         """
         observation = {
-                "services_resources_usage": self.services_resources_usage,
-                "nodes_resources_usage": self.nodes_resources_usage,
-                "services_resources_usage_frac":
-                self.services_resources_usage_frac,
-                "nodes_resources_usage_frac": self.nodes_resources_usage_frac,
-                "services_nodes": self.services_nodes
+                "nodes_capacities": self.cluster.nodes_capacities,
+                "nodes_usages": self.cluster.nodes_capacities,
+                "nodes_requests": self.cluster.nodes_requests,
+                "nodes_available": self.cluster.nodes_available,
+                "nodes_unused": self.cluster.nodes_available,
+                "nodes_slack": self.cluster.nodes_slack,
+                "nodes_usages_frac": self.cluster.nodes_usages_frac,
+                "nodes_requests_frac": self.cluster.nodes_requests_frac,
+                "num_consolidated": self.cluster.num_consolidated,
+                "nodes_requests_available_frac": self.cluster.nodes_requests_available_frac,
+                "nodes_resources_unused_frac": self.cluster.nodes_resources_unused_frac,
+                "nodes_requests_available_frac_avg": self.cluster.nodes_requests_available_frac_avg,
+                "nodes_resources_unused_avg": self.cluster.nodes_resources_unused_avg
+
         }
+        # TODO for now I have chosen just some of them as example
+        # add more after finalized on satate-space
         selected = dict(zip(self.obs_elements,
                             [observation[k] for k in self.obs_elements]))
         return selected
@@ -377,53 +385,21 @@ class SimSchedulerEnv(gym.Env):
 
     def _setup_space(self): # TODO change based on new need
         """
-        States:
-            the whole or a subset of the following dictionary:
-            observation = {
-                    "services_resources_usage":
-                        self.services_resources_usage,
-                    "nodes_resources_usage":
-                        self.nodes_resources_usage,
-                    "services_resources_frac":
-                        self.services_resources_frac,
-                    "nodes_resources_frac":
-                        self.nodes_resources_frac,
-                    "services_nodes":
-                        self.services_nodes,
-                    "users_stations": --> always in the observation
-                        self.users_stations
-            }
-        users_stations:
-             user_id        user_id                 user_id
-            [station_id,    station_id,    , ... ,  station_id  ]
-                        range:
-                            indices: [0, num_users)
-                            contents: [0, num_stations)
-        Actions:
-                              nodes
-            services [                   ]
         """
         # TODO change action-space to arriving services
         # numuber of elements based on the obs in the observation space
         obs_size = 0
         for elm in self.obs_elements:
-            if elm == "services_resources_usage":
-                obs_size += self.total_num_services * self.num_resources
-            elif elm == "nodes_resources_usage":
-                obs_size += self.num_nodes * self.num_resources
-            elif elm == "services_resources_usage_frac":
-                obs_size += self.total_num_services * self.num_resources
-            elif elm == "nodes_resources_usage_frac":
-                obs_size += self.num_nodes * self.num_resources
-            elif elm == "services_nodes":
-                # add the one hot endoded services_resources
-                # number of elements
-                obs_size += (self.num_nodes) * self.total_num_services
+            if elm == "nodes_requests":
+                obs_size += self.cluster.num_nodes * self.cluster.num_resources
+            elif elm == "nodes_usages":
+                obs_size += self.cluster.num_nodes * self.cluster.num_resources
+            elif elm == "nodes_slack":
+                obs_size += self.cluster.num_nodes * self.cluster.num_resources
+        # TODO for now I have chosen just some of them as example
+        # add more after finalized on satate-space
 
-        # add the one hot endoded users_stations
-        # number of elements
-
-        higher_bound = 10 # TODO TEMP just for test - find a cleaner way
+        higher_bound = 20 # TEMP just for test - find a cleaner way
         # generate observation and action spaces
         observation_space = Box(
             low=0, high=higher_bound, shape=(obs_size, ),
@@ -431,14 +407,11 @@ class SimSchedulerEnv(gym.Env):
 
         if self.discrete_actions:
             action_space = Discrete(
-                self.num_nodes**self.total_num_services, seed=self._env_seed)
-            self.discrete_action_converter = Discrete2MultiDiscrete(
-                self.num_nodes, self.total_num_services)
+                self.cluster.num_nodes, seed=self._env_seed)
+            # self.discrete_action_converter = Discrete2MultiDiscrete(
+            #     self.back, self.total_num_services)
         else:
-            action_space = MultiDiscrete(np.ones(self.total_num_services) *
-                                        self.num_nodes, seed=self._env_seed)
-        # action_space = Box(
-        #     low=0, high=self.num_nodes-1, shape=(
-        #         self.num_services,), dtype=int, seed=self._env_seed)
+            action_space = MultiDiscrete(
+                np.ones(self.backlog)*self.cluster.num_nodes, seed=self._env_seed)
 
         return observation_space, action_space

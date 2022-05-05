@@ -57,7 +57,15 @@ class Cluster:
         return schedule_success
 
     @property
-    def nodes_resources_usage(self):
+    def nodes_capacities(self):
+        """return the amount of resources on each node
+        """
+        nodes_capacities = np.array(
+            list(map(lambda node: node.capacities, self.nodes)))
+        return nodes_capacities
+
+    @property
+    def nodes_usages(self):
         """return the amount of resource usage
         on each node
                      ram - cpu
@@ -70,36 +78,44 @@ class Cluster:
                 columns indices: (0, num_resources]
                 enteries: [0, node_resource_cap] type: float
         """
-        nodes_resources_usage = np.array(
+        nodes_usages = np.array(
             list(map(lambda node: node.usages, self.nodes)))
-        return nodes_resources_usage
+        return nodes_usages
 
     @property
-    def nodes_resources_request(self):
+    def nodes_requests(self):
         """return the amount of resource usage
         on each node
         """
-        nodes_resources_requests = np.array(
+        nodes_requests = np.array(
             list(map(lambda node: node.requests, self.nodes)))
-        return nodes_resources_requests
+        return nodes_requests
 
     @property
-    def nodes_requests_available(self):
+    def nodes_available(self):
         # The amount of non requested resources on the nodes
         nodes_requests_available = np.array(
             list(map(lambda node: node.requests_available, self.nodes)))
         return nodes_requests_available
 
     @property
-    def nodes_resources_unused(self):
+    def nodes_unused(self):
         # The amount of the available
         nodes_resources_unused = np.array(
             list(map(lambda node: node.resources_unused, self.nodes)))
         return nodes_resources_unused
 
     @property
+    def nodes_slack(self):
+        """total unused requested resources
+        """
+        nodes_slack = np.array(
+            list(map(lambda node: node.slack, self.nodes)))
+        return nodes_slack
+
+    @property
     @rounding
-    def nodes_resources_usage_frac(self) -> np.ndarray:
+    def nodes_usages_frac(self) -> np.ndarray:
         """returns the resource usage of
         each node
                      ram - cpu
@@ -112,11 +128,11 @@ class Cluster:
                 columns indices: (0, num_resources]
                 enteries: [0, 1] type: float
         """
-        return self.nodes_resources_usage / self.nodes_resources_cap
+        return self.nodes_usages / self.nodes_resources_cap
 
     @property
     @rounding
-    def nodes_resources_request_frac(self):
+    def nodes_requests_frac(self):
         """returns the resource requested on
         each node
                      ram - cpu
@@ -129,7 +145,7 @@ class Cluster:
                 columns indices: (0, num_resources]
                 enteries: [0, 1] type: float
         """
-        return self.nodes_resources_request / self.nodes_resources_cap
+        return self.nodes_requests / self.nodes_resources_cap
 
     @property
     def num_consolidated(self) -> int:
@@ -153,11 +169,11 @@ class Cluster:
 
     @property
     def nodes_requests_available_frac(self):
-        return self.nodes_requests_available / self.nodes_resources_cap
+        return self.nodes_available / self.nodes_resources_cap
 
     @property
     def nodes_resources_unused_frac(self):
-        return self.nodes_resources_unused / self.nodes_resources_cap
+        return self.nodes_unused / self.nodes_resources_cap
 
     @property
     def nodes_requests_available_frac_avg(self):

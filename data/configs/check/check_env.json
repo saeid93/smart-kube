@@ -1,6 +1,10 @@
 {   
     "env_config_base": {
-        "obs_elements": ["services_nodes"],
+        "obs_elements": [
+            "nodes_requests",
+            "nodes_usages",
+            "nodes_slack"
+        ],
         "penalty_illegal": -1,
         "penalty_move": 0,
         "penalty_variance": 0,
@@ -13,6 +17,7 @@
         "consolidation_upper": 0.6,
         "no_action_on_overloaded": true,
         "discrete_actions": false,
+        "backlog": 2,
         "seed": 1204,
         "kube":{
             "admin_config": "~/.kube/config",

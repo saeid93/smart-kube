@@ -20,13 +20,13 @@ def check_config(config: Dict[str, Any]):
                      'no_action_on_overloaded', 'latency_reward_option',
                      'latency_lower', 'latency_upper', 'consolidation_lower',
                      'consolidation_upper', 'placement_reset',
-                     'timestep_reset', 'frame_skip', 'discrete_actions']
+                     'timestep_reset', 'frame_skip', 'discrete_actions', 'backlog']
 
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the environment config")
     # type checks
-    ints = ['episode_length', 'seed']
+    ints = ['episode_length', 'seed', 'backlog']
     for item in ints:
         assert type(config[item]) == int, f"<{item}> must be an integer"
 
@@ -47,12 +47,20 @@ def check_config(config: Dict[str, Any]):
             assert type(config[item]) == str, f"<{item}> must be a string"
 
     # observation checks
-    all_obs_elements: List[str] = ["services_resources_usage",
-                                   "nodes_resources_usage",
-                                   "services_resources_usage_frac",
-                                   "nodes_resources_usage_frac",
-                                   "services_nodes",
-                                   "users_stations"]
+    all_obs_elements: List[str] = [
+        "nodes_capacities",
+        "nodes_usages",
+        "nodes_requests",
+        "nodes_available",
+        "nodes_unused",
+        "nodes_slack",
+        "nodes_usages_frac",
+        "nodes_requests_frac",
+        "num_consolidated",
+        "nodes_requests_available_frac",
+        "nodes_resources_unused_frac",
+        "nodes_requests_available_frac_avg",
+        "nodes_resources_unused_avg"]
 
     assert set(config['obs_elements']).issubset(
         set(all_obs_elements)), f"wrong input for the obs_element <{config['obs_elements']}>"

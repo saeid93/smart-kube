@@ -67,7 +67,7 @@ def env_config_base_check(config: Dict[str, Any]):
                      'edge_simulator_config', 'action_method', 'step_method',
                      'kube', "no_action_on_overloaded", "latency_reward_option",
                      'latency_lower', 'latency_upper', 'consolidation_lower',
-                     'consolidation_upper', 'discrete_actions']
+                     'consolidation_upper', 'discrete_actions', 'backlog']
 
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
@@ -84,12 +84,20 @@ def env_config_base_check(config: Dict[str, Any]):
             f"[{item}] must be a float"
 
     # observation checks
-    all_obs_elements: List[str] = ["services_resources_usage",
-                                   "nodes_resources_usage",
-                                   "services_resources_usage_frac",
-                                   "nodes_resources_usage_frac",
-                                   "services_nodes",
-                                   "users_stations"]
+    all_obs_elements: List[str] = [
+        "nodes_capacities",
+        "nodes_usages",
+        "nodes_requests",
+        "nodes_available",
+        "nodes_unused",
+        "nodes_slack",
+        "nodes_usages_frac",
+        "nodes_requests_frac",
+        "num_consolidated",
+        "nodes_requests_available_frac",
+        "nodes_resources_unused_frac",
+        "nodes_requests_available_frac_avg",
+        "nodes_resources_unused_avg"]
 
     assert set(config['obs_elements']).issubset(
         set(all_obs_elements)),\
