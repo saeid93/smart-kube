@@ -73,6 +73,12 @@ Go to [experiments/utils/constants.py](experiments/utils/constants.py) and set t
 
 ## 3.4. [experiments](experiments)
 
+### 3.4.1. [Dataset Preprocessing]()
+### 3.4.1.1 [Arabesque]()
+TODO
+### 3.4.1.2 [Alibaba]()
+TODO
+
 ### 3.4.1. [Data Generation](experiments/cluster)
 The cluster and workloads are generated in the following order:
 1. **Clusters**: Nodes, services, their capacities, requested resources and their initial placements. 
@@ -92,7 +98,9 @@ Options:
 ```
 For a full list of `config.json` parameters options see [cluster-configs-options](docs/configs-parameters/cluster-generation.md). The results will be saved in [data/clusters/<cluster_id>](data/clusters).
 
-#### 4.4.1.2. [Generating the Workloads](experiments/cluster/generate_workload.py)
+#### 4.4.1.2. Generating the Workloads
+
+#### 4.4.1.2.1. [Generating the Workloads - Option one - Random](experiments/cluster/generate_workload.py)
 
 Go to the your workload generation config [data/configs/generation-configs/workload-generation](data/configs/generation-configs/cluster-generation) make a folder named after your config and make the `config.json` in the folder e.g. see the `my-workload` in the sample [data](data) folder [data/configs/generation-configs/workload-generation/my-workload/config.json](data/configs/generation-configs/cluster-generation/my-workload/config.json). For a full list of `config.json` see. Then run the [experiments/cluster/generate_cluster.py](experiments/cluster/generate_cluster.py) with the following script:
 ```
@@ -104,6 +112,19 @@ Options:
 ```
 For a full list of `config.json` parameters options see [workload-configs-options](docs/configs-parameters/workload-generation.md). The results will be saved in [data/clusters/<cluster_id>/<workload_id>](data/clusters).
 <br />
+#### 4.4.1.2.2. [Generating the Workloads - Option two - Real-world](experiments/cluster/generate_workload.py)
+TODO change it to Alibaba and Arabesque
+Go to the your workload generation config [data/configs/generation-configs/workload-generation](data/configs/generation-configs/cluster-generation) make a folder named after your config and make the `config.json` in the folder e.g. see the `my-workload` in the sample [data](data) folder [data/configs/generation-configs/workload-generation/my-workload/config.json](data/configs/generation-configs/cluster-generation/my-workload/config.json). For a full list of `config.json` see. Then run the [experiments/cluster/generate_cluster.py](experiments/cluster/generate_cluster.py) with the following script:
+```
+python generate_workload.py [OPTIONS]
+
+Options:
+  --workload-config-folder TEXT      config-folder
+  [default:                          my-workload] 
+```
+For a full list of `config.json` parameters options see [workload-configs-options](docs/configs-parameters/workload-generation.md). The results will be saved in [data/clusters/<cluster_id>/<workload_id>](data/clusters).
+<br />
+
 
 ### 4.4.2. [Training](experiments/training) and [analysis](experiments/analysis)
 
