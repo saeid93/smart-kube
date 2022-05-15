@@ -21,7 +21,7 @@ class Cluster:
     def __init__(self, cluster_schema: Dict[str, np.ndarray]):
 
         self.nodes_resources_cap: np.ndarray = cluster_schema['nodes_resources_cap']
-
+        self.time = 0
 
         # find the number of nodes, services, service types and timesteps
         self.num_resources: int = self.nodes_resources_cap.shape[1]
@@ -55,6 +55,11 @@ class Cluster:
             node_id].add_service(service)
         # return true if successful
         return schedule_success
+
+    def clock_tick(self):
+        self.time += 1
+        map(lambda a: a.clock_tick(), self.nodes)
+
 
     @property
     def nodes_capacities(self):
@@ -166,6 +171,15 @@ class Cluster:
         nodes_services = list(
             map(lambda node: node.services_ids, self.nodes))
         return nodes_services
+
+    @property
+    def num_services_nodes(self) -> np.array:
+        """
+            returns the number of services in each nodes
+        """
+        num_services_nodes = np.array(
+            list(map(lambda a: len(a), self.nodes_services)))
+        return num_services_nodes
 
     @property
     def nodes_requests_available_frac(self):

@@ -19,14 +19,14 @@ def check_config(config: Dict[str, Any]):
                      'cluster_path', 'workload_path', 'network_path', 'trace_path',
                      'no_action_on_overloaded', 'latency_reward_option',
                      'latency_lower', 'latency_upper', 'consolidation_lower',
-                     'consolidation_upper', 'placement_reset',
-                     'timestep_reset', 'frame_skip', 'discrete_actions', 'backlog']
+                     'consolidation_upper', 'placement_reset', 'discrete_actions',
+                     'max_services_nodes', 'backlog_size']
 
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the environment config")
     # type checks
-    ints = ['episode_length', 'seed', 'backlog']
+    ints = ['episode_length', 'max_services_nodes', 'backlog_size', 'seed']
     for item in ints:
         assert type(config[item]) == int, f"<{item}> must be an integer"
 
@@ -48,6 +48,7 @@ def check_config(config: Dict[str, Any]):
 
     # observation checks
     all_obs_elements: List[str] = [
+        "num_services_nodes",
         "nodes_capacities",
         "nodes_usages",
         "nodes_requests",
@@ -60,7 +61,8 @@ def check_config(config: Dict[str, Any]):
         "nodes_requests_available_frac",
         "nodes_resources_unused_frac",
         "nodes_requests_available_frac_avg",
-        "nodes_resources_unused_avg"]
+        "nodes_resources_unused_avg",
+        "backlog_services_requests"]
 
     assert set(config['obs_elements']).issubset(
         set(all_obs_elements)), f"wrong input for the obs_element <{config['obs_elements']}>"

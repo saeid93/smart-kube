@@ -67,13 +67,14 @@ def env_config_base_check(config: Dict[str, Any]):
                      'edge_simulator_config', 'action_method', 'step_method',
                      'kube', "no_action_on_overloaded", "latency_reward_option",
                      'latency_lower', 'latency_upper', 'consolidation_lower',
-                     'consolidation_upper', 'discrete_actions', 'backlog']
+                     'consolidation_upper', 'discrete_actions', 'max_services_nodes',
+                     'backlog_size']
 
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the environment config")
     # type checks
-    ints = ['episode_length', 'seed']
+    ints = ['episode_length', 'max_services_nodes', 'backlog_size', 'seed']
     for item in ints:
         assert type(config[item]) == int, f"<{item}> must be an integer"
     floats = ['penalty_illegal', 'penalty_illegal',
@@ -85,6 +86,7 @@ def env_config_base_check(config: Dict[str, Any]):
 
     # observation checks
     all_obs_elements: List[str] = [
+        "num_services_nodes",
         "nodes_capacities",
         "nodes_usages",
         "nodes_requests",
@@ -97,7 +99,8 @@ def env_config_base_check(config: Dict[str, Any]):
         "nodes_requests_available_frac",
         "nodes_resources_unused_frac",
         "nodes_requests_available_frac_avg",
-        "nodes_resources_unused_avg"]
+        "nodes_resources_unused_avg",
+        "backlog_services_requests"]
 
     assert set(config['obs_elements']).issubset(
         set(all_obs_elements)),\

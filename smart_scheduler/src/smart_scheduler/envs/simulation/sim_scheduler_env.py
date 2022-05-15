@@ -18,7 +18,6 @@ from colorama import (
 import gym
 from gym.utils import seeding
 import types
-from pendulum import duration
 from smart_scheduler import cluster
 
 from smart_scheduler.util import (
@@ -51,6 +50,8 @@ from smart_scheduler.cluster import (
     Node,
     Cluster
 )
+
+INTERVAL = 5 # TODO move to config
 
 class SimSchedulerEnv(gym.Env):
     """
@@ -150,6 +151,9 @@ class SimSchedulerEnv(gym.Env):
         self.consolidation_lower = config['consolidation_lower']
         self.consolidation_upper = config['consolidation_upper']
 
+        # maximum allowed services in a node
+        self.max_services_nodes = config['max_services_nodes']
+
         self.pending_services: List[Service] = []
 
         # make services objects
@@ -171,7 +175,7 @@ class SimSchedulerEnv(gym.Env):
                 workload=service_workload,
                 serving_time=serving_time))
 
-        self.backlog = config['backlog']
+        self.backlog_size = config['backlog_size']
 
         # TODO TEMP remove
         self.schedule(
@@ -188,6 +192,14 @@ class SimSchedulerEnv(gym.Env):
         )
         self.schedule(
             service_id=4,
+            node_id=1
+        )
+        self.schedule(
+            service_id=5,
+            node_id=1
+        )
+        self.schedule(
+            service_id=1,
             node_id=1
         )
         self.observation_space, self.action_space =\
@@ -217,6 +229,19 @@ class SimSchedulerEnv(gym.Env):
             self.services_nodes = deepcopy(self.initial_services_nodes)
         return self.observation
 
+    def clock_tick(self):
+        """
+            move the simulator forward proportional to
+            tick_seconds
+        """
+        tick_seconds = self.next_interval()
+        for _ in range(tick_seconds):
+            self.cluster.clock_tick()
+
+    def next_interval(self):
+        # TODO add other logics of time interval here
+        return INTERVAL
+
     @override(gym.Env)
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, int, bool, dict]:
         """
@@ -226,36 +251,28 @@ class SimSchedulerEnv(gym.Env):
         3. update the nodes
         """
         # take the action
-        prev_services_nodes = deepcopy(self.services_nodes)
+        # prev_services_nodes = deepcopy(self.services_nodes)
         assert self.action_space.contains(action)
 
-        if self.discrete_actions:
-            action = self.discrete_action_converter[action]
+        # take action
+        schedule_success_mask = [False] * self.backlog_size
+        for mask_id, service_id, node_id in zip(
+            range(self.backlog_size), self.backlog_services_ids, action):
+            schedule_success_mask[mask_id] = self.schedule(
+                service_id=service_id, node_id=node_id)
 
-        # TODO clock tick for nodes (services are updated inside)
-
-        # TODO not possible to roll back in the real world
-        # take the action in the real world only if possible
-        # simulation therefore should co-exist
-        self.services_nodes = deepcopy(action)
-        if self.no_action_on_overloaded and self.num_overloaded > 0:
-            print("overloaded state, reverting back ...")
-            self.services_nodes = deepcopy(prev_services_nodes)
-
-        # move to the next timestep
+        # TODO move to the next timestep
         self.global_timestep += 1
-        self.timestep = self.global_timestep % self.workload.shape[1]
 
-        num_moves = len(np.where(
-            self.services_nodes != prev_services_nodes)[0])
-
-        reward, rewards = self._reward(
-            num_overloaded=self.num_overloaded,
-            num_moves=num_moves
-            )
+        reward, rewards = 1, {1:1}
+        # TODO
+        # self._reward(
+        #     num_overloaded=self.num_overloaded,
+        #     num_moves=num_moves
+        #     )
 
         info = {'num_consolidated': self.num_consolidated,
-                'num_moves': num_moves,
+                # 'num_moves': num_moves,
                 'num_overloaded': self.num_overloaded,
                 'total_reward': reward,
                 'timestep': self.timestep,
@@ -268,7 +285,6 @@ class SimSchedulerEnv(gym.Env):
                 f"observation_space:\n <{self.observation_space}>")
 
         return self.observation, reward, self.done, info
-
 
     def render(self, mode: Literal['human', 'ansi'] ='human') -> None:
         """
@@ -299,8 +315,7 @@ class SimSchedulerEnv(gym.Env):
                                         plot_length=80)
             print(Style.RESET_ALL)
 
-
-    def schedule(self, service_id: int, node_id: int) -> bool: # TODO part of cluster's logic move the rest to the step function
+    def schedule(self, service_id: int, node_id: int) -> bool:
         """schedule one of the services on a target node
 
         Args:
@@ -313,11 +328,13 @@ class SimSchedulerEnv(gym.Env):
             bool: returns whether the service
                 has been scheduled or not
         """
+        self.clock_tick()
         if not service_id in self.pending_services_ids:
             raise ValueError(
                 'Service {} does not exists in pending services'.format(
                 service_id
             ))
+        # TODO add the logic of checking the empty backlog here
         service_index = self.pending_services_ids.index(service_id)
         schedule_success = self.cluster.schedule(
             service=self.pending_services[service_index],
@@ -329,6 +346,28 @@ class SimSchedulerEnv(gym.Env):
         # return true if successful
         return schedule_success
 
+    @property
+    def backlog_services(self):
+        """
+        The next services to be scheduled on
+        the cluster
+        """
+        # than backlog
+        return self.pending_services[-self.backlog_size:]
+
+    @property
+    def backlog_services_requests(self):
+        backlog_services_requests = np.array(
+            list(map(
+                lambda a: a.requests, self.backlog_services)))
+        return backlog_services_requests
+
+    @property
+    def backlog_services_ids(self):
+        ids = list(
+            map(
+                lambda service: service.service_id, self.backlog_services))
+        return ids
 
     @property
     def pending_services_ids(self) -> List[int]:
@@ -343,6 +382,8 @@ class SimSchedulerEnv(gym.Env):
         in the config input through obs_elements
         """
         observation = {
+                "backlog_services_requests": self.backlog_services_requests,
+                "num_services_nodes": self.cluster.num_services_nodes,
                 "nodes_capacities": self.cluster.nodes_capacities,
                 "nodes_usages": self.cluster.nodes_capacities,
                 "nodes_requests": self.cluster.nodes_requests,
@@ -356,10 +397,9 @@ class SimSchedulerEnv(gym.Env):
                 "nodes_resources_unused_frac": self.cluster.nodes_resources_unused_frac,
                 "nodes_requests_available_frac_avg": self.cluster.nodes_requests_available_frac_avg,
                 "nodes_resources_unused_avg": self.cluster.nodes_resources_unused_avg
-
         }
         # TODO for now I have chosen just some of them as example
-        # add more after finalized on satate-space
+        # add more if needed after finalizing on satate-space
         selected = dict(zip(self.obs_elements,
                             [observation[k] for k in self.obs_elements]))
         return selected
@@ -369,16 +409,15 @@ class SimSchedulerEnv(gym.Env):
         """preprocessed observation of each environment
         """
         obs = self.preprocessor(self.raw_observation)
-        obs = np.array(list(map(int, obs)))
         return obs
-
 
     def preprocessor(self, obs):
         """
         environment preprocessor
         depeiding on the observation (state) definition
         """
-        prep = Preprocessor(self.nodes_resources_cap,
+        prep = Preprocessor(self.max_services_nodes,
+                            self.cluster.nodes_capacities,
                             self.services_resources_request)
         obs = prep.transform(obs)
         return obs
@@ -388,17 +427,34 @@ class SimSchedulerEnv(gym.Env):
         """
         # numuber of elements based on the obs in the observation space
         obs_size = 0
+        node_resource_size_items = [
+            "nodes_capacities",
+            "nodes_usages",
+            "nodes_requests",
+            "nodes_available",
+            "nodes_unused",
+            "nodes_slack",
+            "nodes_usages_frac",
+            "nodes_requests_frac",
+            "nodes_requests_available_frac",
+            "nodes_resources_unused_frac",
+            "nodes_requests_available_frac_avg",
+            "nodes_resources_unused_avg",
+        ]
+        node_services_size_items = ['num_services_nodes']
+        backlog_size_items = ["backlog_services_requests"]
+        node_size_items = ['num_consolidated']
         for elm in self.obs_elements:
-            if elm == "nodes_requests":
+            if elm in node_resource_size_items:
                 obs_size += self.cluster.num_nodes * self.cluster.num_resources
-            elif elm == "nodes_usages":
-                obs_size += self.cluster.num_nodes * self.cluster.num_resources
-            elif elm == "nodes_slack":
-                obs_size += self.cluster.num_nodes * self.cluster.num_resources
-        # TODO for now I have chosen just some of them as example
-        # add more after finalized on satate-space
+            elif elm in node_services_size_items:
+                obs_size += self.cluster.num_nodes * self.max_services_nodes
+            elif elm in backlog_size_items:
+                obs_size += self.backlog_size * self.cluster.num_resources
+            elif elm in node_size_items:
+                obs_size += self.cluster.num_nodes
 
-        higher_bound = 20 # TEMP just for test - find a cleaner way
+        higher_bound = 20 # TEMP find a cleaner way
         # generate observation and action spaces
         observation_space = Box(
             low=0, high=higher_bound, shape=(obs_size, ),
@@ -411,6 +467,10 @@ class SimSchedulerEnv(gym.Env):
             #     self.back, self.total_num_services)
         else:
             action_space = MultiDiscrete(
-                np.ones(self.backlog)*self.cluster.num_nodes, seed=self._env_seed)
+                np.ones(self.backlog_size)*self.cluster.num_nodes, seed=self._env_seed)
 
         return observation_space, action_space
+
+    def cluster(self):
+        a = 1
+        pass

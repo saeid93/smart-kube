@@ -1,6 +1,5 @@
 from turtle import done
 import numpy as np
-from pendulum import duration
 
 class Service:
     def __init__(self, service_id: int,
@@ -17,11 +16,8 @@ class Service:
         self.duration = serving_time
         self.time = start_time
 
-    def clock_tick(self, time):
-        if time < self.start_time\
-            or time > self.start_time + self.duration:
-            raise ValueError('Invalid time!')
-        self.time = time
+    def clock_tick(self):
+        self.time += 1
 
     @property
     def usages(self):

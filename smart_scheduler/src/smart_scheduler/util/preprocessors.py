@@ -5,13 +5,13 @@ from smart_scheduler.util import rounding
 # TODO complete based on the new needs
 
 class Preprocessor():
-    def __init__(self, nodes_resources_cap: np.ndarray,
-                 services_resources_request: np.ndarray,
-                 num_stations: int = 0):
-        self.nodes_resources_cap = nodes_resources_cap
+    def __init__(self, max_services_nodes: int,
+                 cluster_nodes_capacities: np.ndarray,
+                 services_resources_request: np.ndarray,):
+        self.nodes_resources_cap = cluster_nodes_capacities
         self.services_resources_request = services_resources_request
-        self.num_nodes = nodes_resources_cap.shape[0]
-        self.num_stations = num_stations
+        self.num_nodes = cluster_nodes_capacities.shape[0]
+        self.max_services_nodes = max_services_nodes
 
     @rounding
     def transform(self, observation: Dict[str, np.ndarray]) -> np.ndarray:
@@ -22,14 +22,21 @@ class Preprocessor():
         """
         obs = np.array([])
         transformers = {
-           'services_resources_usage': self._services_usage_normalizer,
-           'nodes_resources_usage': self._nodes_usage_normalizer,
-           'services_resources_usage_frac': self._none,
-           'nodes_resources_usage_frac': self._none,
-           'services_nodes': self._one_hot_services_nodes,
-        #    'services_nodes': self._none,
-           'users_stations': self._one_hot_users_stations
-        #    'users_stations': self._none
+            "backlog_services_requests": self._nodes_normalizer,
+            "nodes_capacities": self._nodes_normalizer,
+            "nodes_usages": self._nodes_normalizer,
+            "nodes_requests": self._nodes_normalizer,
+            "nodes_available": self._nodes_normalizer,
+            "nodes_unused": self._nodes_normalizer,
+            "nodes_slack": self._nodes_normalizer,
+            "nodes_usages_frac":self._none,
+            "nodes_requests_frac": self._none,
+            "nodes_requests_available_frac": self._none,
+            "nodes_resources_unused_frac": self._none,
+            "nodes_requests_available_frac_avg": self._none,
+            "nodes_resources_unused_avg": self._none,
+            "num_consolidated": self._one_hot_consolidation,
+            "num_services_nodes": self._one_hot_services_nodes
         }
         for key, val in observation.items():
             obs = np.concatenate((obs, transformers.get(
@@ -49,7 +56,7 @@ class Preprocessor():
             lst.append(max(self.services_resources_request[:, index]))
         return obs/lst
 
-    def _nodes_usage_normalizer(self, obs: np.ndarray) -> np.ndarray:
+    def _nodes_normalizer(self, obs: np.ndarray) -> np.ndarray:
         """
         divides the largest available of each resource by the
         capacity of the largest size of that resource in the cluster
@@ -74,33 +81,22 @@ class Preprocessor():
         results in:
             [0, 0, 0, 1, 0, 1, 0, 0]
         """
-        # TODO make a cleaner version of the one-hot encoding
-        #      look at ray for inspriatino
         obs_prep = np.array([])
         for node in obs:
-            one_hot_encoded = np.zeros(self.num_nodes)
+            one_hot_encoded = np.zeros(self.max_services_nodes)
             one_hot_encoded[node] = 1
             obs_prep = np.concatenate((obs_prep, one_hot_encoded))
         return obs_prep
 
-    def _one_hot_users_stations(
+    def _one_hot_consolidation(
         self, obs: np.ndarray) -> np.ndarray:
         """
-        one hot encoding of the services_nodes
-        e.g in a cluster of 2 nodes and 4 services:
-            [0, 1, 1, 0]
-        results in:
-            [0, 0, 0, 1, 0, 1, 0, 0]
+        one hot encoding of the number of consolidated
+        servers in the cluster
         """
-        # TODO make a cleaner version of the one-hot encoding
-        #      look at ray for inspriatino
-        obs_prep = np.array([])
-        for user in obs:
-            one_hot_encoded = np.zeros(self.num_stations)
-            one_hot_encoded[user] = 1
-            obs_prep = np.concatenate((obs_prep, one_hot_encoded))
-        return obs_prep
+        one_hot_encoded = np.zeros(self.num_nodes)
+        one_hot_encoded[obs-1] = 1
+        return one_hot_encoded
 
     def _invalid_operation(self, obs: np.ndarray) -> None:
-        # TODO get key instead of value
         raise ValueError(f"invalid observation: <{obs}>")

@@ -1,6 +1,9 @@
 {   
     "env_config_base": {
         "obs_elements": [
+            "backlog_services_requests",
+            "num_services_nodes",
+            "num_consolidated",
             "nodes_requests",
             "nodes_usages",
             "nodes_slack"
@@ -15,9 +18,10 @@
         "latency_upper": 2,
         "consolidation_lower": 0,
         "consolidation_upper": 0.6,
+        "max_services_nodes": 10, 
         "no_action_on_overloaded": true,
         "discrete_actions": false,
-        "backlog": 2,
+        "backlog_size": 2,
         "seed": 1204,
         "kube":{
             "admin_config": "~/.kube/config",

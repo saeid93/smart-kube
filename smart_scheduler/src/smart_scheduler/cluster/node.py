@@ -3,16 +3,14 @@ from .service import Service
 from typing import List
 
 class Node:
-    def __init__(self, node_id: int, capacities: np.ndarray, 
-                 start_time: int = 0) -> None:
+    def __init__(self, node_id: int, capacities: np.ndarray) -> None:
         self.services: List[Service] = []
         self.served_services: List[Service] = []
         self.node_id = node_id
         self.capacities = capacities
-        self.start_time = start_time
-        self.time = start_time
+        self.time = 0
 
-    def clock_tick(self, time: int):
+    def clock_tick(self):
         """move the clock of the server forward
 
         Args:
@@ -21,12 +19,8 @@ class Node:
         Raises:
             ValueError: check the validation of time
         """
-        if time < self.start_time:
-            raise ValueError('Invalid time!')
-        self.time = time
-        for service in self.services:
-            service.clock_tick(time)
-        # TODO debug
+        self.time += 1
+        map(lambda a: a.clock_tick(), self.services)
         for service_index, service in enumerate(self.services):
             if service.done:
                 self.deschedule(service_index)
