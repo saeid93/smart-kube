@@ -58,8 +58,11 @@ class Cluster:
 
     def clock_tick(self):
         self.time += 1
-        map(lambda a: a.clock_tick(), self.nodes)
+        list(map(lambda a: a.clock_tick(), self.nodes))
 
+    def reset_cluster(self):
+        self.time = 0
+        list(map(lambda a: a.reset_node(), self.nodes))
 
     @property
     def nodes_capacities(self):
@@ -196,3 +199,14 @@ class Cluster:
     @property
     def nodes_resources_unused_avg(self):
         return np.average(self.nodes_resources_unused_frac, axis=1)
+
+    @property
+    def num_overloaded(self):
+        num_overloaded = sum(
+            map(lambda a: a.is_overloaded, self.nodes))
+        return num_overloaded
+
+    @property
+    def all_jobs_done(self):
+        done = np.alltrue(list(map(lambda a: a.all_jobs_done, self.nodes)))
+        return done

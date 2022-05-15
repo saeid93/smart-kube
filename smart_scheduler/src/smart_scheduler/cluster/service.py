@@ -1,6 +1,11 @@
 from turtle import done
 import numpy as np
 
+class ServiceDummy:
+    def __init__(self) -> None:
+        self.service_id = -1
+        self.requests = np.ones(2) * (-1)
+
 class Service:
     def __init__(self, service_id: int,
                  service_name: str, requests: np.ndarray,
@@ -14,10 +19,13 @@ class Service:
         self.workload = workload
         self.start_time = start_time
         self.duration = serving_time
-        self.time = start_time
+        self.time = 0
 
     def clock_tick(self):
         self.time += 1
+
+    def start_time_update(self, start_time):
+        self.start_time = start_time
 
     @property
     def usages(self):

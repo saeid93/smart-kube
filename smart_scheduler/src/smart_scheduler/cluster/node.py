@@ -20,12 +20,17 @@ class Node:
             ValueError: check the validation of time
         """
         self.time += 1
-        map(lambda a: a.clock_tick(), self.services)
+        list(map(lambda a: a.clock_tick(), self.services))
         for service_index, service in enumerate(self.services):
             if service.done:
                 self.deschedule(service_index)
 
+    def reset_node(self):
+        self.time = 0
+        self.served_services = []
+
     def add_service(self, service: Service) -> bool:
+        service.start_time_update(self.time)
         # add if there is enough request available
         if np.alltrue(
             self.requests_available < service.requests):
@@ -91,3 +96,14 @@ class Node:
         services_names = list(
             map(lambda l: l.service_name, self.services))
         return services_names
+
+    @property
+    def is_overloaded(self):
+        return np.alltrue(self.usages > self.capacities)
+
+    @property
+    def all_jobs_done(self):
+        if self.services == []:
+            return True
+        else:
+            return False

@@ -62,13 +62,16 @@ def check_env(*, config: Dict[str, Any], type_env: str,
         action = env.action_space.sample()
         _, reward, done, info = env.step(action)
         if done: break
-        consolidation_reward = info['rewards']['reward_consolidation']
-        consolidation_rewards.append(consolidation_reward)
+        # consolidation_reward = info['rewards']['reward_consolidation']
+        # consolidation_rewards.append(consolidation_reward)
         reward_total.append(reward)
-        episode_total_consolidation_reward += consolidation_reward
-        print(f'episode_total_latency_reward: {episode_total_latency_reward}')
-        print(f'episode_total_latency_negative_rewards: {episode_total_latency_negative_reward}')
-        print(f'episode_total_consolidation_reward: {episode_total_consolidation_reward}')
+        # episode_total_consolidation_reward += consolidation_reward
+        # print(f'episode_total_latency_reward: {episode_total_latency_reward}')
+        # print(f'episode_total_latency_negative_rewards: {episode_total_latency_negative_reward}')
+        # print(f'episode_total_consolidation_reward: {episode_total_consolidation_reward}')
+        print("timestep: {}".format(
+            env.time
+        ))
     x = np.arange(total_timesteps-1)
 
 @click.command()

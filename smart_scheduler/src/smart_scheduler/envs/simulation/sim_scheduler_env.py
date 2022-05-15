@@ -1,6 +1,7 @@
 """base class of all simulation enviornments
 """
 import abc
+from turtle import back
 import numpy as np
 from copy import deepcopy
 from typing import (
@@ -47,6 +48,7 @@ from smart_scheduler.util import (
 )
 from smart_scheduler.cluster import (
     Service,
+    ServiceDummy,
     Node,
     Cluster
 )
@@ -154,6 +156,8 @@ class SimSchedulerEnv(gym.Env):
         # maximum allowed services in a node
         self.max_services_nodes = config['max_services_nodes']
 
+        self.job_arrival_mode = 'fixed'
+
         self.pending_services: List[Service] = []
 
         # make services objects
@@ -166,7 +170,7 @@ class SimSchedulerEnv(gym.Env):
                         self.services_resources_request[0], (2,1))
                 service_name = get_random_string(6)
                 serving_time = np.random.randint(
-                    5, service_workload.shape[1])
+                    10, service_workload.shape[1])
             self.pending_services.append(Service(
                 service_id=service_id,
                 service_name=service_name,
@@ -174,34 +178,38 @@ class SimSchedulerEnv(gym.Env):
                 limits=self.services_resources_request[service_id],
                 workload=service_workload,
                 serving_time=serving_time))
+        
+        self.initil_pending_services = deepcopy(self.pending_services)
 
         self.backlog_size = config['backlog_size']
 
+        self.time = 0
+
         # TODO TEMP remove
-        self.schedule(
-            service_id=0,
-            node_id=0
-        )
-        self.schedule(
-            service_id=2,
-            node_id=0
-        )
-        self.schedule(
-            service_id=3,
-            node_id=1
-        )
-        self.schedule(
-            service_id=4,
-            node_id=1
-        )
-        self.schedule(
-            service_id=5,
-            node_id=1
-        )
-        self.schedule(
-            service_id=1,
-            node_id=1
-        )
+        # self.schedule(
+        #     service_id=0,
+        #     node_id=0
+        # )
+        # self.schedule(
+        #     service_id=2,
+        #     node_id=0
+        # )
+        # self.schedule(
+        #     service_id=3,
+        #     node_id=1
+        # )
+        # self.schedule(
+        #     service_id=4,
+        #     node_id=1
+        # )
+        # self.schedule(
+        #     service_id=5,
+        #     node_id=1
+        # )
+        # self.schedule(
+        #     service_id=1,
+        #     node_id=1
+        # )
         self.observation_space, self.action_space =\
             self._setup_space()
         _ = self.reset()
@@ -211,6 +219,7 @@ class SimSchedulerEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         self._env_seed = seed
         self.base_env_seed = seed
+        self.scheduling_timestep = False
         return [seed]
 
     @override(gym.Env)
@@ -222,11 +231,10 @@ class SimSchedulerEnv(gym.Env):
         Remarks:
             each time resets to a different initial state
         """
-        if self.timestep_reset:
-            self.global_timestep = 0
-            self.timestep = 0
-        if self.placement_reset:
-            self.services_nodes = deepcopy(self.initial_services_nodes)
+        self.time = 0
+        self.pending_services = deepcopy(self.initil_pending_services)
+        self.cluster.reset_cluster()
+        self.next_scheduling_time = self.get_next_scheduling_time()
         return self.observation
 
     def clock_tick(self):
@@ -234,13 +242,14 @@ class SimSchedulerEnv(gym.Env):
             move the simulator forward proportional to
             tick_seconds
         """
-        tick_seconds = self.next_interval()
-        for _ in range(tick_seconds):
-            self.cluster.clock_tick()
+        self.time += 1
+        self.cluster.clock_tick()
 
-    def next_interval(self):
-        # TODO add other logics of time interval here
-        return INTERVAL
+    def get_next_scheduling_time(self):
+        # next scheduling descition
+        if self.job_arrival_mode:
+            next_time = self.time + INTERVAL
+        return next_time
 
     @override(gym.Env)
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, int, bool, dict]:
@@ -250,19 +259,24 @@ class SimSchedulerEnv(gym.Env):
         2. do one step of user movements
         3. update the nodes
         """
+
         # take the action
         # prev_services_nodes = deepcopy(self.services_nodes)
-        assert self.action_space.contains(action)
+        if self.time == self.next_scheduling_time:
+            assert self.action_space.contains(action)
+            if self.pending_services == []:
+                pass
+            else:
+                success = self.schedule(
+                    service_id=self.pending_services[-1].service_id,
+                    node_id=action
+                    )
+                self.next_scheduling_time = self.get_next_scheduling_time()
+                self.scheduling_timestep = True
+        else:
+            self.scheduling_timestep = False
 
-        # take action
-        schedule_success_mask = [False] * self.backlog_size
-        for mask_id, service_id, node_id in zip(
-            range(self.backlog_size), self.backlog_services_ids, action):
-            schedule_success_mask[mask_id] = self.schedule(
-                service_id=service_id, node_id=node_id)
-
-        # TODO move to the next timestep
-        self.global_timestep += 1
+        self.clock_tick()
 
         reward, rewards = 1, {1:1}
         # TODO
@@ -271,9 +285,9 @@ class SimSchedulerEnv(gym.Env):
         #     num_moves=num_moves
         #     )
 
-        info = {'num_consolidated': self.num_consolidated,
+        info = {'num_consolidated': self.cluster.num_consolidated,
                 # 'num_moves': num_moves,
-                'num_overloaded': self.num_overloaded,
+                'num_overloaded': self.cluster.num_overloaded,
                 'total_reward': reward,
                 'timestep': self.timestep,
                 'global_timestep': self.global_timestep,
@@ -289,31 +303,32 @@ class SimSchedulerEnv(gym.Env):
     def render(self, mode: Literal['human', 'ansi'] ='human') -> None:
         """
         """
-        print("--------state--------")
-        if not self.num_overloaded:
-            print("nodes_resources_request_frac:")
-            print(self.nodes_resources_request_frac)
-            print("services_nodes:")
-            print(self.services_nodes)
-            if mode == 'ansi':
-                plot_resource_allocation(self.services_nodes,
-                                        self.nodes_resources_cap,
-                                        self.services_resources_request,
-                                        self.services_resources_usage,
-                                        plot_length=80)
-        else:
-            print(Fore.RED, "agent's action lead to an overloaded state!")
-            print("nodes_resources_usage_frac:")
-            print(self.nodes_resources_request_frac)
-            print("services_nodes:")
-            print(self.services_nodes)
-            if mode == 'ansi':
-                plot_resource_allocation(self.services_nodes,
-                                        self.nodes_resources_cap,
-                                        self.services_resources_request,
-                                        self.services_resources_usage,
-                                        plot_length=80)
-            print(Style.RESET_ALL)
+        pass
+        # print("--------state--------")
+        # if not self.num_overloaded:
+        #     print("nodes_resources_request_frac:")
+        #     print(self.nodes_resources_request_frac)
+        #     print("services_nodes:")
+        #     print(self.services_nodes)
+        #     if mode == 'ansi':
+        #         plot_resource_allocation(self.services_nodes,
+        #                                 self.nodes_resources_cap,
+        #                                 self.services_resources_request,
+        #                                 self.services_resources_usage,
+        #                                 plot_length=80)
+        # else:
+        #     print(Fore.RED, "agent's action lead to an overloaded state!")
+        #     print("nodes_resources_usage_frac:")
+        #     print(self.nodes_resources_request_frac)
+        #     print("services_nodes:")
+        #     print(self.services_nodes)
+        #     if mode == 'ansi':
+        #         plot_resource_allocation(self.services_nodes,
+        #                                 self.nodes_resources_cap,
+        #                                 self.services_resources_request,
+        #                                 self.services_resources_usage,
+        #                                 plot_length=80)
+        #     print(Style.RESET_ALL)
 
     def schedule(self, service_id: int, node_id: int) -> bool:
         """schedule one of the services on a target node
@@ -334,7 +349,6 @@ class SimSchedulerEnv(gym.Env):
                 'Service {} does not exists in pending services'.format(
                 service_id
             ))
-        # TODO add the logic of checking the empty backlog here
         service_index = self.pending_services_ids.index(service_id)
         schedule_success = self.cluster.schedule(
             service=self.pending_services[service_index],
@@ -352,8 +366,11 @@ class SimSchedulerEnv(gym.Env):
         The next services to be scheduled on
         the cluster
         """
-        # than backlog
-        return self.pending_services[-self.backlog_size:]
+        backlog_services = self.pending_services[-self.backlog_size:]
+        if len(backlog_services) < self.backlog_size:
+            diff = self.backlog_size - len(backlog_services)
+            backlog_services = backlog_services + [ServiceDummy()]*diff
+        return backlog_services
 
     @property
     def backlog_services_requests(self):
@@ -457,20 +474,18 @@ class SimSchedulerEnv(gym.Env):
         higher_bound = 20 # TEMP find a cleaner way
         # generate observation and action spaces
         observation_space = Box(
-            low=0, high=higher_bound, shape=(obs_size, ),
+            low=-1, high=higher_bound, shape=(obs_size, ),
             dtype=np.float64, seed=self._env_seed)
 
-        if self.discrete_actions:
-            action_space = Discrete(
-                self.cluster.num_nodes, seed=self._env_seed)
-            # self.discrete_action_converter = Discrete2MultiDiscrete(
-            #     self.back, self.total_num_services)
-        else:
-            action_space = MultiDiscrete(
-                np.ones(self.backlog_size)*self.cluster.num_nodes, seed=self._env_seed)
+        # if self.discrete_actions:
+        action_space = Discrete(self.cluster.num_nodes, seed=self._env_seed)
 
         return observation_space, action_space
 
-    def cluster(self):
-        a = 1
-        pass
+    @property
+    def done(self):
+        if self.pending_services == []:
+            if self.cluster.all_jobs_done:
+                return True
+        return False
+
