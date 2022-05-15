@@ -5,7 +5,7 @@ This repo contains the code of the upcoming vpa aware scheduling paper
 ## Setup the environment in your machine
 1. Download source code from GitHub
    ```
-    git clone https://github.com/saeid93/CCGrid-paper
+    git clone https://github.com/saeid93/smart-scheduler
    ```
 2. Download and install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 3. Create [conda](https://docs.conda.io/en/latest/miniconda.html) virtual-environment
