@@ -27,7 +27,7 @@ class Cluster:
         self.num_resources: int = self.nodes_resources_cap.shape[1]
         self.num_nodes: int = self.nodes_resources_cap.shape[0]
 
-        self.serving_services: List[Service] = []
+        # self.serving_services: List[Service] = []
         self.nodes: List[Node] = []
 
         for node_id in range(self.num_nodes):

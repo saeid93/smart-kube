@@ -2,6 +2,8 @@ import numpy as np
 from typing import Dict
 from smart_scheduler.util import rounding
 
+# TODO complete based on the new needs
+
 class Preprocessor():
     def __init__(self, nodes_resources_cap: np.ndarray,
                  services_resources_request: np.ndarray,
