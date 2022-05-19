@@ -51,29 +51,27 @@ def check_env(*, config: Dict[str, Any], type_env: str,
     total_timesteps = 1000
     _ = env.reset()
 
-
-    consolidation_rewards = []
     reward_total = []
-    users_distances = []
-    episode_total_latency_reward = 0
-    episode_total_latency_negative_reward = 0
-    episode_total_consolidation_reward = 0
+    # users_distances = []
+    # episode_total_latency_reward = 0
     while i < total_timesteps:
         action = env.action_space.sample()
         _, reward, done, info = env.step(action)
         if info['scheduling_success']:
             print('scheudling timesteps')
-        if done: break
-        # consolidation_reward = info['rewards']['reward_consolidation']
         # consolidation_rewards.append(consolidation_reward)
         reward_total.append(reward)
+        env.render()
         # episode_total_consolidation_reward += consolidation_reward
-        # print(f'episode_total_latency_reward: {episode_total_latency_reward}')
-        # print(f'episode_total_latency_negative_rewards: {episode_total_latency_negative_reward}')
-        # print(f'episode_total_consolidation_reward: {episode_total_consolidation_reward}')
         print("timestep: {}".format(
             env.time
         ))
+        if done and not env.complete_done:
+            print('done for episode!')
+        if done and env.complete_done:
+            print('done for ending the simulation')
+            break
+        i += 1
     x = np.arange(total_timesteps-1)
 
 @click.command()

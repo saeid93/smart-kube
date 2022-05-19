@@ -56,18 +56,17 @@ def env_config_base_check(config: Dict[str, Any]):
     check the structure of env_config_base_check
     """
     # check the items
-    allowed_items = ['obs_elements', 'penalty_illegal', 'penalty_move',
-                     'penalty_variance', 'penalty_latency',
-                     'penalty_consolidated', 'mitigation_tries',
+    allowed_items = ['obs_elements', 'penalty_one', 'penalty_two',
+                     'penalty_three', 'penalty_four',
+                     'penalty_five', 'mitigation_tries',
                      'episode_length', 'placement_reset',
                      'compute_greedy_num_consolidated', 'seed', 'cluster',
                      'workload', 'nodes_cap_rng', 'services_request_rng',
-                     'num_users', 'num_stations', 'network',
-                     'normalise_latency', 'trace', 'from_cluster',
+                     'normalise_latency', 'from_cluster',
                      'edge_simulator_config', 'action_method', 'step_method',
                      'kube', "no_action_on_overloaded", "latency_reward_option",
-                     'latency_lower', 'latency_upper', 'consolidation_lower',
-                     'consolidation_upper', 'discrete_actions', 'max_services_nodes',
+                     'reward_var_one', 'reward_var_two', 'reward_var_three',
+                     'reward_var_four', 'discrete_actions', 'max_services_nodes',
                      'backlog_size', 'job_arrival']
 
     for key, _ in config.items():
@@ -77,9 +76,9 @@ def env_config_base_check(config: Dict[str, Any]):
     ints = ['episode_length', 'max_services_nodes', 'backlog_size', 'seed']
     for item in ints:
         assert type(config[item]) == int, f"<{item}> must be an integer"
-    floats = ['penalty_illegal', 'penalty_illegal',
-              'penalty_variance', 'penalty_consolidated',
-              'penalty_latency', ]
+    floats = ['penalty_one', 'penalty_two',
+              'penalty_three', 'penalty_four',
+              'penalty_five']
     for item in floats:
         assert type(config[item])==float or type(config[item])==int,\
             f"[{item}] must be a float"

@@ -114,9 +114,16 @@ class SimSchedulerEnv(gym.Env):
         self.total_num_services: int = self.services_resources_request.shape[0]
 
         # reward penalties
-        self.penalty_illegal: float = config['penalty_illegal']
-        self.penalty_move: float = config['penalty_move']
-        self.penalty_consolidated: float = config['penalty_consolidated']
+        self.penalty_one: float = config['penalty_one']
+        self.penalty_two: float = config['penalty_two']
+        self.penalty_three: float = config['penalty_three']
+        self.penalty_four: float = config['penalty_four']
+        self.penalty_four: float = config['penalty_five']
+        # reward weighting variables
+        self.reward_var_one = config['reward_var_one']
+        self.reward_var_two = config['reward_var_two']
+        self.reward_var_three = config['reward_var_three']
+        self.reward_var_four = config['reward_var_four']
 
         # episode length
         self.episode_length: int = config['episode_length']
@@ -145,10 +152,6 @@ class SimSchedulerEnv(gym.Env):
 
         # whether to take the overloaded action with negative reward or not
         self.no_action_on_overloaded = config['no_action_on_overloaded']
-
-        # reward weighting variables
-        self.consolidation_lower = config['consolidation_lower']
-        self.consolidation_upper = config['consolidation_upper']
 
         # maximum allowed services in a node
         self.max_services_nodes = config['max_services_nodes']
@@ -187,6 +190,7 @@ class SimSchedulerEnv(gym.Env):
         self.time = 0
         self.observation_space, self.action_space =\
             self._setup_space()
+        self.complete_done = False
         _ = self.reset()
 
     def seed(self, seed):
@@ -206,9 +210,11 @@ class SimSchedulerEnv(gym.Env):
         Remarks:
             each time resets to a different initial state
         """
-        self.time = 0
-        self.pending_services = deepcopy(self.initil_pending_services)
-        self.cluster.reset_cluster()
+        if self.complete_done:
+            self.time = 0
+            self.pending_services = deepcopy(self.initil_pending_services)
+            self.cluster.reset_cluster()
+            self.complete_done = False
         # self.next_scheduling_time = self.get_next_scheduling_time()
         return self.observation
 
@@ -220,15 +226,6 @@ class SimSchedulerEnv(gym.Env):
         self.time += 1
         self.cluster.clock_tick()
 
-    # def get_next_scheduling_time(self):
-    #     # next scheduling descition
-    #     if self.job_arrival_mode == 'fixed':
-    #         next_time = self.time + self.interval
-    #     elif self.job_arrival_mode == 'bernoulli':
-    #         b = 1
-    #         pass
-    #     return next_time
-
     @override(gym.Env)
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, int, bool, dict]:
         """
@@ -238,7 +235,7 @@ class SimSchedulerEnv(gym.Env):
         3. update the nodes
         """
         # take the action
-        # if self.time == self.next_scheduling_time:
+        scheduling_timestep = False
         success = False
         if self.scheduling_timestep:
             assert self.action_space.contains(action)
@@ -254,12 +251,10 @@ class SimSchedulerEnv(gym.Env):
 
         self.clock_tick()
 
-        reward, rewards = 1, {1:1}
+        # reward, rewards = 1, {1:1}
         # TODO
-        # self._reward(
-        #     num_overloaded=self.num_overloaded,
-        #     num_moves=num_moves
-        #     )
+        reward, rewards = self._reward(
+            num_overloaded=self.cluster.num_overloaded)
 
         info = {
             'scheduling_timestep': scheduling_timestep,
@@ -281,7 +276,7 @@ class SimSchedulerEnv(gym.Env):
     def render(self, mode: Literal['human', 'ansi'] ='human') -> None:
         """
         """
-        pass
+        print(f"node placements:\n{self.cluster.nodes_services}")
 
     def schedule(self, service_id: int, node_id: int) -> bool:
         """schedule one of the services on a target node
@@ -453,8 +448,9 @@ class SimSchedulerEnv(gym.Env):
 
     @property
     def done(self):
-        if self.pending_services == []:
-            if self.cluster.all_jobs_done:
-                return True
+        if self.time % self.episode_length == 0:
+            if self.pending_services == [] and self.cluster.all_jobs_done:
+                self.complete_done = True
+            return True
         return False
 
