@@ -61,6 +61,8 @@ def check_env(*, config: Dict[str, Any], type_env: str,
     while i < total_timesteps:
         action = env.action_space.sample()
         _, reward, done, info = env.step(action)
+        if info['scheduling_success']:
+            print('scheudling timesteps')
         if done: break
         # consolidation_reward = info['rewards']['reward_consolidation']
         # consolidation_rewards.append(consolidation_reward)

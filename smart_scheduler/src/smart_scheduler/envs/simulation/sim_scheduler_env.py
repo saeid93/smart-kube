@@ -1,8 +1,7 @@
 """base class of all simulation enviornments
 """
-import abc
-from turtle import back
 import numpy as np
+from scipy.stats import bernoulli
 from copy import deepcopy
 from typing import (
     List,
@@ -52,8 +51,6 @@ from smart_scheduler.cluster import (
     Node,
     Cluster
 )
-
-INTERVAL = 5 # TODO move to config
 
 class SimSchedulerEnv(gym.Env):
     """
@@ -156,7 +153,13 @@ class SimSchedulerEnv(gym.Env):
         # maximum allowed services in a node
         self.max_services_nodes = config['max_services_nodes']
 
-        self.job_arrival_mode = 'fixed'
+        # get the job arrival mode
+        self.job_arrival = config['job_arrival']
+        self.job_arrival_mode = self.job_arrival['mode']
+        if self.job_arrival_mode == 'fixed':
+            self.interval = self.job_arrival['interval']
+        elif self.job_arrival_mode == 'bernoulli':
+            self.probability = self.job_arrival['probability']
 
         self.pending_services: List[Service] = []
 
@@ -178,38 +181,10 @@ class SimSchedulerEnv(gym.Env):
                 limits=self.services_resources_request[service_id],
                 workload=service_workload,
                 serving_time=serving_time))
-        
+
         self.initil_pending_services = deepcopy(self.pending_services)
-
         self.backlog_size = config['backlog_size']
-
         self.time = 0
-
-        # TODO TEMP remove
-        # self.schedule(
-        #     service_id=0,
-        #     node_id=0
-        # )
-        # self.schedule(
-        #     service_id=2,
-        #     node_id=0
-        # )
-        # self.schedule(
-        #     service_id=3,
-        #     node_id=1
-        # )
-        # self.schedule(
-        #     service_id=4,
-        #     node_id=1
-        # )
-        # self.schedule(
-        #     service_id=5,
-        #     node_id=1
-        # )
-        # self.schedule(
-        #     service_id=1,
-        #     node_id=1
-        # )
         self.observation_space, self.action_space =\
             self._setup_space()
         _ = self.reset()
@@ -219,7 +194,7 @@ class SimSchedulerEnv(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         self._env_seed = seed
         self.base_env_seed = seed
-        self.scheduling_timestep = False
+        # self.scheduling_timestep = False
         return [seed]
 
     @override(gym.Env)
@@ -234,7 +209,7 @@ class SimSchedulerEnv(gym.Env):
         self.time = 0
         self.pending_services = deepcopy(self.initil_pending_services)
         self.cluster.reset_cluster()
-        self.next_scheduling_time = self.get_next_scheduling_time()
+        # self.next_scheduling_time = self.get_next_scheduling_time()
         return self.observation
 
     def clock_tick(self):
@@ -245,11 +220,14 @@ class SimSchedulerEnv(gym.Env):
         self.time += 1
         self.cluster.clock_tick()
 
-    def get_next_scheduling_time(self):
-        # next scheduling descition
-        if self.job_arrival_mode:
-            next_time = self.time + INTERVAL
-        return next_time
+    # def get_next_scheduling_time(self):
+    #     # next scheduling descition
+    #     if self.job_arrival_mode == 'fixed':
+    #         next_time = self.time + self.interval
+    #     elif self.job_arrival_mode == 'bernoulli':
+    #         b = 1
+    #         pass
+    #     return next_time
 
     @override(gym.Env)
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, int, bool, dict]:
@@ -259,22 +237,20 @@ class SimSchedulerEnv(gym.Env):
         2. do one step of user movements
         3. update the nodes
         """
-
         # take the action
-        # prev_services_nodes = deepcopy(self.services_nodes)
-        if self.time == self.next_scheduling_time:
+        # if self.time == self.next_scheduling_time:
+        success = False
+        if self.scheduling_timestep:
             assert self.action_space.contains(action)
-            if self.pending_services == []:
-                pass
-            else:
+            if self.pending_services != []:
                 success = self.schedule(
                     service_id=self.pending_services[-1].service_id,
                     node_id=action
                     )
-                self.next_scheduling_time = self.get_next_scheduling_time()
-                self.scheduling_timestep = True
+                # self.next_scheduling_time = self.get_next_scheduling_time()
+                scheduling_timestep = True
         else:
-            self.scheduling_timestep = False
+            scheduling_timestep = False
 
         self.clock_tick()
 
@@ -285,14 +261,16 @@ class SimSchedulerEnv(gym.Env):
         #     num_moves=num_moves
         #     )
 
-        info = {'num_consolidated': self.cluster.num_consolidated,
-                # 'num_moves': num_moves,
-                'num_overloaded': self.cluster.num_overloaded,
-                'total_reward': reward,
-                'timestep': self.timestep,
-                'global_timestep': self.global_timestep,
-                'rewards': rewards,
-                'seed': self.base_env_seed}
+        info = {
+            'scheduling_timestep': scheduling_timestep,
+            'scheduling_success': success,
+            'num_consolidated': self.cluster.num_consolidated,
+            'num_overloaded': self.cluster.num_overloaded,
+            'total_reward': reward,
+            'timestep': self.timestep,
+            'global_timestep': self.global_timestep,
+            'rewards': rewards,
+            'seed': self.base_env_seed}
 
         assert self.observation_space.contains(self.observation),\
                 (f"observation:\n<{self.raw_observation}>\noutside of "
@@ -304,31 +282,6 @@ class SimSchedulerEnv(gym.Env):
         """
         """
         pass
-        # print("--------state--------")
-        # if not self.num_overloaded:
-        #     print("nodes_resources_request_frac:")
-        #     print(self.nodes_resources_request_frac)
-        #     print("services_nodes:")
-        #     print(self.services_nodes)
-        #     if mode == 'ansi':
-        #         plot_resource_allocation(self.services_nodes,
-        #                                 self.nodes_resources_cap,
-        #                                 self.services_resources_request,
-        #                                 self.services_resources_usage,
-        #                                 plot_length=80)
-        # else:
-        #     print(Fore.RED, "agent's action lead to an overloaded state!")
-        #     print("nodes_resources_usage_frac:")
-        #     print(self.nodes_resources_request_frac)
-        #     print("services_nodes:")
-        #     print(self.services_nodes)
-        #     if mode == 'ansi':
-        #         plot_resource_allocation(self.services_nodes,
-        #                                 self.nodes_resources_cap,
-        #                                 self.services_resources_request,
-        #                                 self.services_resources_usage,
-        #                                 plot_length=80)
-        #     print(Style.RESET_ALL)
 
     def schedule(self, service_id: int, node_id: int) -> bool:
         """schedule one of the services on a target node
@@ -343,7 +296,7 @@ class SimSchedulerEnv(gym.Env):
             bool: returns whether the service
                 has been scheduled or not
         """
-        self.clock_tick()
+        # self.clock_tick()
         if not service_id in self.pending_services_ids:
             raise ValueError(
                 'Service {} does not exists in pending services'.format(
@@ -359,6 +312,22 @@ class SimSchedulerEnv(gym.Env):
             self.pending_services.pop(service_index)
         # return true if successful
         return schedule_success
+
+    @property
+    def scheduling_timestep(self):
+        # next scheduling descition
+        if self.job_arrival_mode == 'fixed':
+            if self.time == 0:
+                self.next_scheduling_time = self.interval
+                return False
+            elif self.time == self.next_scheduling_time:
+                self.next_scheduling_time = self.time + self.interval
+                return True
+            else: False
+        elif self.job_arrival_mode == 'bernoulli':
+            dice = bernoulli.rvs(self.probability, loc=0)
+            scheduling_interval = True if dice == 1 else False
+            return scheduling_interval
 
     @property
     def backlog_services(self):

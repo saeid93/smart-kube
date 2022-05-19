@@ -23,6 +23,10 @@
         "discrete_actions": false,
         "backlog_size": 2,
         "seed": 1204,
+        "job_arrival":{
+            "mode": "bernoulli",
+            "probability": 0.5
+        },
         "kube":{
             "admin_config": "~/.kube/config",
             "service_image": "sdghafouri/service",

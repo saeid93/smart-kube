@@ -68,7 +68,7 @@ def env_config_base_check(config: Dict[str, Any]):
                      'kube', "no_action_on_overloaded", "latency_reward_option",
                      'latency_lower', 'latency_upper', 'consolidation_lower',
                      'consolidation_upper', 'discrete_actions', 'max_services_nodes',
-                     'backlog_size']
+                     'backlog_size', 'job_arrival']
 
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
@@ -118,3 +118,16 @@ def env_config_base_check(config: Dict[str, Any]):
 
     assert set(config['kube']).issubset(
         set(kube)), "wrong input for the kube"
+
+    # fixed job_arrival 
+    job_arrival_fixed: List[str] = [
+        "mode",
+        "interval"]
+    # fixed job_arrival 
+    job_arrival_bernoulli: List[str] = [
+        "mode",
+        "probability"]
+
+    assert set(config['job_arrival']).issubset(set(job_arrival_fixed)) or\
+        set(config['job_arrival']).issubset(set(job_arrival_bernoulli)), \
+            "wrong input for the job_arrival"
