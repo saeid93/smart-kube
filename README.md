@@ -10,11 +10,11 @@ This repo contains the code of the upcoming vpa aware scheduling paper
 2. Download and install [miniconda](https://docs.conda.io/en/latest/miniconda.html)
 3. Create [conda](https://docs.conda.io/en/latest/miniconda.html) virtual-environment
    ```
-    conda create --name mobilekube python=3
+    conda create --name smartscheduler python=3
    ```
 4. Activate conda environment
    ```
-    conda activate mobilekube
+    conda activate smartscheduler
    ```
 5. if you want to use GPUs make sure that you have the correct version of CUDA and cuDNN installed from [here](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html)
 6. Use [PyTorch](https://pytorch.org/) or [Tensorflow](https://www.tensorflow.org/install/pip#virtual-environment-install) isntallation manual to install one of them based-on your preference
@@ -48,7 +48,7 @@ You can find the toturial for creating the cluster on google cloud and locally i
 
 The code is separated into three modules
    1. [data](data): This is the folder containing all the configs and results of the project. Could be anywhere in the project.
-   3. [smart-scheduler](mobile-kube): the core simulation library with [Open-AI gym](https://gym.openai.com/) interface
+   3. [smart-scheduler](smart-scheduler): the core simulation library with [Open-AI gym](https://gym.openai.com/) interface
    4. [experiments](experiments): experiments of the paper and the reinforcement learning side of codes.
 
 ## 3.1. [smart-scheduler](smart-scheduler)
