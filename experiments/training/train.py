@@ -30,11 +30,13 @@ from experiments.utils import (
 torch, nn = try_import_torch()
 
 
-def learner(*, config_file_path: str, config: Dict[str, Any],
-            series: int, type_env: str, cluster_id: int,
-            workload_id: int, network_id: int, trace_id: int,
-            use_callback: bool, checkpoint_freq: int,
-            local_mode: bool):
+def learner(*, local_mode: bool,
+            config: Dict[str, Any],
+            config_file_path: str,
+            series: int, type_env: str,
+            cluster_id: int, workload_id: int,
+            job_arrival_mode: int, time_resolution: int,
+            use_callback: bool, checkpoint_freq: int):
     """
     input_config: {"env_config_base": ...,
                     "run_or_experiment": ...,
@@ -87,8 +89,6 @@ def learner(*, config_file_path: str, config: Dict[str, Any],
                                       "envs",       str(type_env),
                                       "clusters",   str(cluster_id),
                                       "workloads",  str(workload_id),
-                                      "networks",   str(network_id),
-                                      "traces",     str(trace_id),
                                       "experiments")
     # make the base path if it does not exists
     if not os.path.isdir(experiments_folder):
@@ -143,20 +143,23 @@ def learner(*, config_file_path: str, config: Dict[str, Any],
 
 
 @click.command()
-@click.option('--local-mode', type=bool, default=False)
+@click.option('--local-mode', type=bool, default=True)
 @click.option('--config-file', type=str, default='final-DQN')
 @click.option('--series', required=True, type=int, default=70)
 @click.option('--type-env', required=True,
-              type=click.Choice(['sim-scheduler', 'sim-binpacking', 'sim-scheduler-greedy',
+              type=click.Choice(['sim-scheduler', 'sim-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=6)
+@click.option('--cluster-id', required=True, type=int, default=0)
 @click.option('--workload-id', required=True, type=int, default=0)
+@click.option('--job-arrival-mode', required=True, type=str, default='fixed')
+@click.option('--time-resolution', required=True, type=int, default=0)
 @click.option('--use-callback', required=True, type=bool, default=True)
 @click.option('--checkpoint-freq', required=False, type=int, default=1000)
 def main(local_mode: bool, config_file: str, series: int,
-         type_env: str, cluster_id: int, workload_id: int, network_id: int,
-         trace_id: int, use_callback: bool, checkpoint_freq: int):
+         type_env: str, cluster_id: int, workload_id: int,
+         job_arrival_mode: str, time_resolution: int,
+         use_callback: bool, checkpoint_freq: int):
     """[summary]
 
     Args:
@@ -168,8 +171,6 @@ def main(local_mode: bool, config_file: str, series: int,
         type_env (str): the type of the used environment
         cluster_id (int): used cluster cluster
         workload_id (int): the workload used in that cluster
-        network_id (int): edge network of some cluster
-        trace_id (int): user movement traces
     """
     config_file_path = os.path.join(
         CONFIGS_PATH, 'train', f"{config_file}.json")
@@ -180,12 +181,18 @@ def main(local_mode: bool, config_file: str, series: int,
     print('start experiments with the following config:\n')
     pp.pprint(config)
 
-    learner(config_file_path=config_file_path,
-            config=config, series=series,
-            type_env=type_env, cluster_id=cluster_id,
-            workload_id=workload_id, network_id=network_id,
-            trace_id=trace_id, use_callback=use_callback,
-            checkpoint_freq=checkpoint_freq, local_mode=local_mode)
+    learner(
+        local_mode=local_mode,
+        config=config,
+        config_file_path=config_file_path,
+        series=series,
+        type_env=type_env,
+        cluster_id=cluster_id,
+        workload_id=workload_id,
+        job_arrival_mode=job_arrival_mode,
+        time_resolution=time_resolution,
+        use_callback=use_callback,
+        checkpoint_freq=checkpoint_freq)
 
 
 if __name__ == "__main__":

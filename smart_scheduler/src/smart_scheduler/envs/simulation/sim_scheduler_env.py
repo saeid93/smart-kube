@@ -137,8 +137,8 @@ class SimSchedulerEnv(gym.Env):
             self.placement_reset: bool = config['placement_reset']
         else:
             self.placement_reset: bool = False
-        self.global_timestep: int = 0
-        self.timestep: int = 0
+        # self.global_timestep: int = 0
+        # self.timestep: int = 0
 
         # set the reward method
         self._reward = types.MethodType(_reward, self)
@@ -187,7 +187,10 @@ class SimSchedulerEnv(gym.Env):
 
         self.initil_pending_services = deepcopy(self.pending_services)
         self.backlog_size = config['backlog_size']
+
         self.time = 0
+        self.timestep_episode = 0
+
         self.observation_space, self.action_space =\
             self._setup_space()
         self.complete_done = False
@@ -212,10 +215,11 @@ class SimSchedulerEnv(gym.Env):
         """
         if self.complete_done:
             self.time = 0
-            self.pending_services = deepcopy(self.initil_pending_services)
+            self.pending_services = deepcopy(
+                self.initil_pending_services)
             self.cluster.reset_cluster()
             self.complete_done = False
-        # self.next_scheduling_time = self.get_next_scheduling_time()
+        self.timestep_episode = 0
         return self.observation
 
     def clock_tick(self):
@@ -244,15 +248,12 @@ class SimSchedulerEnv(gym.Env):
                     service_id=self.pending_services[-1].service_id,
                     node_id=action
                     )
-                # self.next_scheduling_time = self.get_next_scheduling_time()
                 scheduling_timestep = True
-        else:
-            scheduling_timestep = False
 
         self.clock_tick()
+        self.timestep_episode += 1
 
-        # reward, rewards = 1, {1:1}
-        # TODO
+        # TODO fix reward
         reward, rewards = self._reward(
             num_overloaded=self.cluster.num_overloaded)
 
@@ -262,9 +263,10 @@ class SimSchedulerEnv(gym.Env):
             'num_consolidated': self.cluster.num_consolidated,
             'num_overloaded': self.cluster.num_overloaded,
             'total_reward': reward,
-            'timestep': self.timestep,
-            'global_timestep': self.global_timestep,
+            'time': self.time,
+            'timestep_episode': self.timestep_episode,
             'rewards': rewards,
+            'nodes_services': self.cluster.nodes_services,
             'seed': self.base_env_seed}
 
         assert self.observation_space.contains(self.observation),\
@@ -448,9 +450,10 @@ class SimSchedulerEnv(gym.Env):
 
     @property
     def done(self):
+        if self.pending_services == [] and self.cluster.all_jobs_done:
+            self.complete_done = True
+            return True
         if self.time % self.episode_length == 0:
-            if self.pending_services == [] and self.cluster.all_jobs_done:
-                self.complete_done = True
             return True
         return False
 

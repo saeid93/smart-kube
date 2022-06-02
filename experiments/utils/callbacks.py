@@ -54,11 +54,11 @@ class CloudCallback(DefaultCallbacks):
                          env_index: int, **kwargs):
 
         # timestep of the cluster
-        episode.user_data["timestep"] = []
-        episode.hist_data["timestep"] = []
-        # global timestep of the cluster
-        episode.user_data["global_timestep"] = []
-        episode.hist_data["global_timestep"] = []
+        # episode.user_data["timestep"] = []
+        # episode.hist_data["timestep"] = []
+        # # global timestep of the cluster
+        # episode.user_data["global_timestep"] = []
+        # episode.hist_data["global_timestep"] = []
         # num_consolidated placeholder lists
         episode.user_data["num_consolidated"] = []
         episode.hist_data["num_consolidated"] = []
@@ -80,28 +80,28 @@ class CloudCallback(DefaultCallbacks):
                         episode: MultiAgentEpisode,
                         env_index: int, **kwargs):
 
-        if type(episode.last_info_for()) == dict:
-            # extract the timestep of the current step from the dict
-            timestep = episode.last_info_for()['timestep']
-            episode.user_data["timestep"].append(timestep)
-            # extract the global timestep of the current step from the dict
-            global_timestep = episode.last_info_for()['global_timestep']
-            episode.user_data["global_timestep"].append(global_timestep)
-            # extract the number of conolidated from the info dict
-            num_consolidated = episode.last_info_for()['num_consolidated']
-            episode.user_data["num_consolidated"].append(num_consolidated)
-            # extract the number of overloaded from the info dict
-            num_overloaded = episode.last_info_for()['num_overloaded']
-            episode.user_data["num_overloaded"].append(num_overloaded)
-            # extract of the number of services moves from the dict
-            num_moves = episode.last_info_for()['num_moves']
-            episode.user_data["num_moves"].append(num_moves)
-            # extract of the total sum of latencies
-            users_distances = episode.last_info_for()['users_distances']
-            episode.user_data["users_distances"].append(users_distances)
-            # rewards
-            rewards = episode.last_info_for()['rewards']
-            episode.user_data["rewards"].append(rewards)
+        # if type(episode.last_info_for()) == dict:
+        # extract the timestep of the current step from the dict
+        # timestep = episode.last_info_for()['timestep']
+        # episode.user_data["timestep"].append(timestep)
+        # extract the global timestep of the current step from the dict
+        # global_timestep = episode.last_info_for()['global_timestep']
+        # episode.user_data["global_timestep"].append(global_timestep)
+        # extract the number of conolidated from the info dict
+        num_consolidated = episode.last_info_for()['num_consolidated']
+        episode.user_data["num_consolidated"].append(num_consolidated)
+        # extract the number of overloaded from the info dict
+        num_overloaded = episode.last_info_for()['num_overloaded']
+        episode.user_data["num_overloaded"].append(num_overloaded)
+        # extract of the number of services moves from the dict
+        # num_moves = episode.last_info_for()['num_moves']
+        # episode.user_data["num_moves"].append(num_moves)
+        # extract of the total sum of latencies
+        # users_distances = episode.last_info_for()['users_distances']
+        # episode.user_data["users_distances"].append(users_distances)
+        # rewards
+        rewards = episode.last_info_for()['rewards']
+        episode.user_data["rewards"].append(rewards)
 
 
             # print(f"env: <{episode.env_id}>")
@@ -122,37 +122,37 @@ class CloudCallback(DefaultCallbacks):
         # extract the episode information
         num_moves_avg = np.mean(episode.user_data["num_moves"])
         num_consolidated_avg = np.mean(episode.user_data["num_consolidated"])
-        users_distances_avg = np.mean(episode.user_data["users_distances"])
-        num_overloaded_avg = np.mean(episode.user_data["num_overloaded"])
-        timestep = np.max(episode.user_data["timestep"])
-        global_timestep = np.max(episode.user_data["global_timestep"])
+        # users_distances_avg = np.mean(episode.user_data["users_distances"])
+        # num_overloaded_avg = np.mean(episode.user_data["num_overloaded"])
+        # timestep = np.max(episode.user_data["timestep"])
+        # global_timestep = np.max(episode.user_data["global_timestep"])
         # episode_total_reward = episode.total_reward
         # action_logit_max = round(max(episode.last_action_for()).item(), 2)
         # action_logit_min = round(min(episode.last_action_for()).item(), 2)
         # action_logit_avg = round(np.mean(episode.last_action_for()).item(), 2)
 
         # extract episodes rewards info
-        episode_reward_consolidation = [a[
-            'reward_consolidation']for a in episode.user_data[
-                "rewards"]]
-        episode_reward_illegal = [a[
-            'reward_illegal']for a in episode.user_data[
-                "rewards"]]
-        episode_reward_move = [a[
-            'reward_move']for a in episode.user_data[
-                "rewards"]]
-        episode_reward_latency = [a[
-            'reward_latency']for a in episode.user_data[
-                "rewards"]]
+        # episode_reward_consolidation = [a[
+        #     'reward_consolidation']for a in episode.user_data[
+        #         "rewards"]]
+        # # episode_reward_illegal = [a[
+        #     'reward_illegal']for a in episode.user_data[
+        #         "rewards"]]
+        # episode_reward_move = [a[
+        #     'reward_move']for a in episode.user_data[
+        #         "rewards"]]
+        # episode_reward_latency = [a[
+        #     'reward_latency']for a in episode.user_data[
+        #         "rewards"]]
 
-        reward_consolidation_mean = np.mean(episode_reward_consolidation)
-        reward_illegal_mean = np.mean(episode_reward_illegal)
-        reward_move_mean = np.mean(episode_reward_move)
-        reward_latency_mean = np.mean(episode_reward_latency)
-        reward_consolidation_sum = np.sum(episode_reward_consolidation)
-        reward_illegal_sum = np.sum(episode_reward_illegal)
-        reward_move_sum = np.sum(episode_reward_move)
-        reward_latency_sum = np.sum(episode_reward_latency)
+        # reward_consolidation_mean = np.mean(episode_reward_consolidation)
+        # # reward_illegal_mean = np.mean(episode_reward_illegal)
+        # # reward_move_mean = np.mean(episode_reward_move)
+        # # reward_latency_mean = np.mean(episode_reward_latency)
+        # reward_consolidation_sum = np.sum(episode_reward_consolidation)
+        # # reward_illegal_sum = np.sum(episode_reward_illegal)
+        # reward_move_sum = np.sum(episode_reward_move)
+        # reward_latency_sum = np.sum(episode_reward_latency)
         # print episode information in the ouput
         # print('-'*50)
         # print(f"<----- workder <{worker.worker_index}>,"
@@ -186,21 +186,21 @@ class CloudCallback(DefaultCallbacks):
         # add custom metrics to tensorboard
         episode.custom_metrics['num_moves'] = num_moves_avg
         episode.custom_metrics['num_consolidated'] = num_consolidated_avg
-        episode.custom_metrics['users_distances'] = users_distances_avg
-        episode.custom_metrics['num_overloaded'] = num_overloaded_avg
+        # episode.custom_metrics['users_distances'] = users_distances_avg
+        # episode.custom_metrics['num_overloaded'] = num_overloaded_avg
         # episode.custom_metrics['action_logit_max'] = action_logit_max
-        episode.custom_metrics['reward_consolidation_mean'] =\
-            reward_consolidation_mean
-        episode.custom_metrics['reward_illegal_mean'] = reward_illegal_mean
-        episode.custom_metrics['reward_move_mean'] = reward_move_mean
-        episode.custom_metrics['reward_latency_mean'] = reward_latency_mean
-        episode.custom_metrics['reward_consolidation_sum'] =\
-            reward_consolidation_sum
-        episode.custom_metrics['reward_illegal_sum'] = reward_illegal_sum
-        episode.custom_metrics['reward_move_sum'] = reward_move_sum
-        episode.custom_metrics['reward_latency_sum'] = reward_latency_sum
-        episode.custom_metrics['timestep'] = timestep
-        episode.custom_metrics['global_timestep'] = global_timestep
+        # episode.custom_metrics['reward_consolidation_mean'] =\
+        #     reward_consolidation_mean
+        # episode.custom_metrics['reward_illegal_mean'] = reward_illegal_mean
+        # episode.custom_metrics['reward_move_mean'] = reward_move_mean
+        # episode.custom_metrics['reward_latency_mean'] = reward_latency_mean
+        # episode.custom_metrics['reward_consolidation_sum'] =\
+        #     reward_consolidation_sum
+        # episode.custom_metrics['reward_illegal_sum'] = reward_illegal_sum
+        # episode.custom_metrics['reward_move_sum'] = reward_move_sum
+        # episode.custom_metrics['reward_latency_sum'] = reward_latency_sum
+        # episode.custom_metrics['timestep'] = timestep
+        # episode.custom_metrics['global_timestep'] = global_timestep
 
         # # add histogram data
         # episode.hist_data["timestep"] = \

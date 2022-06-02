@@ -19,17 +19,27 @@ class Service:
         self.workload = workload
         self.start_time = start_time
         self.duration = serving_time
-        self.time = 0
+        self.time = start_time
 
     def clock_tick(self):
         self.time += 1
 
     def start_time_update(self, start_time):
         self.start_time = start_time
+        self.time = start_time
 
     @property
     def usages(self):
-        return self.workload[:, self.time]
+        # if self.time == self.workload.shape[1]:
+        #     return self.workload[:, self.time]
+        try:
+            return self.workload[:, self.service_time]
+        except IndexError:
+            return self.workload[:, 0]
+
+    @property
+    def service_time(self):
+        return self.time - self.start_time - 1
 
     @property
     def slack(self):

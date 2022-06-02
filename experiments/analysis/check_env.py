@@ -63,16 +63,20 @@ def check_env(*, config: Dict[str, Any], type_env: str,
         reward_total.append(reward)
         env.render()
         # episode_total_consolidation_reward += consolidation_reward
-        print("timestep: {}".format(
+        print("time: {}".format(
             env.time
         ))
+        print("timestep_episode: {}".format(
+            env.timestep_episode
+        )) 
         if done and not env.complete_done:
-            print('done for episode!')
+            _ = env.reset()
+            print(20*'-' + ' Done for episode! ' + 20*'-')
         if done and env.complete_done:
-            print('done for ending the simulation')
+            print( + 40*'=' + ' Done for ending the simulation ' + 40*'=')
             break
         i += 1
-    x = np.arange(total_timesteps-1)
+    # x = np.arange(total_timesteps-1)
 
 @click.command()
 @click.option('--type-env', required=True,
