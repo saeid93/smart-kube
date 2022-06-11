@@ -143,9 +143,9 @@ def learner(*, local_mode: bool,
 
 
 @click.command()
-@click.option('--local-mode', type=bool, default=True)
-@click.option('--config-file', type=str, default='final-DQN')
-@click.option('--series', required=True, type=int, default=70)
+@click.option('--local-mode', type=bool, default=False)
+@click.option('--config-file', type=str, default='PPO-debug')
+@click.option('--series', required=True, type=int, default=71)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'sim-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
@@ -155,7 +155,7 @@ def learner(*, local_mode: bool,
 @click.option('--job-arrival-mode', required=True, type=str, default='fixed')
 @click.option('--time-resolution', required=True, type=int, default=0)
 @click.option('--use-callback', required=True, type=bool, default=True)
-@click.option('--checkpoint-freq', required=False, type=int, default=1000)
+@click.option('--checkpoint-freq', required=False, type=int, default=100)
 def main(local_mode: bool, config_file: str, series: int,
          type_env: str, cluster_id: int, workload_id: int,
          job_arrival_mode: str, time_resolution: int,
