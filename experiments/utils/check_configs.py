@@ -56,10 +56,11 @@ def env_config_base_check(config: Dict[str, Any]):
     check the structure of env_config_base_check
     """
     # check the items
-    allowed_items = ['obs_elements', 'penalty_one', 'penalty_two',
-                     'penalty_three', 'penalty_four',
-                     'penalty_five', 'mitigation_tries',
-                     'episode_length', 'placement_reset',
+    allowed_items = ['obs_elements', 'penalty_illegal', 'penalty_u',
+                     'penalty_c', 'penalty_v', 'penalty_g', 'penalty_p',
+                     'reward_var_illegal', 'reward_var_u', 'reward_var_c',
+                     'reward_var_v', 'reward_var_g', 'reward_var_p',
+                     'mitigation_tries', 'episode_length', 'placement_reset',
                      'compute_greedy_num_consolidated', 'seed', 'cluster',
                      'workload', 'nodes_cap_rng', 'services_request_rng',
                      'normalise_latency', 'from_cluster',
@@ -67,7 +68,8 @@ def env_config_base_check(config: Dict[str, Any]):
                      'kube', "no_action_on_overloaded", "latency_reward_option",
                      'reward_var_one', 'reward_var_two', 'reward_var_three',
                      'reward_var_four', 'discrete_actions', 'max_services_nodes',
-                     'backlog_size', 'job_arrival']
+                     'backlog_size', 'job_arrival', 'target_utilization',
+                     'reward_option']
 
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
@@ -76,9 +78,9 @@ def env_config_base_check(config: Dict[str, Any]):
     ints = ['episode_length', 'max_services_nodes', 'backlog_size', 'seed']
     for item in ints:
         assert type(config[item]) == int, f"<{item}> must be an integer"
-    floats = ['penalty_one', 'penalty_two',
-              'penalty_three', 'penalty_four',
-              'penalty_five']
+    floats = ['penalty_illegal', 'penalty_u', 'penalty_c', 'penalty_v',
+              'penalty_g', 'penalty_p', 'reward_var_illegal', 'reward_var_u',
+              'reward_var_c', 'reward_var_v', 'reward_var_g', 'reward_var_p']
     for item in floats:
         assert type(config[item])==float or type(config[item])==int,\
             f"[{item}] must be a float"
@@ -117,6 +119,9 @@ def env_config_base_check(config: Dict[str, Any]):
 
     assert set(config['kube']).issubset(
         set(kube)), "wrong input for the kube"
+
+    assert config['reward_option'] in ['rlsk', 'proposed'],\
+        f"wrong input for the reward option: {config['reward_option']}"
 
     # fixed job_arrival 
     job_arrival_fixed: List[str] = [

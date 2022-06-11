@@ -113,17 +113,27 @@ class SimSchedulerEnv(gym.Env):
         self.services_types: np.ndarray = cluster_schema['services_types']
         self.total_num_services: int = self.services_resources_request.shape[0]
 
+        # reward option
+        self.reward_option: str = config['reward_option']
+
         # reward penalties
-        self.penalty_one: float = config['penalty_one']
-        self.penalty_two: float = config['penalty_two']
-        self.penalty_three: float = config['penalty_three']
-        self.penalty_four: float = config['penalty_four']
-        self.penalty_four: float = config['penalty_five']
+        self.penalty_illegal: float = config['penalty_illegal']
+        self.penalty_u: float = config['penalty_u']
+        self.penalty_c: float = config['penalty_c']
+        self.penalty_v: float = config['penalty_v']
+        self.penalty_g: float = config['penalty_g']
+        self.penalty_p: float = config['penalty_p']
+
         # reward weighting variables
-        self.reward_var_one = config['reward_var_one']
-        self.reward_var_two = config['reward_var_two']
-        self.reward_var_three = config['reward_var_three']
-        self.reward_var_four = config['reward_var_four']
+        self.reward_var_illegal = config['reward_var_illegal']
+        self.reward_var_u = config['reward_var_u']
+        self.reward_var_c = config['reward_var_c']
+        self.reward_var_v = config['reward_var_v']
+        self.reward_var_g = config['reward_var_g']
+        self.reward_var_p = config['reward_var_p']
+
+        # target utilization
+        self.target_utilization = np.array([config['target_utilization']])
 
         # episode length
         self.episode_length: int = config['episode_length']
@@ -249,13 +259,11 @@ class SimSchedulerEnv(gym.Env):
                     node_id=action
                     )
                 scheduling_timestep = True
-
         self.clock_tick()
         self.timestep_episode += 1
 
         # TODO fix reward
-        reward, rewards = self._reward(
-            num_overloaded=self.cluster.num_overloaded)
+        reward, rewards = self._reward()
 
         info = {
             'scheduling_timestep': scheduling_timestep,
@@ -325,6 +333,7 @@ class SimSchedulerEnv(gym.Env):
             dice = bernoulli.rvs(self.probability, loc=0)
             scheduling_interval = True if dice == 1 else False
             return scheduling_interval
+        return False
 
     @property
     def backlog_services(self):

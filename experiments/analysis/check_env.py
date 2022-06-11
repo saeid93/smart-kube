@@ -62,13 +62,21 @@ def check_env(*, config: Dict[str, Any], type_env: str,
         # consolidation_rewards.append(consolidation_reward)
         reward_total.append(reward)
         env.render()
+        if env.time == 44:
+            TEMP = 1
         # episode_total_consolidation_reward += consolidation_reward
         print("time: {}".format(
             env.time
         ))
         print("timestep_episode: {}".format(
             env.timestep_episode
-        )) 
+        ))
+        print("reward: {}".format(
+            reward
+        ))
+        print("rewards: {}".format(
+            info['rewards']
+        ))
         if done and not env.complete_done:
             _ = env.reset()
             print(20*'-' + ' Done for episode! ' + 20*'-')

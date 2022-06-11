@@ -20,12 +20,12 @@ from .service import Service
 class Cluster:
     def __init__(self, cluster_schema: Dict[str, np.ndarray]):
 
-        self.nodes_resources_cap: np.ndarray = cluster_schema['nodes_resources_cap']
+        self.nodes_cap: np.ndarray = cluster_schema['nodes_resources_cap']
         self.time = 0
 
         # find the number of nodes, services, service types and timesteps
-        self.num_resources: int = self.nodes_resources_cap.shape[1]
-        self.num_nodes: int = self.nodes_resources_cap.shape[0]
+        self.num_resources: int = self.nodes_cap.shape[1]
+        self.num_nodes: int = self.nodes_cap.shape[0]
 
         # self.serving_services: List[Service] = []
         self.nodes: List[Node] = []
@@ -33,7 +33,7 @@ class Cluster:
         for node_id in range(self.num_nodes):
             self.nodes.append(Node(
                 node_id=node_id,
-                capacities=self.nodes_resources_cap[node_id], 
+                capacities=self.nodes_cap[node_id], 
             ))
 
 
@@ -110,7 +110,7 @@ class Cluster:
     def nodes_unused(self):
         # The amount of the available
         nodes_resources_unused = np.array(
-            list(map(lambda node: node.resources_unused, self.nodes)))
+            list(map(lambda node: node.unused, self.nodes)))
         return nodes_resources_unused
 
     @property
@@ -136,7 +136,7 @@ class Cluster:
                 columns indices: (0, num_resources]
                 enteries: [0, 1] type: float
         """
-        return self.nodes_usages / self.nodes_resources_cap
+        return self.nodes_usages / self.nodes_cap
 
     @property
     @rounding
@@ -153,7 +153,7 @@ class Cluster:
                 columns indices: (0, num_resources]
                 enteries: [0, 1] type: float
         """
-        return self.nodes_requests / self.nodes_resources_cap
+        return self.nodes_requests / self.nodes_cap
 
     @property
     def num_consolidated(self) -> int:
@@ -186,11 +186,11 @@ class Cluster:
 
     @property
     def nodes_requests_available_frac(self):
-        return self.nodes_available / self.nodes_resources_cap
+        return self.nodes_available / self.nodes_cap
 
     @property
     def nodes_resources_unused_frac(self):
-        return self.nodes_unused / self.nodes_resources_cap
+        return self.nodes_unused / self.nodes_cap
 
     @property
     def nodes_requests_available_frac_avg(self):

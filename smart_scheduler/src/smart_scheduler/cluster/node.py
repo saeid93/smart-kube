@@ -37,7 +37,7 @@ class Node:
             return False
         # check if the node has enough resource available
         if np.alltrue(
-            self.resources_unused < service.requests): # TODO check against k8s
+            self.unused < service.requests): # TODO check against k8s
             return False
         self.services.append(service)
         return True
@@ -50,6 +50,35 @@ class Node:
         self.services.pop(service_index)
 
     @property
+    def requests(self):
+        """total resource request on the node
+        """
+        requests = sum(
+            list(map(
+                lambda service: service.requests, self.services)))
+        if type(requests) == int:
+            return np.zeros(2)
+        return requests
+
+    @property
+    def requests_fraction(self):
+        """total resource request on the node fraction
+        """
+        return self.requests / self.capacities
+
+    @property
+    def requests_available(self):
+        """total available resource request on the node
+        """
+        return self.capacities - self.requests
+
+    @property
+    def requests_available_fraction(self):
+        """total available resource request on the node fraction
+        """
+        return self.requests_available / self.capacities
+
+    @property
     def usages(self):
         usages = sum(
             list(map(
@@ -59,31 +88,34 @@ class Node:
         return usages
 
     @property
-    def requests(self):
-        requests = sum(
-            list(map(
-                lambda service: service.requests, self.services)))
-        if type(requests) == int:
-            return np.zeros(2)
-        return requests
-
-    @property
-    def requests_available(self):
-        """total available resource request on the node
+    def usages_fraction(self):
+        """total resource usages on the node fraction
         """
-        return self.capacities - self.requests
+        return self.usages / self.capacities
 
     @property
-    def resources_unused(self):
+    def unused(self):
         """total available resource on the node
         """
         return self.capacities - self.usages
+
+    @property
+    def unused_fraction(self):
+        """percentage of total available resource fraction
+        """
+        return self.resources_unused / self.capacities
 
     @property
     def slack(self):
         """total unused requested resources
         """
         return self.requests - self.usages
+
+    @property
+    def slack_fraction(self):
+        """total unused requested resources fraction
+        """
+        return self.slack / self.capacities
 
     @property
     def services_ids(self):

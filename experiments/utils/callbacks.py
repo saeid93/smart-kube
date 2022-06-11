@@ -66,14 +66,14 @@ class CloudCallback(DefaultCallbacks):
         episode.user_data["num_overloaded"] = []
         episode.hist_data["num_overloaded"] = []
         # num_moves
-        episode.user_data["num_moves"] = []
-        episode.hist_data["num_moves"] = []
+        # episode.user_data["num_moves"] = []
+        # episode.hist_data["num_moves"] = []
         # rewards
         episode.user_data["rewards"] = []
         episode.hist_data["rewards"] = []
         # users distances
-        episode.user_data["users_distances"] = []
-        episode.hist_data["users_distances"] = []
+        # episode.user_data["users_distances"] = []
+        # episode.hist_data["users_distances"] = []
 
     def on_episode_step(self, *, worker,
                         base_env: BaseEnv,
@@ -120,11 +120,11 @@ class CloudCallback(DefaultCallbacks):
                        env_index: int, **kwargs):
 
         # extract the episode information
-        num_moves_avg = np.mean(episode.user_data["num_moves"])
+        # num_moves_avg = np.mean(episode.user_data["num_moves"])
         num_consolidated_avg = np.mean(episode.user_data["num_consolidated"])
         # users_distances_avg = np.mean(episode.user_data["users_distances"])
         # num_overloaded_avg = np.mean(episode.user_data["num_overloaded"])
-        # timestep = np.max(episode.user_data["timestep"])
+        # timestep = np.max(episode.user_data["timestep"]  )
         # global_timestep = np.max(episode.user_data["global_timestep"])
         # episode_total_reward = episode.total_reward
         # action_logit_max = round(max(episode.last_action_for()).item(), 2)
@@ -184,7 +184,7 @@ class CloudCallback(DefaultCallbacks):
         #       f", action_logits_avg <{action_logit_avg}>\n")
 
         # add custom metrics to tensorboard
-        episode.custom_metrics['num_moves'] = num_moves_avg
+        # episode.custom_metrics['num_moves'] = num_moves_avg
         episode.custom_metrics['num_consolidated'] = num_consolidated_avg
         # episode.custom_metrics['users_distances'] = users_distances_avg
         # episode.custom_metrics['num_overloaded'] = num_overloaded_avg
@@ -219,6 +219,19 @@ class CloudCallback(DefaultCallbacks):
             agent_id: AgentID, policy_id,
             policies: Dict[PolicyID, Policy], postprocessed_batch: SampleBatch,
             original_batches: Dict[AgentID, SampleBatch], **kwargs) -> None:
+        # masking all the scheduling states
+        scheduling_timestep_mask = list(
+            map(lambda a: a[
+                'scheduling_timestep'],postprocessed_batch['infos']))
+        # adding scheduling states former state to the mask
+        for i in range(1, len(scheduling_timestep_mask)):
+            if scheduling_timestep_mask[i]:
+                scheduling_timestep_mask[i-1] = True
+        for key in postprocessed_batch.keys():
+            postprocessed_batch[
+                key] = postprocessed_batch[
+                    key][scheduling_timestep_mask]
+        # postprocessed_batch['rewards'] = postprocessed_batch['rewards'][scheduling_timestep_mask]
         if self.legacy_callbacks.get("on_postprocess_traj"):
             self.legacy_callbacks["on_postprocess_traj"]({
                 "episode": episode,
@@ -227,8 +240,6 @@ class CloudCallback(DefaultCallbacks):
                 "post_batch": postprocessed_batch,
                 "all_pre_batches": original_batches,
             })
-
-
 
 
     def on_sample_end(self, *, worker: RolloutWorker, samples: SampleBatch,
@@ -251,7 +262,7 @@ class CloudCallback(DefaultCallbacks):
         # # print(tabulate(table, headers=headers, tablefmt="fancy_grid"))
         # self.count += 1
         # print('*'*50, '\n')
-        pass
+        a = 1
 
     def on_learn_on_batch(self, *, policy: Policy, train_batch: SampleBatch,
                           **kwargs) -> None:
