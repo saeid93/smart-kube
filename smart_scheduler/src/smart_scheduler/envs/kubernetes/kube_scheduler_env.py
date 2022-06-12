@@ -27,13 +27,6 @@ from .kube_base_env import KubeBaseEnv
 
 class KubeSchedulerEnv(KubeBaseEnv):
     def __init__(self, config: Dict[str, Any]):
-        # the network for edge simulatoirs
-        self.latency_lower = config['latency_lower']
-        self.latency_upper = config['latency_upper']
-        self.consolidation_lower = config['consolidation_lower']
-        self.consolidation_upper = config['consolidation_upper']
-        # self.normalise_latency = config['normalise_latency']
-        # self.normalise_factor = self.edge_simulator.get_largest_station_node_path()
         super().__init__(config)
 
         self.observation_space, self.action_space =\

@@ -112,7 +112,7 @@ def _g(self):
     return diff_from_target_sum
 
 def _p(self):
-    """total difference across all clusters
+    """binpacking/consolidation reward
     """
     reward = self.cluster.num_consolidated
     return reward

@@ -25,7 +25,6 @@ import pandas as pd
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=4)
 
-# TODO Refine completely based on the new paper
 
 # get an absolute path to the directory that contains parent files
 project_dir = os.path.dirname(os.path.join(os.getcwd(), __file__))
@@ -46,10 +45,10 @@ torch, nn = try_import_torch()
 
 def run_experiments(
     *, test_series: int, train_series: int, type_env: str,
-    cluster_id: int, workload_id: int, network_id: int,
-    trace_id: int, experiment_id: int, local_mode: bool,
+    cluster_id: int, workload_id: int,
+    experiment_id: int, local_mode: bool,
     episode_length, num_episodes: int, workload_id_test: int,
-    trace_id_test: int, checkpoint_to_load: str):
+    checkpoint_to_load: str):
     """
     """
     path_env = type_env if type_env != 'kube-scheduler' else 'sim-scheduler'    
@@ -59,8 +58,6 @@ def run_experiments(
         "envs",        path_env,
         "clusters",    str(cluster_id),
         "workloads",   str(workload_id),
-        "networks",    str(network_id),
-        "traces",      str(trace_id),
         "experiments", str(experiment_id),
         "experiment_config.json")
 
@@ -72,38 +69,8 @@ def run_experiments(
         config=config,
         cluster_id=cluster_id,
         workload_id_test=workload_id_test,
-        network_id=network_id,
-        trace_id_test=trace_id_test,
         episode_length=episode_length
     )
-
-    # pp = pprint.PrettyPrinter(indent=4)
-    # print('start experiments with the following config:\n')
-    # pp.pprint(config)
-
-    # # extract differnt parts of the input_config
-    # learn_config = config['learn_config']
-    # algorithm = config["run_or_experiment"]
-    # env_config_base = config['env_config_base']
-
-    # # update the difffent part of the envs
-    # env_config_base.update({
-    #     'episode_length': episode_length,
-    #     'no_action_on_overloaded': True,
-    #     'timestep_reset': True,
-    #     'placement_reset': True
-    # })
-    # num_workers = 4
-    # learn_config.update({"num_workers": num_workers})
-
-    # # add the additional nencessary arguments to the edge config
-    # env_config = add_path_to_config_edge(
-    #     config=env_config_base,
-    #     cluster_id=cluster_id,
-    #     workload_id=workload_id_test,
-    #     network_id=network_id,
-    #     trace_id=trace_id_test
-    # )
 
     path_env = type_env if type_env != 'kube-scheduler' else 'sim-scheduler'
     experiments_folder = os.path.join(TRAIN_RESULTS_PATH,
@@ -138,19 +105,6 @@ def run_experiments(
             ray_config.update(learn_config)
                 # break
 
-        # checkpoint_string = [
-        #     s for s in filter (
-        #         lambda x: 'checkpoint' in x, os.listdir(
-        #             os.path.join(
-        #                 experiments_folder, experiment_string)))][0]
-        # checkpoint = int(checkpoint_string.replace('checkpoint_',''))
-        # checkpoint_path = os.path.join(
-        #     experiments_folder,
-        #     experiment_string,
-        #     # os.listdir(experiments_folder)[0],
-        #     checkpoint_string,
-        #     f"checkpoint-{checkpoint}"
-        # )
         if checkpoint_to_load=='last':
             checkpoint_string = sorted([
                 s for s in filter (
@@ -233,7 +187,7 @@ def run_experiments(
             'episode_length': episode_length,
             'num_episodes': num_episodes,
             'algorithm': algorithm,
-            'penalty_consolidated': env_config['penalty_consolidated'],
+            'penalty_consolidated': env_config['penalty_p'],
             'num_workers': num_workers
         }
         # make the new experiment folder
@@ -259,18 +213,23 @@ def run_experiments(
 def flatten(raw_obs, action, reward, info):
     return {
         'action': action,
+        'raw_obs': raw_obs,
         'num_consolidated': info['num_consolidated'],
-        'num_moves': info['num_moves'],
         'num_overloaded': info['num_overloaded'],
-        'reward_move': info['rewards']['reward_move'],
-        'reward_illegal': info['rewards']['reward_illegal'],
-        'reward_variance': info['rewards']['reward_variance'],
+        'scheduling_timestep': info['scheduling_timestep'],
+        'scheduling_success': info['scheduling_success'],
+        'reward_illegal': info['rewards']['illegal'],
+        'reward_u': info['rewards']['u'],
+        'reward_c': info['rewards']['c'],
+        'reward_v': info['rewards']['v'],
+        'reward_g': info['rewards']['g'],
+        'reward_p': info['rewards']['p'],
         'reward': reward
     }
 
 def fix_grid_searches(
-    config, cluster_id, workload_id_test, network_id,
-    trace_id_test, episode_length):
+    config, cluster_id, workload_id_test,
+    episode_length):
     """
     This function is used to fix the grid searches.
     """
@@ -293,9 +252,6 @@ def fix_grid_searches(
                 values = v['grid_search']
                 break
 
-    # for k, v in learn_config.items():
-    #     if v is dict:
-    #         values = v['grid_search']
     values.sort()
     if values != []:
         for value in values:
@@ -314,8 +270,6 @@ def fix_grid_searches(
                 config=env_config_base_copy,
                 cluster_id=cluster_id,
                 workload_id=workload_id_test,
-                network_id=network_id,
-                trace_id=trace_id_test
             )
             learn_configs.append(learn_config)
             env_configs.append(env_config)
@@ -324,7 +278,6 @@ def fix_grid_searches(
         env_config_base.update({
             'episode_length': episode_length,
             'no_action_on_overloaded': True,
-            'timestep_reset': True,
             'placement_reset': True,
         })
         learn_config.update({"num_workers": num_workers})
@@ -333,8 +286,6 @@ def fix_grid_searches(
             config=env_config_base,
             cluster_id=cluster_id,
             workload_id=workload_id_test,
-            network_id=network_id,
-            trace_id=trace_id_test
         )
         learn_configs.append(learn_config)
         env_configs.append(env_config)
@@ -344,26 +295,22 @@ def fix_grid_searches(
 
 @click.command()
 @click.option('--local-mode', type=bool, default=True)
-@click.option('--test-series', required=True, type=int, default=74)
-@click.option('--train-series', required=True, type=int, default=74)
+@click.option('--test-series', required=True, type=int, default=1)
+@click.option('--train-series', required=True, type=int, default=1)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'kube-scheduler']),
-              default='kube-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=6)
+              default='sim-scheduler')
+@click.option('--cluster-id', required=True, type=int, default=0)
 @click.option('--workload-id', required=True, type=int, default=0)
-@click.option('--network-id', required=False, type=int, default=1)
-@click.option('--trace-id', required=False, type=int, default=2)
 @click.option('--experiment-id', required=True, type=int, default=0)
-@click.option('--episode-length', required=False, type=int, default=3453)
-@click.option('--num-episodes', required=False, type=int, default=1)
+@click.option('--episode-length', required=False, type=int, default=10)
+@click.option('--num-episodes', required=False, type=int, default=5)
 @click.option('--workload-id-test', required=False, type=int, default=0)
-@click.option('--trace-id-test', required=False, type=int, default=0)
 @click.option('--checkpoint-to-load', required=False, type=str, default='last')
 def main(local_mode: bool, test_series: int, train_series: int,
          type_env: str, cluster_id: int, workload_id: int,
-         network_id: int, trace_id: int, experiment_id: int,
-         num_episodes: int, episode_length: int,
-         workload_id_test: int, trace_id_test: int,
+         experiment_id: int, num_episodes: int, episode_length: int,
+         workload_id_test: int,
          checkpoint_to_load: str):
     """[summary]
 
@@ -374,8 +321,6 @@ def main(local_mode: bool, test_series: int, train_series: int,
         type_env (str): the type of the used environment
         cluster_id (int): used cluster cluster
         workload_id (int): the workload used in that cluster
-        network_id (int): edge network of some cluster
-        trace_id (int): user movement traces
         checkpoint (int): training checkpoint to load
         experiment-id (int): the trained agent experiment id
         episode-length (int): number of steps in the test episode
@@ -385,11 +330,10 @@ def main(local_mode: bool, test_series: int, train_series: int,
         test_series=test_series,
         train_series=train_series, type_env=type_env,
         cluster_id=cluster_id, workload_id=workload_id,
-        network_id=network_id, trace_id=trace_id,
         experiment_id=experiment_id,
         num_episodes=num_episodes, episode_length=episode_length,
         local_mode=local_mode, workload_id_test=workload_id_test,
-        trace_id_test=trace_id_test, checkpoint_to_load=checkpoint_to_load)
+        checkpoint_to_load=checkpoint_to_load)
 
 
 if __name__ == "__main__":
