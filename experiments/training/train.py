@@ -35,7 +35,6 @@ def learner(*, local_mode: bool,
             config_file_path: str,
             series: int, type_env: str,
             cluster_id: int, workload_id: int,
-            job_arrival_mode: int, time_resolution: int,
             use_callback: bool, checkpoint_freq: int):
     """
     input_config: {"env_config_base": ...,
@@ -143,22 +142,19 @@ def learner(*, local_mode: bool,
 
 
 @click.command()
-@click.option('--local-mode', type=bool, default=False)
+@click.option('--local-mode', type=bool, default=True)
 @click.option('--config-file', type=str, default='PPO-debug')
 @click.option('--series', required=True, type=int, default=71)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'sim-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=0)
+@click.option('--cluster-id', required=True, type=int, default=1)
 @click.option('--workload-id', required=True, type=int, default=0)
-@click.option('--job-arrival-mode', required=True, type=str, default='fixed')
-@click.option('--time-resolution', required=True, type=int, default=0)
 @click.option('--use-callback', required=True, type=bool, default=True)
 @click.option('--checkpoint-freq', required=False, type=int, default=100)
 def main(local_mode: bool, config_file: str, series: int,
          type_env: str, cluster_id: int, workload_id: int,
-         job_arrival_mode: str, time_resolution: int,
          use_callback: bool, checkpoint_freq: int):
     """[summary]
 
@@ -189,8 +185,6 @@ def main(local_mode: bool, config_file: str, series: int,
         type_env=type_env,
         cluster_id=cluster_id,
         workload_id=workload_id,
-        job_arrival_mode=job_arrival_mode,
-        time_resolution=time_resolution,
         use_callback=use_callback,
         checkpoint_freq=checkpoint_freq)
 

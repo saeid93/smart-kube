@@ -30,8 +30,7 @@ from experiments.utils import (
 
 
 def check_env(*, config: Dict[str, Any], type_env: str,
-              cluster_id: int, workload_id: int,
-              job_arrival_mode: str, time_resolution: int):
+              cluster_id: int, workload_id: int):
 
     env_config_base = config["env_config_base"]
     env_config = add_path_to_config(
@@ -39,8 +38,6 @@ def check_env(*, config: Dict[str, Any], type_env: str,
         cluster_id=cluster_id,
         workload_id=workload_id
     )
-    config['job_arrival_mode'] = job_arrival_mode
-    config['time_resolution'] = time_resolution
     if type_env not in ['CartPole-v0', 'Pendulum-v0']:
         type_env = ENVSMAP[type_env]
         env = gym.make(type_env, config=env_config)
@@ -92,21 +89,15 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=0)
+@click.option('--cluster-id', required=True, type=int, default=1)
 @click.option('--workload-id', required=True, type=int, default=0)
-@click.option('--job-arrival-mode', required=True, type=str, default='fixed')
-@click.option('--time-resolution', required=True, type=int, default=0)
-def main(type_env: str, cluster_id: int, workload_id: int,
-         job_arrival_mode: str, time_resolution: int):
+def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]
 
     Args:
         type_env (str): the type of the used environment
         cluster_id (int): the cluster metadata (size, #nodes, etc)
         workload_id (int): the workload used in that cluster
-        job_arrival_mode (str): the distribution that determines
-            the time interval between arriving jobs
-        time_resolution (int): metadata of the job arrival mode
     """
     config_file_path = os.path.join(
         CONFIGS_PATH, 'check',
@@ -118,9 +109,7 @@ def main(type_env: str, cluster_id: int, workload_id: int,
     check_env(config=config,
               type_env=type_env,
               cluster_id=cluster_id,
-              workload_id=workload_id,
-              job_arrival_mode=job_arrival_mode,
-              time_resolution=time_resolution)
+              workload_id=workload_id)
 
 
 if __name__ == "__main__":
