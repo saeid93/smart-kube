@@ -152,30 +152,6 @@ class CloudCallback(DefaultCallbacks):
         episode.custom_metrics['reward_g'] = episode_reward_g
         episode.custom_metrics['reward_p'] = episode_reward_p
 
-        # add histogram data
-        # episode.hist_data["scheduling_timestep_avg"] = \
-        #     episode.user_data["scheduling_timestep_avg"]
-        # episode.hist_data["scheduling_success_avg"] = \
-        #     episode.user_data["scheduling_success_avg"]
-        # episode.hist_data["num_consolidated_avg"] = \
-        #     episode.user_data["num_consolidated_avg"]
-        # episode.hist_data["num_overloaded_avg"] = \
-        #     episode.user_data["num_overloaded_avg"]
-        # episode.hist_data["time"] = \
-        #     episode.user_data["time"]
-        # episode.hist_data["timesetp_episode"] = \
-        #     episode.user_data["timesetp_episode"]
-        # episode.hist_data["reward_u"] = \
-        #     episode.user_data["reward_u"]
-        # episode.hist_data["reward_c"] = \
-        #     episode.user_data["reward_c"]
-        # episode.hist_data["reward_v"] = \
-        #     episode.user_data["reward_v"]
-        # episode.hist_data["reward_g"] = \
-        #     episode.user_data["reward_g"]
-        # episode.hist_data["reward_p"] = \
-        #     episode.user_data["reward_p"]
-
     def on_postprocess_trajectory(
             self, *, worker: "RolloutWorker", episode: MultiAgentEpisode,
             agent_id: AgentID, policy_id,

@@ -102,8 +102,7 @@ class WorkloadGeneratorRandom:
         figs = []
         for i in range(self.num_services_types):
             workload_i = workloads[:, :, i]
-            fig = plot_workload(self.timesteps, workload_i,
-                                self.plot_smoothing, i)
+            fig = plot_workload(self.timesteps, workload_i, i)
             figs.append(fig)
         return workloads, figs
 

@@ -1,6 +1,7 @@
 """base class of all simulation enviornments
 """
 import numpy as np
+from requests import request
 from scipy.stats import bernoulli
 from copy import deepcopy
 from typing import (
@@ -100,18 +101,24 @@ class SimSchedulerEnv(gym.Env):
         self.workload_save = load_object(self.workload_path)
 
         # TODO different for other types of data
-        sim_type = self.workload_save['workload_type']
+        # TODO HERE
+        sim_type: str = self.workload_save['workload_type']
         self.workload = self.workload_save['workloads']
 
         self.cluster = Cluster(cluster_schema)
 
-        self.total_timesteps: int = self.workload.shape[1]
+        # self.total_timesteps: int = self.workload.shape[1]
 
 
         self.services_resources_request: np.ndarray = cluster_schema[
             'services_resources_request']
         self.services_types: np.ndarray = cluster_schema['services_types']
-        self.total_num_services: int = self.services_resources_request.shape[0]
+        if sim_type == 'random':
+            self.total_num_services: int = self.services_resources_request.shape[0]
+        if sim_type == 'arabesque':
+            self.total_num_services: int = len(self.workload)
+        if sim_type == 'alibaba':
+            pass
 
         # reward option
         self.reward_option: str = config['reward_option']
@@ -125,12 +132,18 @@ class SimSchedulerEnv(gym.Env):
         self.penalty_p: float = config['penalty_p']
 
         # reward weighting variables
-        self.reward_var_illegal = config['reward_var_illegal']
-        self.reward_var_u = config['reward_var_u']
-        self.reward_var_c = config['reward_var_c']
-        self.reward_var_v = config['reward_var_v']
-        self.reward_var_g = config['reward_var_g']
-        self.reward_var_p = config['reward_var_p']
+        self.reward_var_illegal_1 = config['reward_var_illegal_1']
+        self.reward_var_u_1 = config['reward_var_u_1']
+        self.reward_var_c_1 = config['reward_var_c_1']
+        self.reward_var_v_1 = config['reward_var_v_1']
+        self.reward_var_g_1 = config['reward_var_g_1']
+        self.reward_var_p_1 = config['reward_var_p_1']
+        self.reward_var_illegal_2 = config['reward_var_illegal_2']
+        self.reward_var_u_2 = config['reward_var_u_2']
+        self.reward_var_c_2 = config['reward_var_c_2']
+        self.reward_var_v_2 = config['reward_var_v_2']
+        self.reward_var_g_2 = config['reward_var_g_2']
+        self.reward_var_p_2 = config['reward_var_p_2']
 
         # target utilization
         self.target_utilization = np.array([config['target_utilization']])
@@ -178,20 +191,35 @@ class SimSchedulerEnv(gym.Env):
 
         # make services objects
         for service_id in range(self.total_num_services):
-            if sim_type=='alibaba' or sim_type=='arabesque':
-                pass # TODO
-            else:
+            if sim_type == 'arabesque':
+                service_name = list(self.workload.keys())[service_id]
+                requests = self.workload[service_name]['requests']
+                limits = self.workload[service_name]['limits']
+                service_workload = self.workload[service_name]['workload']
+                service_workload = service_workload.astype(float)
+                requests['cpu'] /= 1000
+                limits['cpu'] /= 1000
+                service_workload[1] = service_workload[1] / 1000
+                requests = np.array(list(requests.values()))
+                limits = np.array(list(limits.values()))
+                serving_time = service_workload.shape[1]
+                service_workload = service_workload / requests.reshape(2,1)
+            elif sim_type == 'alibaba':
+                b = 1
+            elif sim_type == 'random':
                 service_workload = self.workload[
                     :, :, self.services_types[0]] * np.reshape(
                         self.services_resources_request[0], (2,1))
                 service_name = get_random_string(6)
                 serving_time = np.random.randint(
                     10, service_workload.shape[1])
+                requests=self.services_resources_request[service_id]
+                limits=self.services_resources_request[service_id]
             self.pending_services.append(Service(
                 service_id=service_id,
                 service_name=service_name,
-                requests=self.services_resources_request[service_id],
-                limits=self.services_resources_request[service_id],
+                requests=requests,
+                limits=limits,
                 workload=service_workload,
                 serving_time=serving_time))
 

@@ -43,11 +43,6 @@ def rescale(values, old_min = 0, old_max = 1, new_min = 0, new_max = 100):
 
     return np.array(output)
 
-def reward_illegal(self):
-    rewards_total = 1
-    rewards = {}
-    return rewards_total, rewards
-
 def rlsk(self, u, c, v):
     """RLSK paper reward function
     """
@@ -67,6 +62,9 @@ def _illegal(self):
         to having overloaded machines
     """
     reward = self.penalty_illegal * self.cluster.num_overloaded
+    reward = rescale(
+        [reward], old_min = 0, old_max = self.reward_var_illegal_1,
+        new_min = 0, new_max = self.reward_var_illegal_2)[0]
     return reward
 
 def _u(self):
@@ -77,6 +75,9 @@ def _u(self):
         self.cluster.nodes_usages_frac, axis=1)
     overal_resource_usage = np.sum(
         average_resource_usage_fraction)
+    overal_resource_usage = rescale(
+        [overal_resource_usage], old_min = 0, old_max = self.reward_var_u_1,
+        new_min = 0, new_max = self.reward_var_u_2)[0]
     return overal_resource_usage
 
 def _c(self):
@@ -90,6 +91,9 @@ def _c(self):
                 diff_node += np.abs(resource_i-resource_j)
         diff_usage_per_node.append(diff_node/2)
     total_resource_difference_all_cluster = np.sum(diff_usage_per_node)
+    total_resource_difference_all_cluster = rescale(
+        [total_resource_difference_all_cluster], old_min = 0, old_max = self.reward_var_c_1,
+        new_min = 0, new_max = self.reward_var_c_2)[0]
     return total_resource_difference_all_cluster
 
 def _v(self):
@@ -101,7 +105,11 @@ def _v(self):
     for node_i in average_resource_usage_fraction:
         for node_j in average_resource_usage_fraction:
             diff_usage_nodes = np.abs(node_i-node_j)
-    return diff_usage_nodes/2
+    diff_usage_nodes /= 2
+    diff_usage_nodes = rescale(
+        [diff_usage_nodes], old_min = 0, old_max = self.reward_var_v_1,
+        new_min = 0, new_max = self.reward_var_v_2)[0]
+    return diff_usage_nodes
 
 def _g(self):
     """total difference across all clusters 
@@ -109,10 +117,16 @@ def _g(self):
     diff_from_target = np.abs(
         self.cluster.nodes_usages_frac - self.target_utilization)
     diff_from_target_sum = np.sum(diff_from_target)
+    diff_from_target_sum = rescale(
+        [diff_from_target_sum], old_min = 0, old_max = self.reward_var_g_1,
+        new_min = 0, new_max = self.reward_var_g_2)[0]
     return diff_from_target_sum
 
 def _p(self):
     """binpacking/consolidation reward
     """
     reward = self.cluster.num_consolidated
+    reward = rescale(
+        [reward], old_min = 0, old_max = self.reward_var_p_1,
+        new_min = 0, new_max = self.reward_var_p_2)[0]
     return reward

@@ -46,7 +46,8 @@ def config_cluster_generation_check(config: Dict[str, Any]):
 
 def config_workload_generation_check(config: Dict[str, Any]):
     allowed_items = ['notes', 'cluster_id', 'timesteps', 'services_types',
-                     'workloads_var', 'plot_smoothing', 'seed', 'workload_type']
+                     'workloads_var', 'plot_smoothing', 'seed', 'workload_type',
+                     'num_workloads', 'num_services']
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the workload generation config")
@@ -58,8 +59,10 @@ def env_config_base_check(config: Dict[str, Any]):
     # check the items
     allowed_items = ['obs_elements', 'penalty_illegal', 'penalty_u',
                      'penalty_c', 'penalty_v', 'penalty_g', 'penalty_p',
-                     'reward_var_illegal', 'reward_var_u', 'reward_var_c',
-                     'reward_var_v', 'reward_var_g', 'reward_var_p',
+                     'reward_var_illegal_1', 'reward_var_u_1',
+                     'reward_var_c_1', 'reward_var_v_1', 'reward_var_g_1', 'reward_var_p_1',
+                     'reward_var_illegal_2', 'reward_var_u_2',
+                     'reward_var_c_2', 'reward_var_v_2', 'reward_var_g_2', 'reward_var_p_2',
                      'mitigation_tries', 'episode_length', 'placement_reset',
                      'compute_greedy_num_consolidated', 'seed', 'cluster',
                      'workload', 'nodes_cap_rng', 'services_request_rng',
@@ -79,8 +82,10 @@ def env_config_base_check(config: Dict[str, Any]):
     for item in ints:
         assert type(config[item]) == int, f"<{item}> must be an integer"
     floats = ['penalty_illegal', 'penalty_u', 'penalty_c', 'penalty_v',
-              'penalty_g', 'penalty_p', 'reward_var_illegal', 'reward_var_u',
-              'reward_var_c', 'reward_var_v', 'reward_var_g', 'reward_var_p']
+              'penalty_g', 'penalty_p', 'reward_var_illegal_1', 'reward_var_u_1',
+              'reward_var_c_1', 'reward_var_v_1', 'reward_var_g_1', 'reward_var_p_1',
+              'reward_var_illegal_2', 'reward_var_u_2',
+              'reward_var_c_2', 'reward_var_v_2', 'reward_var_g_2', 'reward_var_p_2']
     for item in floats:
         assert type(config[item])==float or type(config[item])==int,\
             f"[{item}] must be a float"

@@ -240,5 +240,6 @@ data/train-results
 data/plots
 data/clusters
 data.zip
+data/arabesque
 
 reward_scaling_samples_1

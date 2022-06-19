@@ -1,2 +1,4 @@
 from .cluster_generator_random import ClusterGeneratorRandom
 from .workload_generator_random import WorkloadGeneratorRandom
+from .workload_generator_arabesque import WorkloadGeneratorArabesque
+from .workload_generator_alibaba import WorkloadGeneratorAlibaba

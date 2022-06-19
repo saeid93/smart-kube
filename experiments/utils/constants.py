@@ -16,7 +16,8 @@ TESTS_RESULTS_PATH = os.path.join(DATA_PATH, "test-results")
 CONFIGS_PATH = os.path.join(DATA_PATH, "configs")
 BACKUP_PATH = os.path.join(DATA_PATH, "backup")
 PLOTS_PATH = os.path.join(DATA_PATH, "plots")
-CLUSTERS_METADATA_PATH = os.path.join(DATA_PATH, "cluster_metadata") 
+ARABESQUE_PATH = os.path.join(DATA_PATH, "arabesque")
+ALIBABA_PATH = os.path.join(DATA_PATH, "alibaba")
 
 def _create_dirs():
     """
@@ -32,8 +33,6 @@ def _create_dirs():
         os.makedirs(BACKUP_PATH)
     if not os.path.exists(TESTS_RESULTS_PATH):
         os.makedirs(TESTS_RESULTS_PATH)
-    if not os.path.exists(CLUSTERS_METADATA_PATH):
-        os.makedirs(CLUSTERS_METADATA_PATH)
     if not os.path.exists(PLOTS_PATH):
         os.makedirs(PLOTS_PATH)
 

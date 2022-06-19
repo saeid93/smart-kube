@@ -49,13 +49,15 @@ def check_env(*, config: Dict[str, Any], type_env: str,
     _ = env.reset()
 
     reward_total = []
-    # users_distances = []
-    # episode_total_latency_reward = 0
     while i < total_timesteps:
         action = env.action_space.sample()
         _, reward, done, info = env.step(action)
-        if info['scheduling_success']:
-            print('scheudling timesteps')
+        if info['scheduling_timestep']:
+            print('scheudling timestep')
+            if info['scheduling_success']:
+                print('scheduling successful :)')
+            else:
+                print('scheduling unsuccessful :(')
         # consolidation_rewards.append(consolidation_reward)
         reward_total.append(reward)
         env.render()

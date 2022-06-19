@@ -9,9 +9,11 @@ def check_config(config: Dict[str, Any]):
     # check the for illegal items
     allowed_items = ['obs_elements', 'penalty_illegal', 'penalty_u',
                      'penalty_c', 'penalty_v', 'penalty_g', 'penalty_p',
-                     'reward_var_illegal', 'reward_var_u', 'reward_var_c',
-                     'reward_var_v', 'reward_var_g', 'reward_var_p', 'episode_length',
-                     'compute_greedy_num_consolidated', 'seed', 'cluster',
+                     'reward_var_illegal_1', 'reward_var_u_1',
+                     'reward_var_c_1', 'reward_var_v_1', 'reward_var_g_1', 'reward_var_p_1',
+                     'reward_var_illegal_2', 'reward_var_u_2',
+                     'reward_var_c_2', 'reward_var_v_2', 'reward_var_g_2', 'reward_var_p_2',
+                     'episode_length', 'compute_greedy_num_consolidated', 'seed', 'cluster',
                      'workload', 'nodes_cap_rng', 'services_request_rng',
                      'num_users', 'num_stations', 'network', 'normalise_latency',
                      'trace', 'from_cluster', 'edge_simulator_config',
@@ -33,8 +35,10 @@ def check_config(config: Dict[str, Any]):
         assert type(config[item]) == int, f"<{item}> must be an integer"
 
     floats = ['penalty_illegal', 'penalty_u', 'penalty_c', 'penalty_v',
-              'penalty_g', 'penalty_p', 'reward_var_illegal', 'reward_var_u',
-              'reward_var_c', 'reward_var_v', 'reward_var_g', 'reward_var_p']
+              'penalty_g', 'penalty_p', 'reward_var_illegal_1', 'reward_var_u_1',
+              'reward_var_c_1', 'reward_var_v_1', 'reward_var_g_1', 'reward_var_p_1',
+              'reward_var_illegal_2', 'reward_var_u_2',
+              'reward_var_c_2', 'reward_var_v_2', 'reward_var_g_2', 'reward_var_p_2']
     for item in floats:
         assert type(config[item])==float or type(config[item])==int,\
             f"[{item}] must be a float"
