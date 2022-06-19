@@ -100,8 +100,7 @@ class SimSchedulerEnv(gym.Env):
         cluster_schema = load_object(self.cluster_path)
         self.workload_save = load_object(self.workload_path)
 
-        # TODO different for other types of data
-        # TODO HERE
+        # dataset or random workload
         sim_type: str = self.workload_save['workload_type']
         self.workload = self.workload_save['workloads']
 
@@ -223,6 +222,12 @@ class SimSchedulerEnv(gym.Env):
                 workload=service_workload,
                 serving_time=serving_time))
 
+        if sim_type == 'arabesque':
+            self.services_resources_request = np.array(
+                list(map(
+                    lambda service: service.requests, self.pending_services)))
+        if sim_type == 'alibaba':
+            b = 1
         self.initil_pending_services = deepcopy(self.pending_services)
         self.backlog_size = config['backlog_size']
 
@@ -343,6 +348,9 @@ class SimSchedulerEnv(gym.Env):
         # remove the service from the pending services if successful
         if schedule_success:
             self.pending_services.pop(service_index)
+        # if the scheuduling was unsuccessful
+        else:
+            a = 1
         # return true if successful
         return schedule_success
 

@@ -3,10 +3,10 @@
     "fixed_size_cluster": true,
     "nums": {
         "nodes": 3,
-        "services": 6,
+        "services": 60,
         "resources": 2,
         "services_types": 3,
-        "services_types_map": [2, 2, 2]
+        "services_types_map": [20, 20, 20]
     },
     "metrics": {
         "ram":"mb",
@@ -18,28 +18,28 @@
     },
     "nodes_cap_rng": {
         "ram": {
-            "min": 2950,
-            "max": 2950,
+            "min": 40000,
+            "max": 40000,
             "step": 1
         },
         "cpu": {
-            "min": 3.92,
-            "max": 3.92,
+            "min": 8,
+            "max": 8,
             "step": 1
         }
     },
     "services_request_rng": {
         "0":
             {
-            "num": 6,
+            "num": 60,
             "ram": {
-                "min": 250,
-                "max": 250,
+                "min": 1250,
+                "max": 2500,
                 "step": 1
             },
             "cpu": {
-                "min": 0.125,
-                "max": 0.125,
+                "min": 0.5,
+                "max": 2,
                 "step": 1
             }
         }

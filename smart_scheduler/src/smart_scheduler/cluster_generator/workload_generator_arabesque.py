@@ -15,7 +15,8 @@ from typing import List
 
 class WorkloadGeneratorArabesque:
     def __init__(
-        self, cluster, dataset_path, num_services, plot_smoothing, seed):
+        self, cluster, min_timesteps, 
+        dataset_path, num_services, plot_smoothing, seed):
         """
             cluster generator
         """
@@ -24,6 +25,7 @@ class WorkloadGeneratorArabesque:
         np.random.seed(self.seed)
         random.seed(seed)
         self.num_services = num_services
+        self.min_timesteps = min_timesteps
 
         dataset_path = os.path.join(dataset_path, 'arabesque-single-file')
         dataset_file_names = os.listdir(dataset_path)
@@ -37,6 +39,18 @@ class WorkloadGeneratorArabesque:
 
         self.plot_smoothing = plot_smoothing
 
+    def is_fit(self, service_data):
+        # check if a workload fit into any
+        # of the servers - we are not experimenting
+        # situation with server overload
+        limits = np.array(list(service_data['limits'].values()))
+        limits[1] = limits[1]/1000
+        if np.alltrue(limits < self.cluster['nodes_resources_cap'])\
+            and len(service_data['time']) >= self.min_timesteps:
+            return True
+        return False
+
+
     def make_workloads(self):
         """
         choosing containers from randomly the dataset
@@ -44,34 +58,42 @@ class WorkloadGeneratorArabesque:
         # grab containers from the list until the selected
         # services are proportial
         workloads = {}
-        while len(workloads) < self.num_services:
-            # first grab the top ten containers
-            for service_name, service_data in self.datasets[
-                'engine-top-ten']['engine'].items():
+        # while len(workloads) < self.num_services:
+        # first grab the top ten containers
+        for service_name, service_data in self.datasets[
+            'engine-top-ten']['engine'].items():
+            if not self.is_fit(service_data):
+                continue
+            workloads[service_name] = service_data
+            if len(workloads) >= self.num_services:
+                break
+        for service_name, service_data in self.datasets[
+            'portfolio-top-ten']['qryfolio-daily'].items():
+            if not self.is_fit(service_data):
+                continue
+            workloads[service_name] = service_data
+            if len(workloads) >= self.num_services:
+                break
+        for _, dataset in self.datasets[
+            'engine-july-all'].items():
+            for service_name, service_data in dataset.items():
+                if not self.is_fit(service_data):
+                    continue
                 workloads[service_name] = service_data
                 if len(workloads) >= self.num_services:
                     break
-            for service_name, service_data in self.datasets[
-                'portfolio-top-ten']['qryfolio-daily'].items():
+            if len(workloads) >= self.num_services:
+                break
+        for _, dataset in self.datasets[
+            'portfolio-july-all'].items():
+            for service_name, service_data in dataset.items():
+                if not self.is_fit(service_data):
+                    continue
                 workloads[service_name] = service_data
                 if len(workloads) >= self.num_services:
                     break
-            for _, dataset in self.datasets[
-                'engine-july-all'].items():
-                for service_name, service_data in dataset.items():
-                    workloads[service_name] = service_data
-                    if len(workloads) >= self.num_services:
-                        break
-                if len(workloads) >= self.num_services:
-                    break
-            for _, dataset in self.datasets[
-                'portfolio-july-all'].items():
-                for service_name, service_data in dataset.items():
-                    workloads[service_name] = service_data
-                    if len(workloads) >= self.num_services:
-                        break
-                if len(workloads) >= self.num_services:
-                    break
+            if len(workloads) >= self.num_services:
+                break
         figs = []
         for service_name, service in workloads.items():
             fig = plot_workload(

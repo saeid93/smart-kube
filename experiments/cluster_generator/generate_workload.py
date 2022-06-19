@@ -82,6 +82,7 @@ def generate_workload(notes: str, cluster_id: int,
         # generate the workload
         workload_generator = WorkloadGeneratorArabesque(
             cluster=cluster,
+            min_timesteps=kwargs['min_timesteps'],
             dataset_path=ARABESQUE_PATH,
             num_services=kwargs['num_services'],
             plot_smoothing=plot_smoothing,
@@ -117,7 +118,7 @@ def generate_workload(notes: str, cluster_id: int,
 @click.command()
 @click.option('--workload-type',
               type=click.Choice(
-                  ['random', 'arabesque', 'alibaba']), default='random')
+                  ['random', 'arabesque', 'alibaba']), default='arabesque')
 def main(workload_type: str):
     # read the config file
     config_file_path = os.path.join(

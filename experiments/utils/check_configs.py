@@ -47,7 +47,7 @@ def config_cluster_generation_check(config: Dict[str, Any]):
 def config_workload_generation_check(config: Dict[str, Any]):
     allowed_items = ['notes', 'cluster_id', 'timesteps', 'services_types',
                      'workloads_var', 'plot_smoothing', 'seed', 'workload_type',
-                     'num_workloads', 'num_services']
+                     'num_workloads', 'num_services', 'min_timesteps']
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
                                       " the workload generation config")

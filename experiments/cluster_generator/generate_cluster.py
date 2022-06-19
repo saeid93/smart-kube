@@ -52,8 +52,8 @@ def generate_cluster(config):
         cluster['nodes_resources_cap'].tolist()
     info['capacities']['services_resources'] = \
         cluster['services_resources_request'].tolist()
-    info['services_nodes'] = \
-        cluster['services_nodes'].tolist()
+    # info['services_nodes'] = \
+    #     cluster['services_nodes'].tolist()
 
     # save the info and cluster in the folder
     with open(os.path.join(dir2save, 'info.json'), 'x') as out_file:
