@@ -36,6 +36,10 @@ There are several options for setting up a Kuberentes cluster. The repo codes ca
 We have used [Google Cloud Platform](https://cloud.google.com/) for our experiments.
 You can find the toturial for creating the cluster on google cloud and locally in the followings:
 
+
+If you want to train then checkout [tips for training](docs/builtin-k8s-scheduler.md)
+
+
 * [Google cloud installation](docs/kubernetes/installation-gcp.md)
 * [Local cluster setup installation](docs/kubernetes/installation-local.md)
 
