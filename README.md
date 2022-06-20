@@ -161,7 +161,8 @@ The main operations that are currently implemented are:
   * utilisation server
   * pods
 * actions
-  * moving pods
+  * scheduling pods to nodes
+  * moving pods (not used in this work)
   * deleting pods
   * cleaning nemespace
 * monitoring
