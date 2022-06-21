@@ -37,7 +37,7 @@ We have used [Google Cloud Platform](https://cloud.google.com/) for our experime
 You can find the toturial for creating the cluster on google cloud and locally in the followings:
 
 
-If you want to train then checkout [tips for training](docs/builtin-k8s-scheduler.md)
+If you want to train then checkout [tips for training](docs/tips-for-training.md)
 
 
 * [Google cloud installation](docs/kubernetes/installation-gcp.md)
