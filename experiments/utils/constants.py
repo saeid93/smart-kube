@@ -6,7 +6,8 @@ from smart_scheduler.envs import (
     KubeBinpackingEnv,
 )
 # dfined by the user
-DATA_PATH = "/homes/sg324/smart-vpa/smart-scheduler/data/"
+# DATA_PATH = "/homes/sg324/smart-vpa/smart-scheduler/data/"
+DATA_PATH = "/home/saeid/smart-scheduler/data/"
 
 # generated baesd on the users' path
 CLUSTERS_PATH = os.path.join(DATA_PATH, "clusters")

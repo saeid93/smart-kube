@@ -82,8 +82,9 @@ class Preprocessor():
             [0, 0, 0, 1, 0, 1, 0, 0]
         """
         obs_prep = np.array([])
+
         for node in obs:
-            one_hot_encoded = np.zeros(self.max_services_nodes)
+            one_hot_encoded = np.zeros(self.max_services_nodes + 1)
             one_hot_encoded[node] = 1
             obs_prep = np.concatenate((obs_prep, one_hot_encoded))
         return obs_prep
