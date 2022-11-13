@@ -1,0 +1,2 @@
+Series 1:
+started with cluster 5 with 2 servers and train and test on both datasets to setup everything
