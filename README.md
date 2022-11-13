@@ -79,9 +79,6 @@ Go to [experiments/utils/constants.py](experiments/utils/constants.py) and set t
 
 ### 3.4.1. [Dataset Preprocessing]()
 ### 3.4.1.1 [Arabesque]()
-TODO
-### 3.4.1.2 [Alibaba]()
-TODO
 
 ### 3.4.1. [Data Generation](experiments/cluster)
 The cluster and workloads are generated in the following order:
@@ -117,7 +114,7 @@ Options:
 For a full list of `config.json` parameters options see [workload-configs-options](docs/configs-parameters/workload-generation.md). The results will be saved in [data/clusters/<cluster_id>/<workload_id>](data/clusters).
 <br />
 #### 4.4.1.2.2. [Generating the Workloads - Option two - Real-world](experiments/cluster/generate_workload.py)
-TODO change it to Alibaba and Arabesque
+Change it to Alibaba and Arabesque
 Go to the your workload generation config [data/configs/generation-configs/workload-generation](data/configs/generation-configs/cluster-generation) make a folder named after your config and make the `config.json` in the folder e.g. see the `my-workload` in the sample [data](data) folder [data/configs/generation-configs/workload-generation/my-workload/config.json](data/configs/generation-configs/cluster-generation/my-workload/config.json). For a full list of `config.json` see. Then run the [experiments/cluster/generate_cluster.py](experiments/cluster/generate_cluster.py) with the following script:
 ```
 python generate_workload.py [OPTIONS]
@@ -165,7 +162,8 @@ The main operations that are currently implemented are:
   * utilisation server
   * pods
 * actions
-  * moving pods
+  * scheduling pods to nodes
+  * moving pods (not used in this work)
   * deleting pods
   * cleaning nemespace
 * monitoring

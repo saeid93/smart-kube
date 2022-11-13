@@ -1,5 +1,3 @@
-from distutils.log import set_verbosity
-from cv2 import sepFilter2D
 import numpy as np
 import random
 import os

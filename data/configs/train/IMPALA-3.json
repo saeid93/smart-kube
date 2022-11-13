@@ -14,20 +14,6 @@
         "penalty_v": 1,
         "penalty_g": 1,
         "penalty_p": 1,
-<<<<<<< HEAD
-        "reward_var_illegal_1": 1,
-        "reward_var_u_1": 1,
-        "reward_var_c_1": 1,
-        "reward_var_v_1": 1,
-        "reward_var_g_1": 1,
-        "reward_var_p_1": 1,
-        "reward_var_illegal_2": 2,
-        "reward_var_u_2": 2,
-        "reward_var_c_2": 2,
-        "reward_var_v_2": 2,
-        "reward_var_g_2": 2,
-        "reward_var_p_2": 2,
-=======
         "reward_var_illegal_1": 0.1,
         "reward_var_u_1": 0.1,
         "reward_var_c_1": 0.1,
@@ -40,7 +26,6 @@
         "reward_var_v_2": 1.05,
         "reward_var_g_2": 1.05,
         "reward_var_p_2": 1.05,
->>>>>>> 1920b661fa3d4ba8714a148b71742bb3e8839f40
         "reward_option": "proposed",
         "no_action_on_overloaded": true,
         "episode_length": 10,
@@ -61,18 +46,19 @@
             "utilization_image": "sdghafouri/utilization-server"
         }
     },
-    "run_or_experiment": "PG",
+    "run_or_experiment": "IMPALA",
     "learn_config": {
         "train_batch_size": 1000,
-        "num_gpus": 0.5,
+        "num_gpus": 1,
         "model": {
             "fcnet_hiddens": [64, 64],
-            "fcnet_activation": "linear"
+            "fcnet_activation": "linear",
+            "vf_share_layers": true
         },
         "gamma": 0.99,
         "lr": 0.0003,
         "num_workers": 6,
-        "observation_filter": "NoFilter",
+        "vf_loss_coeff": 0.01,
         "seed": 203
     },
     "stop": {

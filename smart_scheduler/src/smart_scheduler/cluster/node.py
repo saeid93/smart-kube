@@ -124,6 +124,10 @@ class Node:
         return services_id
 
     @property
+    def num_services(self):
+        return len(self.services)
+
+    @property
     def services_names(self):
         services_names = list(
             map(lambda l: l.service_name, self.services))

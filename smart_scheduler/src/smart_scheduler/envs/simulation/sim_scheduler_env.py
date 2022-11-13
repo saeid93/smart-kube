@@ -278,8 +278,6 @@ class SimSchedulerEnv(gym.Env):
         """
         edge servers here
         1. move the services based-on current network and nodes state
-        2. do one step of user movements
-        3. update the nodes
         """
         # take the action
         scheduling_timestep = False
@@ -340,17 +338,17 @@ class SimSchedulerEnv(gym.Env):
                 'Service {} does not exists in pending services'.format(
                 service_id
             ))
-        service_index = self.pending_services_ids.index(service_id)
-        schedule_success = self.cluster.schedule(
-            service=self.pending_services[service_index],
-            node_id=node_id
-        )
+        if self.cluster.nodes[node_id].num_services != self.max_services_nodes:
+            service_index = self.pending_services_ids.index(service_id)
+            schedule_success = self.cluster.schedule(
+                service=self.pending_services[service_index],
+                node_id=node_id
+            )
+        else:
+            schedule_success = False
         # remove the service from the pending services if successful
         if schedule_success:
             self.pending_services.pop(service_index)
-        # if the scheuduling was unsuccessful
-        else:
-            a = 1
         # return true if successful
         return schedule_success
 
@@ -476,7 +474,7 @@ class SimSchedulerEnv(gym.Env):
             if elm in node_resource_size_items:
                 obs_size += self.cluster.num_nodes * self.cluster.num_resources
             elif elm in node_services_size_items:
-                obs_size += self.cluster.num_nodes * self.max_services_nodes
+                obs_size += self.cluster.num_nodes * (self.max_services_nodes + 1)
             elif elm in backlog_size_items:
                 obs_size += self.backlog_size * self.cluster.num_resources
             elif elm in node_size_items:

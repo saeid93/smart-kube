@@ -149,7 +149,7 @@ def learner(*, local_mode: bool,
               type=click.Choice(['sim-scheduler', 'sim-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=1)
+@click.option('--cluster-id', required=True, type=int, default=0)
 @click.option('--workload-id', required=True, type=int, default=0)
 @click.option('--use-callback', required=True, type=bool, default=True)
 @click.option('--checkpoint-freq', required=False, type=int, default=100)

@@ -45,12 +45,13 @@ def check_env(*, config: Dict[str, Any], type_env: str,
         env = gym.make(type_env)
 
     i = 1
-    total_timesteps = 1000
+    total_timesteps = 10000
     _ = env.reset()
 
     reward_total = []
     while i < total_timesteps:
         action = env.action_space.sample()
+        action = 1
         _, reward, done, info = env.step(action)
         if info['scheduling_timestep']:
             print('scheudling timestep')
@@ -91,7 +92,11 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
+<<<<<<< HEAD
 @click.option('--cluster-id', required=True, type=int, default=5)
+=======
+@click.option('--cluster-id', required=True, type=int, default=0)
+>>>>>>> 1920b661fa3d4ba8714a148b71742bb3e8839f40
 @click.option('--workload-id', required=True, type=int, default=0)
 def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]
