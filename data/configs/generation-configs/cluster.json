@@ -2,7 +2,7 @@
     "notes":"small cluster to fix the namings",
     "fixed_size_cluster": true,
     "nums": {
-        "nodes": 3,
+        "nodes": 2,
         "services": 60,
         "resources": 2,
         "services_types": 3,
