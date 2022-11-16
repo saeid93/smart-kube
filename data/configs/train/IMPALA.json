@@ -33,7 +33,7 @@
         "discrete_actions": false,
         "backlog_size": 2,
         "seed": 1204,
-        "target_utilization": [0.7, 0.7],
+        "target_utilization": {"grid_search": [[0, 0], [0.7, 0.7], [1, 1]]},
         "job_arrival":{
             "mode": "fixed",
             "interval": 5
@@ -48,6 +48,7 @@
     },
     "run_or_experiment": "IMPALA",
     "learn_config": {
+        "framework": "torch",
         "train_batch_size": 1000,
         "num_gpus": 1,
         "model": {
