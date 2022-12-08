@@ -16,7 +16,7 @@ This repo contains the code of the upcoming vpa aware scheduling paper
    ```
     conda activate smartscheduler
    ```
-5. If you want to use GPUs make sure that you have the correct version of CUDA and cuDNN installed from [here](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html). Alternatively, you can check (https://punndeeplearningblog.com/development/tensorflow-cuda-cudnn-compatibility) to find compatible versions and install CUDA and cuDNN with conda from (https://anaconda.org/anaconda/cudatoolkit) and (https://anaconda.org/conda-forge/cudnn), respectively. MAKE SURE THER VERSIONS OF PYTHON, CUDA, CUDNN, AND TENSORFLOW IN YOUR CONDA ENVIRONMENT ARE COMPATIBLE.
+5. If you want to use GPUs make sure that you have the correct version of CUDA and cuDNN installed from [here](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html). Alternatively, you can check [cudnn-compatibility](https://punndeeplearningblog.com/development/tensorflow-cuda-cudnn-compatibility) to find compatible versions and install CUDA and cuDNN with conda from [cudatoolkit](https://anaconda.org/anaconda/cudatoolkit) and [cudnn](https://anaconda.org/conda-forge/cudnn), respectively. MAKE SURE THER VERSIONS OF PYTHON, CUDA, CUDNN, AND TENSORFLOW IN YOUR CONDA ENVIRONMENT ARE COMPATIBLE.
 6. Use [PyTorch](https://pytorch.org/) or [Tensorflow](https://www.tensorflow.org/install/pip#virtual-environment-install) isntallation manual to install one of them based-on your preference
 
 7. Install the followings
