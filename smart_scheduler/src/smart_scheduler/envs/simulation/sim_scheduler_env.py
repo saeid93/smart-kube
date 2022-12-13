@@ -221,6 +221,8 @@ class SimSchedulerEnv(gym.Env):
                 limits=limits,
                 workload=service_workload,
                 serving_time=serving_time))
+            # import random
+            # random.shuffle(self.pending_services)
 
         if sim_type == 'arabesque':
             self.services_resources_request = np.array(

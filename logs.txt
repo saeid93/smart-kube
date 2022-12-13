@@ -1,5 +1,18 @@
+GOALS:
+1. get to a working experiment on larger clusters
+    - find out why it stops on a certain point
+2. run on gpu
+    - try the other server
+
+
 Series 1:
 started with cluster 5 with 2 servers and train and test on both datasets to setup everything
 
 Series 2:
 checking the effect of different target utilizations
+
+series 4:
+Tried PG on a larger dataset with smaller batch size trining
+
+series 5:
+Tried DQN to just get to a working state

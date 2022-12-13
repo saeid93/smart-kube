@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 from .service import Service
 from typing import List
 
@@ -21,9 +22,10 @@ class Node:
         """
         self.time += 1
         list(map(lambda a: a.clock_tick(), self.services))
-        for service_index, service in enumerate(self.services):
+        services_copy = deepcopy(self.services)
+        for service in services_copy:
             if service.done:
-                self.deschedule(service_index)
+                self.deschedule(service)
 
     def reset_node(self):
         self.time = 0
@@ -42,12 +44,13 @@ class Node:
         self.services.append(service)
         return True
 
-    def deschedule(self, service_index):
-        # TODO debug
+    def deschedule(self, service: Service):
         # schedule the service on the node
-        self.served_services.append(service_index)
-        # remove the service from the pending services
-        self.services.pop(service_index)
+        self.served_services.append(service.service_id)
+        # remove the service from the node services
+        for svc_index, svc in enumerate(self.services):
+            if svc.service_id == service.service_id:
+                self.services.pop(svc_index)
 
     @property
     def requests(self):

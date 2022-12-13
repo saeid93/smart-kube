@@ -25,6 +25,10 @@ class Service:
         self.time += 1
 
     def start_time_update(self, start_time):
+        """
+        start_time: cluster time that this service has started
+        time: internal service timestep
+        """
         self.start_time = start_time
         self.time = start_time
 
@@ -48,6 +52,7 @@ class Service:
     @property
     def done(self):
         if self.start_time + self.duration == self.time:
+        # if self.duration == self.time:
             return True
         else:
             return False

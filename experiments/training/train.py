@@ -116,7 +116,7 @@ def learner(*, local_mode: bool,
         type_env not in ['CartPole-v0', 'Pendulum-v0']:
         ray_config.update({'callbacks': CloudCallback})
 
-    ray.init(local_mode=local_mode)
+    ray.init(local_mode=local_mode, num_gpus=1)
     # run the ML after fixing the folders structres
     _ = tune.run(local_dir=this_experiment_folder,
                  run_or_experiment=run_or_experiment,
@@ -144,12 +144,12 @@ def learner(*, local_mode: bool,
 @click.command()
 @click.option('--local-mode', type=bool, default=False)
 @click.option('--config-file', type=str, default='PPO-debug')
-@click.option('--series', required=True, type=int, default=2)
+@click.option('--series', required=True, type=int, default=3)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'sim-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=0)
+@click.option('--cluster-id', required=True, type=int, default=5)
 @click.option('--workload-id', required=True, type=int, default=0)
 @click.option('--use-callback', required=True, type=bool, default=True)
 @click.option('--checkpoint-freq', required=False, type=int, default=100)

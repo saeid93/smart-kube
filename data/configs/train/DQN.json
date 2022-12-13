@@ -33,7 +33,7 @@
         "discrete_actions": false,
         "backlog_size": 2,
         "seed": 1204,
-        "target_utilization": {"grid_search": [[0, 0], [0.7, 0.7], [1, 1]]},
+        "target_utilization": [1, 1],
         "job_arrival":{
             "mode": "fixed",
             "interval": 5
@@ -48,16 +48,16 @@
     },
     "run_or_experiment": "DQN",
     "learn_config": {
-        "framework": "torch",
+        "num_gpus": 1,
         "train_batch_size": 200,
         "model": {
-            "fcnet_hiddens": [64, 64],
+            "fcnet_hiddens": [128, 128, 128, 128],
             "fcnet_activation": "linear",
             "vf_share_layers": true
         },
         "gamma": 0.99,
         "lr": 0.0003,
-        "num_workers": 6,
+        "num_workers": 20,
         "observation_filter": "MeanStdFilter",
         "seed": 203
     },

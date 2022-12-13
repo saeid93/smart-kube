@@ -51,7 +51,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
     reward_total = []
     while i < total_timesteps:
         action = env.action_space.sample()
-        action = 1
+        # action = 1
         _, reward, done, info = env.step(action)
         if info['scheduling_timestep']:
             print('scheudling timestep')
@@ -62,7 +62,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
         # consolidation_rewards.append(consolidation_reward)
         reward_total.append(reward)
         env.render()
-        if env.time == 362:
+        if env.time % 964 == 0:
             TEMP = 1
         # episode_total_consolidation_reward += consolidation_reward
         print("time: {}".format(
@@ -92,11 +92,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-<<<<<<< HEAD
-@click.option('--cluster-id', required=True, type=int, default=5)
-=======
-@click.option('--cluster-id', required=True, type=int, default=0)
->>>>>>> 1920b661fa3d4ba8714a148b71742bb3e8839f40
+@click.option('--cluster-id', required=True, type=int, default=6)
 @click.option('--workload-id', required=True, type=int, default=0)
 def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]
