@@ -49,6 +49,7 @@
     "run_or_experiment": "PG",
     "learn_config": {
         "train_batch_size": 100,
+        "num_gpus": 0.25,
         "model": {
             "fcnet_hiddens": [64, 64],
             "fcnet_activation": "linear"

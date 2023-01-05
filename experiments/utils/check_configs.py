@@ -58,17 +58,18 @@ def env_config_base_check(config: Dict[str, Any]):
     """
     # check the items
     allowed_items = ['obs_elements', 'penalty_illegal', 'penalty_u',
-                     'penalty_c', 'penalty_v', 'penalty_g', 'penalty_p',
-                     'reward_var_illegal_1', 'reward_var_u_1',
-                     'reward_var_c_1', 'reward_var_v_1', 'reward_var_g_1', 'reward_var_p_1',
-                     'reward_var_illegal_2', 'reward_var_u_2',
-                     'reward_var_c_2', 'reward_var_v_2', 'reward_var_g_2', 'reward_var_p_2',
+                     'penalty_c', 'penalty_cv', 'penalty_v', 'penalty_g',
+                     'penalty_p', 'reward_var_illegal_1', 'reward_var_u_1',
+                     'reward_var_c_1', 'reward_var_cv_1', 'reward_var_v_1',
+                     'reward_var_g_1', 'reward_var_p_1','reward_var_illegal_2',
+                     'reward_var_u_2', 'reward_var_c_2', 'reward_var_cv_2',
+                     'reward_var_v_2', 'reward_var_g_2', 'reward_var_p_2',
                      'mitigation_tries', 'episode_length', 'placement_reset',
                      'compute_greedy_num_consolidated', 'seed', 'cluster',
                      'workload', 'nodes_cap_rng', 'services_request_rng',
-                     'normalise_latency', 'from_cluster',
-                     'edge_simulator_config', 'action_method', 'step_method',
-                     'kube', "no_action_on_overloaded", "latency_reward_option",
+                     'normalise_latency', 'from_cluster', 'edge_simulator_config',
+                     'action_method', 'step_method', 'kube',
+                     "no_action_on_overloaded", "latency_reward_option",
                      'reward_var_one', 'reward_var_two', 'reward_var_three',
                      'reward_var_four', 'discrete_actions', 'max_services_nodes',
                      'backlog_size', 'job_arrival', 'target_utilization',
@@ -106,7 +107,8 @@ def env_config_base_check(config: Dict[str, Any]):
         "nodes_resources_unused_frac",
         "nodes_requests_available_frac_avg",
         "nodes_resources_unused_avg",
-        "backlog_services_requests"]
+        "backlog_services_requests",
+        "backlog_services_requests_frac"]
 
     assert set(config['obs_elements']).issubset(
         set(all_obs_elements)),\

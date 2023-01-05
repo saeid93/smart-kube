@@ -221,6 +221,7 @@ def flatten(raw_obs, action, reward, info):
         'reward_illegal': info['rewards']['illegal'],
         'reward_u': info['rewards']['u'],
         'reward_c': info['rewards']['c'],
+        'reward_cv': info['rewards']['cv'],
         'reward_v': info['rewards']['v'],
         'reward_g': info['rewards']['g'],
         'reward_p': info['rewards']['p'],

@@ -126,6 +126,7 @@ class SimSchedulerEnv(gym.Env):
         self.penalty_illegal: float = config['penalty_illegal']
         self.penalty_u: float = config['penalty_u']
         self.penalty_c: float = config['penalty_c']
+        self.penalty_cv: float = config['penalty_cv']
         self.penalty_v: float = config['penalty_v']
         self.penalty_g: float = config['penalty_g']
         self.penalty_p: float = config['penalty_p']
@@ -134,12 +135,14 @@ class SimSchedulerEnv(gym.Env):
         self.reward_var_illegal_1 = config['reward_var_illegal_1']
         self.reward_var_u_1 = config['reward_var_u_1']
         self.reward_var_c_1 = config['reward_var_c_1']
+        self.reward_var_cv_1 = config['reward_var_cv_1']
         self.reward_var_v_1 = config['reward_var_v_1']
         self.reward_var_g_1 = config['reward_var_g_1']
         self.reward_var_p_1 = config['reward_var_p_1']
         self.reward_var_illegal_2 = config['reward_var_illegal_2']
         self.reward_var_u_2 = config['reward_var_u_2']
         self.reward_var_c_2 = config['reward_var_c_2']
+        self.reward_var_cv_2 = config['reward_var_cv_2']
         self.reward_var_v_2 = config['reward_var_v_2']
         self.reward_var_g_2 = config['reward_var_g_2']
         self.reward_var_p_2 = config['reward_var_p_2']
@@ -391,6 +394,18 @@ class SimSchedulerEnv(gym.Env):
         return backlog_services_requests
 
     @property
+    def backlog_services_requests_frac(self):
+        """
+        backlog services_requests values divided by
+        cluster capacities, (works only in homogeneous clusters)
+        """
+        backlog_services_requests = np.array(
+            list(map(
+                lambda a: a.requests, self.backlog_services)))
+        capacities = self.cluster.nodes[0].capacities
+        return backlog_services_requests/capacities
+
+    @property
     def backlog_services_ids(self):
         ids = list(
             map(
@@ -424,7 +439,8 @@ class SimSchedulerEnv(gym.Env):
                 "nodes_requests_available_frac": self.cluster.nodes_requests_available_frac,
                 "nodes_resources_unused_frac": self.cluster.nodes_resources_unused_frac,
                 "nodes_requests_available_frac_avg": self.cluster.nodes_requests_available_frac_avg,
-                "nodes_resources_unused_avg": self.cluster.nodes_resources_unused_avg
+                "nodes_resources_unused_avg": self.cluster.nodes_resources_unused_avg,
+                "backlog_services_requests_frac": self.backlog_services_requests_frac
         }
         # TODO for now I have chosen just some of them as example
         # add more if needed after finalizing on satate-space
@@ -467,10 +483,10 @@ class SimSchedulerEnv(gym.Env):
             "nodes_requests_available_frac",
             "nodes_resources_unused_frac",
             "nodes_requests_available_frac_avg",
-            "nodes_resources_unused_avg",
+            "nodes_resources_unused_avg"
         ]
         node_services_size_items = ['num_services_nodes']
-        backlog_size_items = ["backlog_services_requests"]
+        backlog_size_items = ["backlog_services_requests", "backlog_services_requests_frac"]
         node_size_items = ['num_consolidated']
         for elm in self.obs_elements:
             if elm in node_resource_size_items:

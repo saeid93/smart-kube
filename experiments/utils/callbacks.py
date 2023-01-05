@@ -123,6 +123,9 @@ class CloudCallback(DefaultCallbacks):
         episode_reward_c = [a[
             'c']for a in episode.user_data[
                 "rewards"]]
+        episode_reward_cv = [a[
+            'cv']for a in episode.user_data[
+                "rewards"]]
         episode_reward_v = [a[
             'v']for a in episode.user_data[
                 "rewards"]]
@@ -135,6 +138,7 @@ class CloudCallback(DefaultCallbacks):
 
         episode_reward_u = np.mean(episode_reward_u)
         episode_reward_c = np.mean(episode_reward_c)
+        episode_reward_cv = np.mean(episode_reward_cv)
         episode_reward_v = np.mean(episode_reward_v)
         episode_reward_g = np.mean(episode_reward_g)
         episode_reward_p = np.mean(episode_reward_p)
@@ -148,6 +152,7 @@ class CloudCallback(DefaultCallbacks):
         episode.custom_metrics['timestep_episode'] = timestep_episode
         episode.custom_metrics['reward_u'] = episode_reward_u
         episode.custom_metrics['reward_c'] = episode_reward_c
+        episode.custom_metrics['reward_cv'] = episode_reward_cv
         episode.custom_metrics['reward_v'] = episode_reward_v
         episode.custom_metrics['reward_g'] = episode_reward_g
         episode.custom_metrics['reward_p'] = episode_reward_p

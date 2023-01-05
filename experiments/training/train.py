@@ -143,8 +143,8 @@ def learner(*, local_mode: bool,
 
 @click.command()
 @click.option('--local-mode', type=bool, default=False)
-@click.option('--config-file', type=str, default='PPO-debug')
-@click.option('--series', required=True, type=int, default=3)
+@click.option('--config-file', type=str, default='PG')
+@click.option('--series', required=True, type=int, default=40)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'sim-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),

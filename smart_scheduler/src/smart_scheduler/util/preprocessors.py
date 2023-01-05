@@ -31,6 +31,7 @@ class Preprocessor():
             "nodes_slack": self._nodes_normalizer,
             "nodes_usages_frac":self._none,
             "nodes_requests_frac": self._none,
+            "backlog_services_requests_frac": self._none,
             "nodes_requests_available_frac": self._none,
             "nodes_resources_unused_frac": self._none,
             "nodes_requests_available_frac_avg": self._none,

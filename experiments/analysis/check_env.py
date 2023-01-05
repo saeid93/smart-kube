@@ -59,10 +59,15 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                 print('scheduling successful :)')
             else:
                 print('scheduling unsuccessful :(')
+        print("request:")
+        print(env.cluster.nodes_requests_frac)
+        # print("difference requests:")
+        # print(env.cluster.nodes_requests_frac - env.target_utilization)
+        # print(env.backlog_services_requests_frac)
         # consolidation_rewards.append(consolidation_reward)
         reward_total.append(reward)
         env.render()
-        if env.time % 964 == 0:
+        if env.time % 500 == 0:
             TEMP = 1
         # episode_total_consolidation_reward += consolidation_reward
         print("time: {}".format(
@@ -92,7 +97,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=6)
+@click.option('--cluster-id', required=True, type=int, default=7)
 @click.option('--workload-id', required=True, type=int, default=0)
 def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]

@@ -8,23 +8,23 @@ def check_config(config: Dict[str, Any]):
     """
     # check the for illegal items
     allowed_items = ['obs_elements', 'penalty_illegal', 'penalty_u',
-                     'penalty_c', 'penalty_v', 'penalty_g', 'penalty_p',
-                     'reward_var_illegal_1', 'reward_var_u_1',
-                     'reward_var_c_1', 'reward_var_v_1', 'reward_var_g_1', 'reward_var_p_1',
-                     'reward_var_illegal_2', 'reward_var_u_2',
-                     'reward_var_c_2', 'reward_var_v_2', 'reward_var_g_2', 'reward_var_p_2',
-                     'episode_length', 'compute_greedy_num_consolidated', 'seed', 'cluster',
-                     'workload', 'nodes_cap_rng', 'services_request_rng',
-                     'num_users', 'num_stations', 'network', 'normalise_latency',
-                     'trace', 'from_cluster', 'edge_simulator_config',
-                     'action_method', 'step_method', 'kube',
-                     'cluster_path', 'workload_path',
-                     'no_action_on_overloaded',
-                     'reward_var_one', 'reward_var_two',
-                     'reward_var_three', 'reward_var_four',
-                     'placement_reset', 'discrete_actions',
-                     'max_services_nodes', 'backlog_size', 'job_arrival',
-                     'target_utilization', 'reward_option']
+                     'penalty_c', 'penalty_cv', 'penalty_v',
+                     'penalty_g', 'penalty_p', 'reward_var_illegal_1',
+                     'reward_var_u_1', 'reward_var_c_1', 'reward_var_cv_1',
+                     'reward_var_v_1', 'reward_var_g_1', 'reward_var_p_1',
+                     'reward_var_illegal_2', 'reward_var_u_2', 'reward_var_c_2',
+                     'reward_var_cv_2', 'reward_var_v_2', 'reward_var_g_2',
+                     'reward_var_p_2', 'episode_length', 'compute_greedy_num_consolidated',
+                     'seed', 'cluster', 'workload', 'nodes_cap_rng',
+                     'services_request_rng', 'num_users', 'num_stations',
+                     'network', 'normalise_latency', 'trace',
+                     'from_cluster', 'edge_simulator_config', 'action_method',
+                     'step_method', 'kube', 'cluster_path',
+                     'workload_path', 'no_action_on_overloaded', 'reward_var_one',
+                     'reward_var_two', 'reward_var_three', 'reward_var_four',
+                     'placement_reset', 'discrete_actions', 'max_services_nodes',
+                     'backlog_size', 'job_arrival', 'target_utilization',
+                     'reward_option']
 
     for key, _ in config.items():
         assert key in allowed_items, (f"<{key}> is not an allowed items for"
@@ -71,7 +71,8 @@ def check_config(config: Dict[str, Any]):
         "nodes_resources_unused_frac",
         "nodes_requests_available_frac_avg",
         "nodes_resources_unused_avg",
-        "backlog_services_requests"]
+        "backlog_services_requests",
+        "backlog_services_requests_frac"]
 
     assert set(config['obs_elements']).issubset(
         set(all_obs_elements)), f"wrong input for the obs_element <{config['obs_elements']}>"
