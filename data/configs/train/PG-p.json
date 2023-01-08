@@ -10,8 +10,8 @@
         "penalty_c": 0,
         "penalty_cv": 0,
         "penalty_v": 0,
-        "penalty_g": 1,
-        "penalty_p": 0,
+        "penalty_g": 0,
+        "penalty_p": 1,
         "reward_var_illegal_1": 0.1,
         "reward_var_u_1": 0.1,
         "reward_var_c_1": 0.1,
@@ -61,6 +61,6 @@
         "seed": 203
     },
     "stop": {
-        "timesteps_total": 2000000
+        "timesteps_total": 500000
     }
 }

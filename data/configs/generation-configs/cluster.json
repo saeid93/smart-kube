@@ -2,11 +2,11 @@
     "notes":"small cluster to fix the namings",
     "fixed_size_cluster": true,
     "nums": {
-        "nodes": 4,
-        "services": 180,
+        "nodes": 8,
+        "services": 400,
         "resources": 2,
-        "services_types": 3,
-        "services_types_map": [60, 60, 60]
+        "services_types": 1,
+        "services_types_map": [400]
     },
     "metrics": {
         "ram":"mb",
@@ -18,20 +18,20 @@
     },
     "nodes_cap_rng": {
         "ram": {
-            "min": 40000,
-            "max": 40000,
+            "min": 20000,
+            "max": 20000,
             "step": 1
         },
         "cpu": {
-            "min": 8,
-            "max": 8,
+            "min": 20,
+            "max": 20,
             "step": 1
         }
     },
     "services_request_rng": {
         "0":
             {
-            "num": 60,
+            "num": 400,
             "ram": {
                 "min": 1000,
                 "max": 1000,
@@ -42,37 +42,9 @@
                 "max": 1,
                 "step": 1
             }
-        },
-        "1":
-            {
-            "num": 60,
-            "ram": {
-                "min": 2000,
-                "max": 2000,
-                "step": 1
-            },
-            "cpu": {
-                "min": 2,
-                "max": 2,
-                "step": 1
-            }
-        },
-        "2":
-            {
-            "num": 60,
-            "ram": {
-                "min": 4000,
-                "max": 4000,
-                "step": 1
-            },
-            "cpu": {
-                "min": 4,
-                "max": 4,
-                "step": 1
-            }
         }
     },
-    "start_workload":[[0.5, 0.5], [0.5, 0.5], [0.5, 0.5]],
+    "start_workload":[[0.5, 0.5]],
     "cluster_start_time": 0,
     "cluster_end_time": 5000,
     "seed": 42

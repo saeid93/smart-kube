@@ -7,10 +7,10 @@
         ],
         "penalty_illegal": -1,
         "penalty_u": 0,
-        "penalty_c": 0,
+        "penalty_c": 1,
         "penalty_cv": 0,
         "penalty_v": 0,
-        "penalty_g": 1,
+        "penalty_g": 0,
         "penalty_p": 0,
         "reward_var_illegal_1": 0.1,
         "reward_var_u_1": 0.1,
@@ -33,7 +33,7 @@
         "discrete_actions": false,
         "backlog_size": 2,
         "seed": 1204,
-        "target_utilization": [0.3, 0.3],
+        "target_utilization": [0.5, 0.5],
         "job_arrival":{
             "mode": "fixed",
             "interval": 5
@@ -45,5 +45,22 @@
             "clean_after_exit": true,
             "utilization_image": "sdghafouri/utilization-server"
         }
+    },
+    "run_or_experiment": "PG",
+    "learn_config": {
+        "train_batch_size": 100,
+        "num_gpus": 0.25,
+        "model": {
+            "fcnet_hiddens": [64, 64],
+            "fcnet_activation": "linear"
+        },
+        "gamma": 0.99,
+        "lr": 0.0003,
+        "num_workers": 3,
+        "observation_filter": "NoFilter",
+        "seed": 203
+    },
+    "stop": {
+        "timesteps_total": 2000000
     }
 }

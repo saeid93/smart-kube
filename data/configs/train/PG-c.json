@@ -33,7 +33,7 @@
         "discrete_actions": false,
         "backlog_size": 2,
         "seed": 1204,
-        "target_utilization": [0.1, 0.1],
+        "target_utilization": [0.3, 0.3],
         "job_arrival":{
             "mode": "fixed",
             "interval": 5
