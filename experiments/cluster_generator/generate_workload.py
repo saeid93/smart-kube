@@ -121,7 +121,7 @@ def generate_workload(notes: str, cluster_id: int,
 @click.command()
 @click.option('--workload-type',
               type=click.Choice(
-                  ['random', 'arabesque', 'alibaba']), default='random')
+                  ['random', 'arabesque', 'alibaba']), default='arabesque')
 def main(workload_type: str):
     # read the config file
     config_file_path = os.path.join(

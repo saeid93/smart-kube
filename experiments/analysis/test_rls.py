@@ -225,6 +225,13 @@ def flatten(raw_obs, action, reward, info):
         'reward_v': info['rewards']['v'],
         'reward_g': info['rewards']['g'],
         'reward_p': info['rewards']['p'],
+        'reward_illegal': info['rewards']['illegal'],
+        'u': info['values']['u'],
+        'c': info['values']['c'],
+        'cv': info['values']['cv'],
+        'v': info['values']['v'],
+        'g': info['values']['g'],
+        'p': info['values']['p'],
         'reward': reward
     }
 
@@ -296,17 +303,17 @@ def fix_grid_searches(
 
 @click.command()
 @click.option('--local-mode', type=bool, default=True)
-@click.option('--test-series', required=True, type=int, default=1)
-@click.option('--train-series', required=True, type=int, default=1)
+@click.option('--test-series', required=True, type=int, default=12)
+@click.option('--train-series', required=True, type=int, default=62)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'kube-scheduler']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=0)
+@click.option('--cluster-id', required=True, type=int, default=12)
 @click.option('--workload-id', required=True, type=int, default=0)
 @click.option('--experiment-id', required=True, type=int, default=0)
-@click.option('--episode-length', required=False, type=int, default=10)
+@click.option('--episode-length', required=False, type=int, default=1000)
 @click.option('--num-episodes', required=False, type=int, default=5)
-@click.option('--workload-id-test', required=False, type=int, default=0)
+@click.option('--workload-id-test', required=False, type=int, default=1)
 @click.option('--checkpoint-to-load', required=False, type=str, default='last')
 def main(local_mode: bool, test_series: int, train_series: int,
          type_env: str, cluster_id: int, workload_id: int,

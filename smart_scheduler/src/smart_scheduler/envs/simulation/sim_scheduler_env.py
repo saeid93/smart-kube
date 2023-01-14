@@ -299,7 +299,7 @@ class SimSchedulerEnv(gym.Env):
         self.timestep_episode += 1
 
         # TODO fix reward
-        reward, rewards = self._reward()
+        reward, rewards, values = self._reward()
 
         info = {
             'scheduling_timestep': scheduling_timestep,
@@ -311,7 +311,8 @@ class SimSchedulerEnv(gym.Env):
             'timestep_episode': self.timestep_episode,
             'rewards': rewards,
             'nodes_services': self.cluster.nodes_services,
-            'seed': self.base_env_seed}
+            'seed': self.base_env_seed,
+            'values': values}
 
         assert self.observation_space.contains(self.observation),\
                 (f"observation:\n<{self.raw_observation}>\noutside of "

@@ -16,12 +16,12 @@ def _reward(self) -> Tuple[
             "p": 0
             }
     illegal = _illegal(self)
-    u = _u(self)
-    c = _c(self)
-    cv = _cv(self)
-    v = _v(self)
-    g = _g(self)
-    p = _p(self)
+    u, u_val = _u(self)
+    c, c_val = _c(self)
+    cv, cv_val = _cv(self)
+    v, v_val = _v(self)
+    g, g_val = _g(self)
+    p, p_val = _p(self)
     rewards = {
         "illegal": illegal,
         "u": u,
@@ -31,11 +31,19 @@ def _reward(self) -> Tuple[
         "g": g,
         "p": p
     }
+    values = {
+        'u': u_val,
+        'c': c_val,
+        'cv': cv_val,
+        'v': v_val,
+        'g': g_val,
+        'p': p_val
+    }
     if self.reward_option == 'rlsk':
         rewards_total = rlsk(self, u, c, v)
     if self.reward_option == 'proposed':
         rewards_total = proposed(self, p, g, c, cv)
-    return rewards_total, rewards
+    return rewards_total, rewards, values
 
 def rescale(values, old_min = 0, old_max = 1, new_min = 0, new_max = 100):
     output = []
@@ -78,11 +86,11 @@ def _u(self):
         self.cluster.nodes_usages_frac, axis=1)
     overal_resource_usage = np.sum(
         average_resource_usage_fraction)
-    # overal_resource_usage_scaled = rescale(
-    #     [overal_resource_usage], old_min = 0, old_max = self.reward_var_u_1,
-    #     new_min = 0, new_max = self.reward_var_u_2)[0]
-    overal_resource_usage_scaled = overal_resource_usage # TEMP
-    return overal_resource_usage_scaled
+    overal_resource_usage_scaled = rescale(
+        [overal_resource_usage], old_min = 0, old_max = self.reward_var_u_1,
+        new_min = 0, new_max = self.reward_var_u_2)[0]
+    # overal_resource_usage_scaled = overal_resource_usage # TEMP
+    return overal_resource_usage_scaled, overal_resource_usage
 
 def _c(self):
     """compute the difference reward
@@ -95,11 +103,11 @@ def _c(self):
                 diff_node += np.abs(resource_i-resource_j)
         diff_usage_per_node.append(diff_node/2)
     total_resource_difference_all_cluster = np.sum(diff_usage_per_node)
-    # total_resource_difference_all_cluster_scaled = rescale(
-    #     [total_resource_difference_all_cluster], old_min = 0, old_max = self.reward_var_c_1,
-    #     new_min = 0, new_max = self.reward_var_c_2)[0]
-    total_resource_difference_all_cluster_scaled = total_resource_difference_all_cluster # TEMP
-    return total_resource_difference_all_cluster_scaled
+    total_resource_difference_all_cluster_scaled = rescale(
+        [total_resource_difference_all_cluster], old_min = 0, old_max = self.reward_var_c_1,
+        new_min = 0, new_max = self.reward_var_c_2)[0]
+    # total_resource_difference_all_cluster_scaled = total_resource_difference_all_cluster # TEMP
+    return total_resource_difference_all_cluster_scaled, total_resource_difference_all_cluster
 
 def _cv(self):
     """compute the difference reward for variance
@@ -109,11 +117,11 @@ def _cv(self):
         per_resource_var.append(np.var(
             self.cluster.nodes_usages_frac[:, resource]))
     total_resource_difference_all_cluster = np.sum(per_resource_var)
-    # total_resource_difference_all_cluster_scaled = rescale(
-    #     [total_resource_difference_all_cluster], old_min = 0, old_max = self.reward_var_cv_1,
-    #     new_min = 0, new_max = self.reward_var_cv_2)[0]
-    total_resource_difference_all_cluster_scaled = total_resource_difference_all_cluster # TEMP
-    return total_resource_difference_all_cluster_scaled
+    total_resource_difference_all_cluster_scaled = rescale(
+        [total_resource_difference_all_cluster], old_min = 0, old_max = self.reward_var_cv_1,
+        new_min = 0, new_max = self.reward_var_cv_2)[0]
+    # total_resource_difference_all_cluster_scaled = total_resource_difference_all_cluster # TEMP
+    return total_resource_difference_all_cluster_scaled, total_resource_difference_all_cluster
 
 def _v(self):
     """reward for balancing the ultilization across servers
@@ -125,11 +133,11 @@ def _v(self):
         for node_j in average_resource_usage_fraction:
             diff_usage_nodes = np.abs(node_i-node_j)
     diff_usage_nodes /= 2
-    # diff_usage_nodes_scaled = rescale(
-    #     [diff_usage_nodes], old_min = 0, old_max = self.reward_var_v_1,
-    #     new_min = 0, new_max = self.reward_var_v_2)[0]
-    diff_usage_nodes_scaled = diff_usage_nodes # TEMP
-    return diff_usage_nodes_scaled
+    diff_usage_nodes_scaled = rescale(
+        [diff_usage_nodes], old_min = 0, old_max = self.reward_var_v_1,
+        new_min = 0, new_max = self.reward_var_v_2)[0]
+    # diff_usage_nodes_scaled = diff_usage_nodes # TEMP
+    return diff_usage_nodes_scaled, diff_usage_nodes
 
 
 def _g(self):
@@ -138,18 +146,18 @@ def _g(self):
     diff_from_target = np.abs(
         self.cluster.nodes_requests_frac - self.target_utilization)
     diff_from_target_sum = np.sum(diff_from_target)
-    # diff_from_target_sum_scaled = rescale(
-    #     [diff_from_target_sum], old_min = 0, old_max = self.reward_var_g_1,
-    #     new_min = 0, new_max = self.reward_var_g_2)[0]
-    diff_from_target_sum_scaled = diff_from_target_sum # TEMP
-    return diff_from_target_sum_scaled
+    diff_from_target_sum_scaled = rescale(
+        [diff_from_target_sum], old_min = 0, old_max = self.reward_var_g_1,
+        new_min = 0, new_max = self.reward_var_g_2)[0]
+    # diff_from_target_sum_scaled = diff_from_target_sum # TEMP
+    return diff_from_target_sum_scaled, diff_from_target_sum
 
 def _p(self):
     """binpacking/consolidation reward
     """
     reward = self.cluster.num_consolidated
-    # reward_scaled = rescale(
-    #     [reward], old_min = 0, old_max = self.reward_var_p_1,
-    #     new_min = 0, new_max = self.reward_var_p_2)[0]
-    reward_scaled = reward # TEMP
-    return reward_scaled
+    reward_scaled = rescale(
+        [reward], old_min = 0, old_max = self.reward_var_p_1,
+        new_min = 0, new_max = self.reward_var_p_2)[0]
+    # reward_scaled = reward # TEMP
+    return reward_scaled, reward

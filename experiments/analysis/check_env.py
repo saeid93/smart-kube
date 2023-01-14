@@ -8,8 +8,8 @@ from typing import Dict, Any
 import time
 import json
 from pprint import PrettyPrinter
-# import matplotlib.pyplot as plt
-# matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+matplotlib.use("Agg")
 pp = PrettyPrinter(indent=4)
 
 
@@ -48,7 +48,10 @@ def check_env(*, config: Dict[str, Any], type_env: str,
     total_timesteps = 10000
     _ = env.reset()
 
-    reward_total = []
+    rewards = []
+    rewards_cv = []
+    rewards_p = []
+    rewards_g = []
     while i < total_timesteps:
         action = env.action_space.sample()
         # action = 1
@@ -59,17 +62,13 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                 print('scheduling successful :)')
             else:
                 print('scheduling unsuccessful :(')
-        print("request:")
-        print(env.cluster.nodes_requests_frac)
-        # print("difference requests:")
-        # print(env.cluster.nodes_requests_frac - env.target_utilization)
-        # print(env.backlog_services_requests_frac)
-        # consolidation_rewards.append(consolidation_reward)
-        reward_total.append(reward)
+        rewards.append(reward)
+        rewards_cv.append(info['rewards']['cv'])
+        rewards_p.append(info['rewards']['p'])
+        rewards_g.append(info['rewards']['g'])
         env.render()
-        if env.time % 500 == 0:
+        if env.time % 100 == 0:
             TEMP = 1
-        # episode_total_consolidation_reward += consolidation_reward
         print("time: {}".format(
             env.time
         ))
@@ -89,7 +88,14 @@ def check_env(*, config: Dict[str, Any], type_env: str,
             print( + 40*'=' + ' Done for ending the simulation ' + 40*'=')
             break
         i += 1
-    # x = np.arange(total_timesteps-1)
+    x = np.arange(len(rewards))
+    plt.plot(x, np.array(rewards), label = "Total")
+    plt.plot(x, np.array(rewards_cv), label = "CV")
+    plt.plot(x, np.array(rewards_p), label = "P")
+    # plt.plot(x, np.array(rewards_g), label = "G")
+    plt.legend()
+    plt.grid()
+    plt.savefig(f'1-2')
 
 @click.command()
 @click.option('--type-env', required=True,
@@ -97,7 +103,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=8)
+@click.option('--cluster-id', required=True, type=int, default=12)
 @click.option('--workload-id', required=True, type=int, default=0)
 def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]

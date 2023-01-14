@@ -48,7 +48,7 @@ class SimBinpackingEnv(SimSchedulerEnv):
         num_moves = len(np.where(
             self.services_nodes != prev_services_nodes)[0])
 
-        reward, rewards = self._reward(
+        reward, rewards, values = self._reward(
             num_overloaded=self.num_overloaded,
             num_moves=num_moves
             )
@@ -58,7 +58,8 @@ class SimBinpackingEnv(SimSchedulerEnv):
                 'num_overloaded': self.num_overloaded,
                 'total_reward': reward,
                 'timestep': self.timestep,
-                'rewards': rewards}
+                'rewards': rewards,
+                'values': values}
 
         assert self.observation_space.contains(self.observation),\
                 (f"observation:\n<{self.raw_observation}>\noutside of "

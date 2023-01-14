@@ -1,7 +1,7 @@
 {
     "workload_type": "arabesque",
     "notes": "arabesque dataset usage",
-    "cluster_id": 6,
+    "cluster_id": 12,
     "num_services":60,
     "min_timesteps": 100,
     "plot_smoothing":301,

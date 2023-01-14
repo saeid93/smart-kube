@@ -158,7 +158,7 @@ class KubeSchedulerEnv(KubeBaseEnv):
         num_moves = len(np.where(
             self.services_nodes != prev_services_nodes)[0])
 
-        reward, rewards = self._reward(
+        reward, rewards, values = self._reward(
             num_overloaded=self.num_overloaded,
             users_distances=users_distances,
             num_moves=num_moves
@@ -172,7 +172,8 @@ class KubeSchedulerEnv(KubeBaseEnv):
                 'timestep': self.timestep,
                 'global_timestep': self.global_timestep,
                 'rewards': rewards,
-                'seed': self.base_env_seed}
+                'seed': self.base_env_seed,
+                'values': values}
 
         assert self.observation_space.contains(self.observation),\
                 (f"observation:\n<{self.raw_observation}>\noutside of "
