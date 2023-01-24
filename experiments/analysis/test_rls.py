@@ -304,13 +304,13 @@ def fix_grid_searches(
 @click.command()
 @click.option('--local-mode', type=bool, default=True)
 @click.option('--test-series', required=True, type=int, default=12)
-@click.option('--train-series', required=True, type=int, default=62)
+@click.option('--train-series', required=True, type=int, default=66)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'kube-scheduler']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=12)
+@click.option('--cluster-id', required=True, type=int, default=13)
 @click.option('--workload-id', required=True, type=int, default=0)
-@click.option('--experiment-id', required=True, type=int, default=0)
+@click.option('--experiment-id', required=True, type=int, default=2)
 @click.option('--episode-length', required=False, type=int, default=1000)
 @click.option('--num-episodes', required=False, type=int, default=5)
 @click.option('--workload-id-test', required=False, type=int, default=1)

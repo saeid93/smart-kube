@@ -18,13 +18,13 @@
     },
     "nodes_cap_rng": {
         "ram": {
-            "min": 20000,
-            "max": 20000,
+            "min": 16000,
+            "max": 16000,
             "step": 1
         },
         "cpu": {
-            "min": 20,
-            "max": 20,
+            "min": 16,
+            "max": 16,
             "step": 1
         }
     },
