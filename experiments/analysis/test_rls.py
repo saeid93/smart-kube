@@ -303,8 +303,8 @@ def fix_grid_searches(
 
 @click.command()
 @click.option('--local-mode', type=bool, default=True)
-@click.option('--test-series', required=True, type=int, default=12)
-@click.option('--train-series', required=True, type=int, default=66)
+@click.option('--test-series', required=True, type=int, default=13)
+@click.option('--train-series', required=True, type=int, default=79)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'kube-scheduler']),
               default='sim-scheduler')

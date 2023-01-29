@@ -89,13 +89,15 @@ def check_env(*, config: Dict[str, Any], type_env: str,
             break
         i += 1
     x = np.arange(len(rewards))
-    plt.plot(x, np.array(rewards), label = "Total")
-    plt.plot(x, np.array(rewards_cv), label = "CV")
-    plt.plot(x, np.array(rewards_p), label = "P")
+    plt.plot(x, np.array(rewards), label = "Total Rewards")
+    plt.plot(x, np.array(rewards_cv), label = "Variance reward")
+    plt.plot(x, np.array(rewards_p), label = "Consolidation reward")
+    plt.xlabel('Timesteps')
+    plt.ylabel('Reward Value')
     # plt.plot(x, np.array(rewards_g), label = "G")
     plt.legend()
     plt.grid()
-    plt.savefig(f'1-2')
+    plt.savefig(f'rewards.pdf')
 
 @click.command()
 @click.option('--type-env', required=True,
@@ -103,7 +105,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=12)
+@click.option('--cluster-id', required=True, type=int, default=13)
 @click.option('--workload-id', required=True, type=int, default=0)
 def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]
