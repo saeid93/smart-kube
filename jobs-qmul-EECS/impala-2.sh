@@ -1,0 +1,3 @@
+/homes/sg324/.conda/envs/central/bin/python /homes/sg324/smart-scheduler/experiments/training/train.py --config-file IMPALA-p-big --cluster-id 14 --workload-id 0 --series 99
+/homes/sg324/.conda/envs/central/bin/python /homes/sg324/smart-scheduler/experiments/training/train.py --config-file IMPALA-cv-big --cluster-id 14 --workload-id 0 --series 99
+/homes/sg324/.conda/envs/central/bin/python /homes/sg324/smart-scheduler/experiments/training/train.py --config-file IMPALA-balance-big --cluster-id 14 --workload-id 0 --series 99

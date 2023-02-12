@@ -1,6 +1,7 @@
 """base class of all simulation enviornments
 """
 import numpy as np
+import random
 from requests import request
 from scipy.stats import bernoulli
 from copy import deepcopy
@@ -224,8 +225,8 @@ class SimSchedulerEnv(gym.Env):
                 limits=limits,
                 workload=service_workload,
                 serving_time=serving_time))
-            # import random
-            # random.shuffle(self.pending_services)
+
+            random.shuffle(self.pending_services)
 
         if sim_type == 'arabesque':
             self.services_resources_request = np.array(
@@ -233,6 +234,8 @@ class SimSchedulerEnv(gym.Env):
                     lambda service: service.requests, self.pending_services)))
         if sim_type == 'alibaba':
             b = 1
+
+        # load and shuffle all services
         self.initil_pending_services = deepcopy(self.pending_services)
         self.backlog_size = config['backlog_size']
 

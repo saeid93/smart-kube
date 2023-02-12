@@ -11,7 +11,7 @@
         "penalty_cv": 1,
         "penalty_v": 0,
         "penalty_g": 0,
-        "penalty_p": 2,
+        "penalty_p": 1,
         "reward_var_illegal_1": 0.1,
         "reward_var_u_1": 0.1,
         "reward_var_c_1": 0.1,

@@ -65,6 +65,6 @@
         "seed": 203
     },
     "stop": {
-        "timesteps_total": 2000000
+        "timesteps_total": 200000
     }
 }
