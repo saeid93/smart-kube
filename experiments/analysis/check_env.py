@@ -97,7 +97,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
     # plt.plot(x, np.array(rewards_g), label = "G")
     plt.legend()
     plt.grid()
-    plt.savefig(f'rewards.png')
+    plt.savefig(f'rewards-{cluster_id}.png')
 
 @click.command()
 @click.option('--type-env', required=True,
@@ -105,7 +105,7 @@ def check_env(*, config: Dict[str, Any], type_env: str,
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=18)
+@click.option('--cluster-id', required=True, type=int, default=17)
 @click.option('--workload-id', required=True, type=int, default=0)
 def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]
@@ -117,7 +117,7 @@ def main(type_env: str, cluster_id: int, workload_id: int):
     """
     config_file_path = os.path.join(
         CONFIGS_PATH, 'check',
-        'check_env.json')
+        f'check_env_{cluster_id}.json')
     with open(config_file_path) as cf:
         config = json.loads(cf.read())
 

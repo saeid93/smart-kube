@@ -8,7 +8,7 @@
         "penalty_illegal": -1,
         "penalty_u": 0,
         "penalty_c": 0,
-        "penalty_cv": 1,
+        "penalty_cv": 0,
         "penalty_v": 0,
         "penalty_g": 0,
         "penalty_p": 1,
@@ -46,19 +46,18 @@
             "utilization_image": "sdghafouri/utilization-server"
         }
     },
-    "run_or_experiment": "IMPALA",
+    "run_or_experiment": "PG",
     "learn_config": {
         "train_batch_size": 100,
         "num_gpus": 0.25,
         "model": {
             "fcnet_hiddens": [64, 64],
-            "fcnet_activation": "linear",
-            "vf_share_layers": true
+            "fcnet_activation": "linear"
         },
         "gamma": 0.99,
         "lr": 0.0003,
         "num_workers": 3,
-        "vf_loss_coeff": 0.01,
+        "observation_filter": "NoFilter",
         "seed": 203
     },
     "stop": {
