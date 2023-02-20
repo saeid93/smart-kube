@@ -1,0 +1,518 @@
+based on results so far
+
+series 2
+- good results for g
+outcome:
+- fix other rewards for PG, IMPALA and PPO and then find a bad case for DQN and you are done
+
+series 3, 4, 5:
+test of reduced space
+outcome: should be repeated because of the wrong reward
+
+series 6, 7, 8:
+repeat of 3, 4, 5
+outcome:    "backlog_services_requests",
+            "nodes_requests",
+            "nodes_usages"
+seems to be enough
+TODO_1: test this obs space
+
+series 9:
+test of reward v
+outcome: all zero
+TODO_2: reward v meaning should be understood and then re-test
+
+series 10:
+TODO_1: 
+test of reward p with reduced search space
+outcome: we can continue with this observation space
+
+series 11:
+test of reward c
+outcome: Seems to work - more elaboration is needed
+TODO_4: test reward c on benchmark cluster 7
+
+series 12:
+test of reward p on smaller dataset - cluster 7
+outcome: working completely
+
+series 13:
+test of reward g on smaller dataset - cluster 7
+outcome: not working at all
+TODO_5: test reward g on cluster 7 after checking search space
+
+series 14:
+series 12 (test of reward p) with the following space
+"backlog_services_requests_frac",
+            "nodes_requests",
+            "nodes_usages"
+outcome: new state space is validated
+
+series 15:
+series 13 with the following space, reward g
+"backlog_services_requests_frac",
+            "nodes_requests",
+            "nodes_usages"
+outcome:
+TODO_6: validate the new state-space in code
+
+sereis 15.1:
+TODO_6: validate the new state-space in code
+outcome: done
+
+series 16:
+TODO_4: test reward c on cluster 7
+outcome: seems to work
+TODO_7: test it without normalization
+TODO_8: test it with changed cap
+
+series 17:
+TODO_5: test reward g on cluster 7 with changed cap
+outcome: Interestingly it reduces reward cv but not the g itself
+TODO_9: test it without normalization
+
+series 18:
+TODO_3: one experiment with reward cv on cluster 7
+outcome: Seems not working
+TODO_10: test it without normalization
+
+series 19:
+TODO_7: test reward c on cluster 7 without normalization
+
+series 20:
+TODO_8: test reward c on cluster 7 with changed cap and without normalization
+
+series 21:
+TODO_9: Test reward cv on cluster 7 without normalization
+outcome: there was a bug and should be repeated
+TODO_11: repeat withouth the bug
+
+series 22:
+TODO_10: Test reward g on cluster 7 without normalization
+outcome: it is working, the results should be compared with g after TODO_11
+
+series 23:
+Test reward p on cluster 7 without normalization
+outcome: mistake - not fixed
+TODO_12: repeat
+
+series 24:
+TODO_11: Test reward cv on cluster 7 without normalization with bug fix
+outcome: fixed on reward cv as it is performing much better than cv
+Fixed: reward cv
+
+series 25:
+TODO_12: Test reward p on cluster 7 without normalization with bug fix
+outcome: works well
+
+series 26:
+a two node minimal cluster with similar sized jobs one reward p
+
+series 27:
+a two node minimal cluster with similar sized jobs one reward g
+outchome: substitute cv with g -> this is wrong g is differnt from cv TODO_13
+
+series 28:
+a two node minimal cluster with similar sized jobs one reward cv
+outcome: works perfectly
+
+series 29:
+a two node minimal cluster with similar sized jobs one reward c
+outcome: we left reward c
+
+series 30:
+a four node minimal cluster with similar sized jobs one reward p
+outcome: works perfectly
+
+series 31:
+a four node minimal cluster with similar sized jobs one reward cv
+outcome: works even better
+
+series 32:
+a four node minimal cluster with similar sized jobs one reward c
+outcome: we left reward c
+
+series 33:
+a eight node minimal cluster with similar sized jobs one reward p
+outcome: works perfectly
+
+series 34:
+a eight node minimal cluster with similar sized jobs one reward cv
+outcome: works perfectly
+
+series 35:
+a eight node minimal cluster with similar sized jobs one reward c
+outcome: we left reward c
+
+series 36:
+TODO_13: a two node minimal cluster with similar sized jobs one reward g
+outcome: not working
+TODO_14: try it with normalization
+
+series 37:
+TODO_13: a four node minimal cluster with similar sized jobs one reward g
+outcome: not working
+TODO_14: try it with normalization
+
+series 38:
+TODO_13: a eight node minimal cluster with similar sized jobs one reward g
+outcome: not working
+TODO_14: try it with normalization
+
+series 39:
+a four node on reward cv with shorter steps
+outcome: perfect but shorter steps was forgotten
+TODO_15: repeat with shorter steps
+
+series 40:
+a four node on reward p with shorter steps
+outcome: wrong reward, repeat
+TODO_16: repeat
+
+series 41:
+TODO_14: a two node minimal cluster with similar sized jobs one reward g with normalization
+outcome: not working
+TODO_16: in depth analysis with debug of reward g
+
+series 42:
+TODO_14: a four node minimal cluster with similar sized jobs one reward g with normalization
+outcome: not working
+TODO_16: in depth analysis with debug of reward g
+
+series 43:
+TODO_14: a eight node minimal cluster with similar sized jobs one reward g with normalization
+outcome: not working
+TODO_16: in depth analysis with debug of reward g
+
+series 44:
+TODO_15: a two node on reward cv with shorter steps
+outcome: good but small
+TODO_17: run on four and eight cluster
+
+series 45:
+TODO_15: a two node on reward p with shorter steps
+outcome: good but small
+TODO_17: run on four and eight cluster
+
+series 46:
+TODO_17: a four on reward cv with shorter steps
+outcome: fixed for session
+
+series 47:
+TODO_17: a four node on reward p with shorter steps
+outcome: fixed for session
+
+series 48:
+TODO_17: an eight node on reward cv with shorter steps
+outcome: fixed for session
+
+series 49:
+TODO_17: an eight node on reward p with shorter steps
+outcome: fixed for session
+
+series 50:
+combination of reward cv and p to find a middle ground with normalizing on four node cluster - reward cv only
+outcome: worked as expected
+
+series 51:
+combination of reward cv and p to find a middle ground with normalizing on four node cluster- reward cv and p
+outcome: worked as expected
+
+series 52:
+combination of reward cv and p to find a middle ground with normalizing on four node cluster - reward p only
+outcome: worked as expected
+
+series 53:
+combination of reward cv and p to find a middle ground with normalizing on eight node cluster - reward cv only
+outcome: not working
+
+series 54:
+combination of reward cv and p to find a middle ground with normalizing on eight node cluster - reward cv and p
+outcome: not working
+
+series 55:
+combination of reward cv and p to find a middle ground with normalizing on eight node cluster- reward p only
+outcome: working but useless as 53 and 54 are also not working
+
+series 56:
+none-fixed sized job on the cluster of size four nodes reward p
+outcome: working as expected
+TODO_18: more diverse set -> 8 types of jobs
+
+series 57:
+none-fixed sized job on the cluster of size four nodes reward cv and p
+outcome: working as expected
+TODO_18: more diverse set -> 8 types of jobs
+
+series 58:
+none-fixed sized job on the cluster of size four nodes reward cv
+outcome: working as expected
+TODO_18: more diverse set -> 8 types of jobs
+
+series 59:
+TODO_18: 8 type none-fixed sized job on the cluster of size four nodes reward p
+outcome: works
+
+series 60:
+TODO_18: more diverse set -> 8 types of jobs on reward cv and p
+outcome: wrong cluser
+TODO_19: repeat
+
+
+series 61:
+TODO_18: more diverse set -> 8 types of jobs on reward cv
+outcome: works
+
+series 62:
+TODO_19: repeat 60
+outcome: works
+
+series 63:
+TODO_19: repeat 60
+double weights of consolidation
+outcome: not work
+
+series 64:
+check different weighting between cv and p to find the best hyperparameters
+weighting that make a difference:
+outcome: equal wights are still the bests
+TODO_20: smaller servers and multiples of two
+TODO_21: more testing jobs
+TODO_22: PPO
+TODO_23: IMPALA
+
+series 65:
+TODO_20: Make servers smaller and multipls of two to be consistent with cloud resources and with all three reward weightenings
+
+series 66:
+TODO_22: PPO
+
+series 67:
+TODO_23: IMPALA
+
+series 68:
+DQN
+
+series 69:
+A2C
+
+series 70:
+TODO_20: Make servers smaller and multipls of two to be consistent with cloud resources and with all three reward weightenings
+
+
+
+series 71-75:
+trying to sync values
+PG, PPO, IMPALA, DQN
+
+series 76-79:
+repeat of the former series
+
+
+
+series 80-83:
+make training batch bigger to make DQN worse
+outcome: no use
+
+
+series 84-85:
+8 node cluster and test for IMPALA and DQN
+outcome: no use:
+
+series 86-87:
+8 node cluster with smaller servers and test for IMPALA and DQN
+outcome: no use:
+
+
+series 88-89:
+4 node cluster with smaller servers setting and test for IMPALA and DQN
+outcome: DQN
+
+series 90-91:
+4 node cluster with previous setting and test for IMPALA and DQN
+outcome: no use
+
+series 92-93:
+4 node cluster and test for IMPALA and DQN with longer episode length
+outcome: still DQN is better
+
+series 94-95:
+8 node cluster and test for IMPALA and DQN w100ith with longer episode length
+outcome: still DQN is better but IMPALA is better in finding the balance
+
+series 96-97:
+reeat of 92-93 with shuffling - 4 node cluster and test for IMPALA and DQN with longer episode length
+outcome: without shuffle showed better curves in DQN no use
+
+series 98-99:
+reeat of 94-95 with shuffling - 8 node cluster and test for IMPALA and DQN with with longer episode length
+outcome: without shuffle showed better curves in DQN, no use
+
+series 100-101:
+8 node cluster for IMPALA and DQN with smaller episode length but bigger, tighter jobs
+outcome: shows some promising curve, DQN is paper ready wit hreward g and u
+
+series 102:
+follow the DQN path of 100 and make the span clearer
+gridsearch for big and small servers
+
+series 103:
+follow the DQN path of 100 and make the span clearer
+gridsearch on differnt wieghting between rewards
+outcome: 0.75, 0.75 optimal
+
+series 104:
+follow the DQN path of 100 and make the span clearer
+gridsearch on differnt episode lenghth
+outcome: no real different, do it on 100
+
+series 105:
+not using homogeneous weighting on eight node 2, 0.75,
+outcome: no use
+
+series 106:
+same result on 8 node cluster but only the optimal
+outcome: finalized for paper
+FINALIZED
+
+series 107:
+same resutls on 4 node cluster
+outcome: great convergance, but needs to play with reward value to get to a tradeoff
+
+series 108:
+same resutls on 16 node cluster
+outcome: great convergance, but needs to play with reward value to get to a tradeoff
+
+series 109:
+Redo 107 for best tradeoff
+outcome: weighting does not give tradeoff, I should go for normalization variables
+TODO_20: work on the normalizing
+
+series 110:
+Redo 108 for best tradeoff
+outcome: weighting does not give tradeoff, I should go for normalization variables
+TODO_20: work on the normalizing
+
+series 111:
+An experiment with 32 servers
+outcome: promising but needs to work on the tradeoff with weighthing
+TODO_20: work on the normalizing
+
+series 112:
+redo 109 for TODO_20 on 4 node
+outcome: finalized for the paper
+FINALIZED
+
+series 113:
+redo 110 for TODO_20 on 16 node
+outcome: promissing just neeed some more playing with variables
+TODO_21
+
+series 114:
+redo 111 for TODO_20 on 32 node
+outcome: promissing just neeed some more playing with variables
+TODO_21
+
+series 115:
+redo of 113 for TODO_21 for better curve DQN on 16 nodes and deacreased consolidation effect
+outcome: finalized for the paper
+
+series 116:
+test on IMPALA with new scheme, all cluster sizes
+outcome: not bad but not enough
+
+series 117:
+test on PG with new scheme, all cluster sizes
+outcome: bye bye PG
+
+series 118:
+test on PPO with new scheme, all cluster sizes
+outcome: bye bye PPO
+
+series 119:
+test on DQN with new scheme, all cluster sizes
+outcome: redo for mistake in experiments
+
+series 120:
+test on IMPALA with reduced rewards new scheme, all cluster sizes
+outcome: not good, going for impala parameter search
+
+series 121:
+test on DQN with new scheme, all cluster sizes
+outcome: finalized for the paepr
+FINALIZED
+
+series 122:
+gridsearch on impala algorithms on entropy_coeff and entropy_coeff_schedule 
+outcome: not good, going for smaller values
+
+series 123:
+gridsearch on impala algorithms on entropy_coeff and entropy_coeff_schedule 
+repeat of 122 with smaller values
+outcome: no result
+
+series 124:
+test on other algorithms
+outcome: no result
+
+series 125:
+test on impala with filter
+outcome: no result
+
+series 126:
+test ppp with filter
+outcome: no result
+
+series 127:
+gridsearch on ppo
+outcome: no result
+
+series 128:
+Conclude here on one type and go for tests - only continue if there is a very clear difference, otherwise do this just as a hobby with a cap of 30 min per day
+
+series 129:
+Ask question about Apex and run one experiements with each of them but only one!
+
+series 120:
+making the workloads tighter by making the service times longer
+
+series 121:
+test on other algorithms
+
+
+series 114:
+finalize with 4, 8, 16, 32 on the paper
+
+series 114:
+brute force all other algorithms for one better answer until the deadline
+
+
+series 103:
+Either another algorithm
+criteria to check:
+1. weighting
+2. episode length
+3. training iterations
+
+series 103:
+Or go with the DQN with smaller sizes
+
+-----------------
+
+series 96:
+what factor in https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9591490 for IMPALA better PPO
+
+
+series 96:
+check how the system works
+
+
+Fixed:
+we are fixed on the reward cv and p for their performance
+show 84-87-101 to Joseph
+
+regx:
+runs: ((92/)|(93/)).*.(?=experiments/2)
+reward to search: (tune/custom_metrics/num_consolidated_avg_mean)|(tune/custom_metrics/reward_p_mean)|(tune/custom_metrics/reward_cv_mean)|(tune/custom_metrics/reward_u_mean)|tune/custom_metrics/reward_g_mean
+
+

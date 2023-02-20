@@ -1,3 +1,5 @@
+# callback function updated for new versios
+
 import numpy as np
 from typing import Dict
 import ray
@@ -19,7 +21,7 @@ from ray.rllib.utils.deprecation import deprecation_warning
 from ray.rllib.utils.typing import AgentID, PolicyID
 
 
-class CloudCallback(DefaultCallbacks):
+class CloudCallbackUpdate(DefaultCallbacks):
 
     """
     callbakc for saving my own metrics
@@ -205,7 +207,7 @@ class CloudCallback(DefaultCallbacks):
         self.total += train_batch.count
         self.count += 1
 
-    def on_train_result(self, *, trainer, result: dict, **kwargs):
+    def on_train_result(self, *, result: dict, **kwargs):
         """Called at the end of Trainable.train().
 
         Args:

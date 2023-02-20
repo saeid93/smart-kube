@@ -181,6 +181,7 @@ def run_experiments(
             'series': train_series,
             'cluster_id': cluster_id,
             'workload_id': workload_id,
+            'workload_id_test': workload_id_test,
             'checkpoint': checkpoint_to_load_info,
             'experiment_str': experiment_str,
             'experiments': experiment_id,
@@ -303,17 +304,17 @@ def fix_grid_searches(
 
 @click.command()
 @click.option('--local-mode', type=bool, default=True)
-@click.option('--test-series', required=True, type=int, default=13)
-@click.option('--train-series', required=True, type=int, default=79)
+@click.option('--test-series', required=True, type=int, default=17)
+@click.option('--train-series', required=True, type=int, default=121)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'kube-scheduler']),
               default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=13)
+@click.option('--cluster-id', required=True, type=int, default=19)
 @click.option('--workload-id', required=True, type=int, default=0)
-@click.option('--experiment-id', required=True, type=int, default=2)
-@click.option('--episode-length', required=False, type=int, default=1000)
-@click.option('--num-episodes', required=False, type=int, default=5)
-@click.option('--workload-id-test', required=False, type=int, default=1)
+@click.option('--experiment-id', required=True, type=int, default=0)
+@click.option('--episode-length', required=False, type=int, default=100000)
+@click.option('--num-episodes', required=False, type=int, default=1)
+@click.option('--workload-id-test', required=False, type=int, default=3)
 @click.option('--checkpoint-to-load', required=False, type=str, default='last')
 def main(local_mode: bool, test_series: int, train_series: int,
          type_env: str, cluster_id: int, workload_id: int,

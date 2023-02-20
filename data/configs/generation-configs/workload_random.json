@@ -1,7 +1,7 @@
 {
     "workload_type": "random",
     "notes": "resoure usage",
-    "cluster_id": 20,
+    "cluster_id": 22,
     "timesteps": 300,
     "services_types": 8,
     "workloads_var" : {

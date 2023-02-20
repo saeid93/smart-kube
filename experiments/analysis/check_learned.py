@@ -39,7 +39,6 @@ from experiments.utils.constants import (
 from experiments.utils import (
     add_path_to_config,
     make_env_class,
-    CloudCallback
 )
 
 torch, nn = try_import_torch()

@@ -89,7 +89,8 @@ def generate_workload(notes: str, cluster_id: int,
             plot_smoothing=plot_smoothing,
             seed=seed)
         num_services = kwargs['num_services']
-        workloads, figs = workload_generator.make_workloads()
+        # workloads, figs = workload_generator.make_workloads()
+        workloads = workload_generator.make_workloads()
     elif workload_type == 'alibaba':
         b = 1
     info = {
@@ -113,15 +114,15 @@ def generate_workload(notes: str, cluster_id: int,
     print(f"\n\nGenerated data saved in <{dir2save}>\n\n")
 
     # save figs
-    figures_dir = os.path.join(dir2save, 'figures')
-    os.mkdir(figures_dir)
-    for i, fig in enumerate(figs):
-        fig.savefig(os.path.join(figures_dir, f'services_type_{i}.png'))
+    # figures_dir = os.path.join(dir2save, 'figures')
+    # os.mkdir(figures_dir)
+    # for i, fig in enumerate(figs):
+    #     fig.savefig(os.path.join(figures_dir, f'services_type_{i}.png'))
 
 @click.command()
 @click.option('--workload-type',
               type=click.Choice(
-                  ['random', 'arabesque', 'alibaba']), default='random')
+                  ['random', 'arabesque', 'alibaba']), default='arabesque')
 def main(workload_type: str):
     # read the config file
     config_file_path = os.path.join(

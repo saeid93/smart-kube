@@ -2,11 +2,11 @@
     "notes":"16 node clsuter same as cluster 17",
     "fixed_size_cluster": true,
     "nums": {
-        "nodes": 32,
-        "services": 6400,
+        "nodes": 10,
+        "services": 1200,
         "resources": 2,
         "services_types": 8,
-        "services_types_map": [800, 800, 800, 800, 800, 800, 800, 800]
+        "services_types_map": [150, 150, 150, 150, 150, 150, 150, 150]
     },
     "metrics": {
         "ram":"mb",
@@ -31,7 +31,7 @@
     "services_request_rng": {
         "0":
             {
-            "num": 800,
+            "num": 150,
             "ram": {
                 "min": 250,
                 "max": 250,
@@ -45,7 +45,7 @@
         },
         "1":
             {
-            "num": 800,
+            "num": 150,
             "ram": {
                 "min": 500,
                 "max": 500,
@@ -59,7 +59,7 @@
         },
         "2":
             {
-            "num": 800,
+            "num": 150,
             "ram": {
                 "min": 1000,
                 "max": 1000,
@@ -73,7 +73,7 @@
         },
         "3":
             {
-            "num": 800,
+            "num": 150,
             "ram": {
                 "min": 2000,
                 "max": 2000,
@@ -87,7 +87,7 @@
         },
         "4":
             {
-            "num": 800,
+            "num": 150,
             "ram": {
                 "min": 3000,
                 "max": 3000,
@@ -101,7 +101,7 @@
         },
         "5":
             {
-            "num": 800,
+            "num": 150,
             "ram": {
                 "min": 4000,
                 "max": 4000,
@@ -115,7 +115,7 @@
         },
         "6":
             {
-            "num": 800,
+            "num": 150,
             "ram": {
                 "min": 5000,
                 "max": 5000,
@@ -129,7 +129,7 @@
         },
         "7":
             {
-            "num": 800,
+            "num": 150,
             "ram": {
                 "min": 6000,
                 "max": 6000,

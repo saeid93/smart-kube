@@ -8,10 +8,10 @@
         "penalty_illegal": -1,
         "penalty_u": 0,
         "penalty_c": 0,
-        "penalty_cv": 0,
+        "penalty_cv": 0.75,
         "penalty_v": 0,
         "penalty_g": 0,
-        "penalty_p": 1,
+        "penalty_p": 0.75,
         "reward_var_illegal_1": 0.1,
         "reward_var_u_1": 0.1,
         "reward_var_c_1": 0.1,
@@ -46,9 +46,10 @@
             "utilization_image": "sdghafouri/utilization-server"
         }
     },
-    "run_or_experiment": "IMPALA",
+    "run_or_experiment": "PPO",
     "learn_config": {
         "train_batch_size": 100,
+        "sgd_minibatch_size": 64,
         "num_gpus": 0.25,
         "model": {
             "fcnet_hiddens": [64, 64],

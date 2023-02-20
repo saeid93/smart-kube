@@ -9,6 +9,7 @@ import ray
 from ray import tune
 from ray.rllib.utils.framework import try_import_torch
 import pprint
+from packaging import version
 
 # TODO Refine completely based on the new paper
 
@@ -24,7 +25,8 @@ from experiments.utils.constants import (
 from experiments.utils import (
     add_path_to_config,
     make_env_class,
-    CloudCallback
+    CloudCallback,
+    CloudCallbackUpdate
 )
 
 torch, nn = try_import_torch()
@@ -114,7 +116,10 @@ def learner(*, local_mode: bool,
     # if callback is specified add it here
     if use_callback and\
         type_env not in ['CartPole-v0', 'Pendulum-v0']:
-        ray_config.update({'callbacks': CloudCallback})
+        if version.parse(ray.__version__) < version.parse('1.9.0'):
+            ray_config.update({'callbacks': CloudCallback})
+        else:
+            ray_config.update({'callbacks': CloudCallbackUpdate})
 
     ray.init(local_mode=local_mode, num_gpus=1)
     # run the ML after fixing the folders structres

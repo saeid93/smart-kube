@@ -8,10 +8,10 @@
         "penalty_illegal": -1,
         "penalty_u": 0,
         "penalty_c": 0,
-        "penalty_cv": 0,
+        "penalty_cv": 1,
         "penalty_v": 0,
         "penalty_g": 0,
-        "penalty_p": 1,
+        "penalty_p": 0,
         "reward_var_illegal_1": 0.1,
         "reward_var_u_1": 0.1,
         "reward_var_c_1": 0.1,
@@ -46,20 +46,19 @@
             "utilization_image": "sdghafouri/utilization-server"
         }
     },
-    "run_or_experiment": "IMPALA",
+    "run_or_experiment": "DQN",
     "learn_config": {
-        "train_batch_size": 100,
         "num_gpus": 0.25,
+        "train_batch_size": 100,
         "model": {
             "fcnet_hiddens": [64, 64],
             "fcnet_activation": "linear",
             "vf_share_layers": true
         },
-        "gamma": 0.99,
+        "gamma": 0.9,
         "lr": 0.0003,
         "num_workers": 3,
-        "vf_loss_coeff": {"grid_search": [0.0001, 0.001, 0.005, 0.01]},
-        "entropy_coeff": {"grid_search": [0.0001, 0.001, 0.005, 0.01]},
+        "observation_filter": "MeanStdFilter",
         "seed": 203
     },
     "stop": {

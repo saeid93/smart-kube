@@ -13,5 +13,5 @@ requests==2.24.0
 colorama==0.4.4
 wget
 ipykernel
-ray==1.8.0
+ray
 ray[rllib]
