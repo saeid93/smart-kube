@@ -1,12 +1,11 @@
 import os
 from smart_scheduler.envs import (
     SimSchedulerEnv,
-    SimBinpackingEnv,
     KubeSchedulerEnv,
-    KubeBinpackingEnv,
 )
 # dfined by the user
-DATA_PATH = "/homes/sg324/smart-scheduler/data/"
+# DATA_PATH = "/homes/sg324/smart-scheduler/data/"
+DATA_PATH = "/home/user/smart-scheduler/data"
 
 # generated baesd on the users' path
 CLUSTERS_PATH = os.path.join(DATA_PATH, "clusters")
@@ -40,9 +39,7 @@ _create_dirs()
 
 ENVS = {
     'sim-scheduler': SimSchedulerEnv,
-    'sim-binpacking': SimBinpackingEnv,
     'kube-scheduler': KubeSchedulerEnv,
-    'kube-binpacking': KubeBinpackingEnv,
 }
 
 ENVSMAP = {

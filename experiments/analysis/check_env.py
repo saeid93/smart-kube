@@ -104,8 +104,8 @@ def check_env(*, config: Dict[str, Any], type_env: str,
               type=click.Choice(['sim-scheduler', 'sim-binpacking',
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
-              default='sim-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=22)
+              default='kube-scheduler')
+@click.option('--cluster-id', required=True, type=int, default=23)
 @click.option('--workload-id', required=True, type=int, default=0)
 def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]
@@ -117,7 +117,7 @@ def main(type_env: str, cluster_id: int, workload_id: int):
     """
     config_file_path = os.path.join(
         CONFIGS_PATH, 'check',
-        f'check_env_{cluster_id}.json')
+        f'check_env.json')
     with open(config_file_path) as cf:
         config = json.loads(cf.read())
 
