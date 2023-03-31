@@ -5,6 +5,9 @@ import requests
 import logging
 import socket
 import os
+import time
+import signal
+import threading
 
 logging.basicConfig(format='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%Y-%m-%d:%H:%M:%S',
@@ -15,6 +18,10 @@ COMMAND_TEMPLATE = "stress-ng --vm 1 --vm-bytes '{}M' --cpu 1 --cpu-load '{}' &"
 SUCCESS_MESSAGE = "Resources allocated successfully"
 app = Flask(__name__)
 
+def stop_server():
+    print('Stopping Flask app...')
+    # Send a SIGTERM signal to the current process
+    os.kill(os.getpid(), signal.SIGTERM)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -79,5 +86,8 @@ if __name__ == '__main__':
     # logging.info('running stress-ng: "{}"'.format(command))
     # os.system(command)
 
-    logging.info("serving 'app' on port {}".format(PORT))
-    app.run(host="0.0.0.0", port=PORT, debug=True, use_reloader=False)
+    timer = threading.Timer(10, stop_server)
+    timer.start()
+
+    # logging.info("serving 'app' on port {}".format(PORT))
+    # app.run(host="0.0.0.0", port=PORT, debug=True, use_reloader=False)

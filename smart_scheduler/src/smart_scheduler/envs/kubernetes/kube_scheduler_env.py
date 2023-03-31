@@ -66,6 +66,7 @@ from smart_scheduler.util.kubernetes_utils import (
     mapper, construct_svc
 )
 from smart_scheduler.util import logger
+import time
 
 class KubeSchedulerEnv(gym.Env):
     """
@@ -328,6 +329,7 @@ class KubeSchedulerEnv(gym.Env):
             tick_seconds
         """
         self.time += 1
+        time.sleep(1)
         self.cluster.clock_tick()
 
     @override(gym.Env)
