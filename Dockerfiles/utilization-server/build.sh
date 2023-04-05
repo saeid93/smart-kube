@@ -1,1 +1,1 @@
-docker build --tag=sdghafouri/utilization-server-smart-scheduler-smart-scheduler:latest . && docker tag sdghafouri/utilization-server-smart-scheduler:latest sdghafouri/utilization-server-smart-scheduler-smart-scheduler && docker push sdghafouri/utilization-server-smart-scheduler-smart-scheduler
+docker build --tag=sdghafouri/utilization-server-smart-scheduler:latest . && docker tag sdghafouri/utilization-server-smart-scheduler:latest sdghafouri/utilization-server-smart-scheduler && docker push sdghafouri/utilization-server-smart-scheduler

@@ -190,6 +190,8 @@ def construct_pod(
                     )
                 )
             ],
+            termination_grace_period_seconds=0,
+            restart_policy="Never",
             node_name=node_name
         )
     )

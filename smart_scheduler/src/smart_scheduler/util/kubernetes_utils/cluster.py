@@ -732,7 +732,7 @@ class Action(BaseFunctionalities):
             previous Service
 
         :param to_node_name: str
-            name of the node which you want to start the pod in
+            name of the node which you want to start the pod inprallel
 
         :param to_node_id: int
             id of the node which you want to start the pod in
@@ -951,7 +951,7 @@ class KubeCluster:
 
         if utilization_server_image is None:
             # set default value for utilization server image
-            utilization_server_image = 'r0ot/sdghafouri/utilization-server-smart-scheduler'
+            utilization_server_image = 'sdghafouri/utilization-server-smart-scheduler'
 
         # define using namespace
         self.namespace = namespace

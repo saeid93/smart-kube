@@ -166,25 +166,25 @@ def runScheduler():
 
 if __name__ == '__main__':
 
-    while True:
-        try:
+    # while True:
+    #     try:
 
-            with open(WORKLOAD_PATH, 'rb') as file:
-                WORKLOADS = WorkLoads(pickle.load(file))
+    #         with open(WORKLOAD_PATH, 'rb') as file:
+    #             WORKLOADS = WorkLoads(pickle.load(file))
 
-            with open(CLUSTER_PATH, 'rb') as file:
-                CLUSTER = Cluster(pickle.load(file))
+    #         with open(CLUSTER_PATH, 'rb') as file:
+    #             CLUSTER = Cluster(pickle.load(file))
 
-            break
-        except Exception as e:
-            logging.info(
-                'looking for file "{}" and "{}", '
-                'in order to run web server, you need to upload them: {}'.format(
-                    WORKLOAD_PATH,
-                    CLUSTER_PATH,
-                    e
-                ))
-        time.sleep(1)
+    #         break
+    #     except Exception as e:
+    #         logging.info(
+    #             'looking for file "{}" and "{}", '
+    #             'in order to run web server, you need to upload them: {}'.format(
+    #                 WORKLOAD_PATH,
+    #                 CLUSTER_PATH,
+    #                 e
+    #             ))
+    #     time.sleep(1)
 
     logging.info("serving 'app' on port {}".format(PORT))
     app.run(host="0.0.0.0", port=PORT, debug=True, use_reloader=False)
