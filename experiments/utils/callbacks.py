@@ -4,7 +4,7 @@ import ray
 from packaging import version
 from tabulate import tabulate
 if version.parse(ray.__version__) < version.parse('1.9.0'):
-    from ray.rllib.agents.callbacks import DefaultCallbacks
+    from ray.rllib.algorithms.callbacks import DefaultCallbacks
 else:
     from ray.rllib.algorithms.callbacks import DefaultCallbacks
 from ray.rllib.env import BaseEnv

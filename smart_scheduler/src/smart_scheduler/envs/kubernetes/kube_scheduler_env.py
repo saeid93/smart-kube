@@ -411,7 +411,8 @@ class KubeSchedulerEnv(gym.Env):
         if schedule_success:
             self.schedule_on_kube(
                 service=self.pending_services[service_index],
-                node=self.kube_nodes[node_id])
+                node=self.kube_nodes[node_id],
+                duration=self.pending_services[service_index].duration)
             self.pending_services.pop(service_index)
         # return true if successful
         return schedule_success
@@ -578,7 +579,7 @@ class KubeSchedulerEnv(gym.Env):
         return False
 
 
-    def schedule_on_kube(self, service: Service, node: KubeNode):
+    def schedule_on_kube(self, service: Service, node: KubeNode, duration: int):
         # TODO add scheduling success
         pod = construct_pod(
             name=service.service_name,
@@ -589,6 +590,7 @@ class KubeSchedulerEnv(gym.Env):
                 service.requests[0]),
             limit_cpu="{}".format(
                 service.requests[1]),
+            env={'DURATION': str(duration)}
         )
 
         svc = construct_svc(

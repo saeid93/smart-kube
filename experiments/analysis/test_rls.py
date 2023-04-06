@@ -16,11 +16,11 @@ import ray
 from ray.rllib.utils.framework import try_import_torch
 import pprint
 import gym
-import ray.rllib.agents.ppo as ppo
-import ray.rllib.agents.impala as impala
-import ray.rllib.agents.a3c as a3c
-import ray.rllib.agents.pg as pg
-import ray.rllib.agents.dqn as dqn
+import ray.rllib.algorithms.ppo as ppo
+import ray.rllib.algorithms.impala as impala
+import ray.rllib.algorithms.a3c as a3c
+import ray.rllib.algorithms.pg as pg
+import ray.rllib.algorithms.dqn as dqn
 import pandas as pd
 from pprint import PrettyPrinter
 pp = PrettyPrinter(indent=4)
@@ -308,7 +308,7 @@ def fix_grid_searches(
 @click.option('--train-series', required=True, type=int, default=121)
 @click.option('--type-env', required=True,
               type=click.Choice(['sim-scheduler', 'kube-scheduler']),
-              default='sim-scheduler')
+              default='kube-scheduler')
 @click.option('--cluster-id', required=True, type=int, default=19)
 @click.option('--workload-id', required=True, type=int, default=0)
 @click.option('--experiment-id', required=True, type=int, default=0)

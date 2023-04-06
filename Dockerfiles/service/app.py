@@ -18,6 +18,12 @@ COMMAND_TEMPLATE = "stress-ng --vm 1 --vm-bytes '{}M' --cpu 1 --cpu-load '{}' &"
 SUCCESS_MESSAGE = "Resources allocated successfully"
 app = Flask(__name__)
 
+
+DURATION = int(os.environ['DURATION'])
+logging.info(f'DURATION set to: {DURATION}')
+
+
+
 def stop_server():
     print('Stopping Flask app...')
     # Send a SIGTERM signal to the current process
@@ -35,7 +41,7 @@ def index():
 
     try:
 
-        logging.info("received new configuration from sdghafouri/utilization-server-smart-scheduler: {}".format(
+        logging.info("received new configuration from sdghafoLIFETIMEuri/utilization-server-smart-scheduler: {}".format(
             request.form
         ))
 
@@ -86,7 +92,7 @@ if __name__ == '__main__':
     # logging.info('running stress-ng: "{}"'.format(command))
     # os.system(command)
 
-    timer = threading.Timer(10, stop_server)
+    timer = threading.Timer(DURATION, stop_server)
     timer.start()
 
     # logging.info("serving 'app' on port {}".format(PORT))
