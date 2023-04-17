@@ -1,0 +1,67 @@
+{
+    "env_config_base": {
+        "obs_elements": [
+            "backlog_services_requests_frac",
+            "nodes_requests",
+            "nodes_usages"
+        ],
+        "penalty_illegal": -1,
+        "penalty_u": 0,
+        "penalty_c": 0,
+        "penalty_cv": 0.75,
+        "penalty_v": 0,
+        "penalty_g": 0,
+        "penalty_p": 0.75,
+        "reward_var_illegal_1": 0.1,
+        "reward_var_u_1": 0.1,
+        "reward_var_c_1": 0.1,
+        "reward_var_cv_1": 0.0001,
+        "reward_var_v_1": 0.3,
+        "reward_var_g_1": 25,
+        "reward_var_p_1": 4,
+        "reward_var_illegal_2": 1.05,
+        "reward_var_u_2": 1.05,
+        "reward_var_c_2": 0,
+        "reward_var_cv_2": 1,
+        "reward_var_v_2": 1,
+        "reward_var_g_2": 1,
+        "reward_var_p_2": 1,
+        "reward_option": "proposed",
+        "no_action_on_overloaded": true,
+        "episode_length": 100,
+        "max_services_nodes": 10, 
+        "discrete_actions": false,
+        "backlog_size": {"grid_search": [2, 4, 8, 16]},
+        "seed": 1204,
+        "target_utilization": [0.1, 0.1],
+        "job_arrival":{
+            "mode": "fixed",
+            "interval": {"grid_search": [5, 10, 30, 60]}
+        },
+        "kube":{
+            "admin_config": "~/.kube/config",
+            "service_image": "sdghafouri/service",
+            "namespace": "consolidation",
+            "clean_after_exit": true,
+            "utilization_image": "sdghafouri/utilization-server"
+        }
+    },
+    "run_or_experiment": "DQN",
+    "learn_config": {
+        "num_gpus": 0.25,
+        "train_batch_size": 100,
+        "model": {
+            "fcnet_hiddens": [64, 64],
+            "fcnet_activation": "linear",
+            "vf_share_layers": true
+        },
+        "gamma": 0.9,
+        "lr": 0.0003,
+        "num_workers": 3,
+        "observation_filter": "MeanStdFilter",
+        "seed": 203
+    },
+    "stop": {
+        "timesteps_total": 300000
+    }
+}
