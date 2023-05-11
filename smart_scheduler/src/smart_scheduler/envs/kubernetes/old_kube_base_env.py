@@ -31,10 +31,10 @@ from smart_scheduler.envs_extensions import (
     _reward
 )
 from smart_scheduler.util.kubernetes_utils import (
-    Cluster,
-    Node,
-    Service,
-    ResourceUsage
+    KubeCluster,
+    KubeNode,
+    KubeService,
+    KubeResourceUsage
 )
 from smart_scheduler.util.kubernetes_utils import (
     generate_random_service_name,
@@ -156,7 +156,7 @@ class KubeBaseEnv(gym.Env):
             self.discrete_actions: bool = False
 
         # construct the kubernetes cluster
-        self._cluster = Cluster(
+        self._cluster = KubeCluster(
             self.kube_config_file,
             self.namespace,
             self.workload_path,
@@ -172,12 +172,12 @@ class KubeBaseEnv(gym.Env):
         # check if the number of nodes in the cluster equals to
         # the number of nodes in the cluster
         self.nodes = np.array([
-            Node(id, node) for id, node in enumerate(self.nodes)
+            KubeNode(id, node) for id, node in enumerate(self.nodes)
         ])
 
         # aux server added if exists
         if self.aux_server is not None:
-            self.aux_server = Node(len(self.nodes) + 1, self.aux_server, is_auxiliary=True)
+            self.aux_server = KubeNode(len(self.nodes) + 1, self.aux_server, is_auxiliary=True)
 
         assert len(self.nodes) == self.num_nodes, \
             (f"number of nodes in the cluster <{len(self.nodes)}>"
@@ -541,7 +541,7 @@ class KubeBaseEnv(gym.Env):
                 portProtocol='TCP',
             )
 
-            service = Service(id=service_id + 1, pod=pod, svc=svc)
+            service = KubeService(id=service_id + 1, pod=pod, svc=svc)
             self.services.append(service)
 
         self.services: np.array = np.array(self.services)
@@ -590,7 +590,7 @@ class KubeBaseEnv(gym.Env):
                 raise ValueError('svc should not be None')
 
             # create a service for new Pod
-            service = Service(service.id, pod, svc)
+            service = KubeService(service.id, pod, svc)
 
             # append to the list
             services.append(service)

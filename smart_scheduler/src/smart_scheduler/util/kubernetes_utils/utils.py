@@ -183,13 +183,15 @@ def construct_pod(
                     name=name,
                     image=image,
                     env=env,
-                    image_pull_policy='IfNotPresent',
+                    image_pull_policy='Always',
                     resources=V1ResourceRequirements( # TODO check here
                         limits=limits,
-                        requests=requests
+                        requests=limits
                     )
                 )
             ],
+            termination_grace_period_seconds=0,
+            restart_policy="Never",
             node_name=node_name
         )
     )

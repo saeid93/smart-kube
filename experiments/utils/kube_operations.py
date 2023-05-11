@@ -1,16 +1,16 @@
 from smart_scheduler.util.kubernetes_utils import (
-    Cluster,
-    Node,
+    KubeCluster,
+    KubeNode,
     construct_pod
 )
 
 CONFIG_FILE = "~/.kube/config"
-cluster = Cluster(CONFIG_FILE)
+cluster = KubeCluster(CONFIG_FILE)
 
 # Get Nodes
 nodes = cluster.monitor.get_nodes()
 for node in nodes:
-    print(Node(node))
+    print(KubeNode(node))
 
 # Get Nodes
 print(cluster.monitor.get_nodes())

@@ -7,7 +7,7 @@ from kubernetes.client import V1Node, V1Pod, V1Service
 from smart_scheduler.util import logger
 
 
-class ResourceUsage:
+class KubeResourceUsage:
     """Resource Usage of Node/Pod"""
     def __init__(self, usage: dict):
         """ResourceUsage
@@ -39,7 +39,7 @@ class ResourceUsage:
         )
 
 
-class Node:
+class KubeNode:
     """Node Descriptor"""
 
     def __init__(self, id: str, node: V1Node, is_auxiliary: bool = False):
@@ -74,7 +74,7 @@ class Node:
         )
 
 
-class Service:
+class KubeService:
     """Service Descriptor"""
 
     def __init__(self, id: str, pod: V1Pod, svc: V1Service):

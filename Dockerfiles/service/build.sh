@@ -1,0 +1,1 @@
+docker build --tag=service:latest . && docker tag service:latest sdghafouri/service-smart-scheduler && docker push sdghafouri/service-smart-scheduler

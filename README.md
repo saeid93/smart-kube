@@ -1,6 +1,6 @@
 # 1. Introduction
-## 1.1. Repo contetns
-This repo contains the code of the upcoming vpa aware scheduling paper
+## Abstract
+One of the most challenging problems in the popular orchestration framework Kubernetes is assigning sufficient resources to containers to operate at a required level while also avoiding excessive resource allocation which can delay other jobs in the cluster. A variety of heuristic approaches have been proposed to tackle this problem but these require considerable manual adjustments which can be laborious. Reinforcement learning approaches have been proposed to address this issue but these proposals do not consider the energy consumption of the cluster. This is an important component of the problem due to the commitments of large cloud operators to carbon neutrality. We have proposed a system called Smart-Kube to achieve a target utilization on nodes while maintaining energy consumption at a reasonable level. An experimental framework is designed on top of real-world Kubernetes clusters and real-world traces of container jobs are used to evaluate the framework. Experimental results show that Smart-Kube can approach the target utilization and reduce energy consumption in a variety of ways depending on the preferences of the cluster operator for a variety of cluster sizes.
 
 ## Setup the environment in your machine
 1. Download source code from GitHub

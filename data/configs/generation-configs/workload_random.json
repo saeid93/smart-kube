@@ -1,12 +1,12 @@
 {
     "workload_type": "random",
     "notes": "resoure usage",
-    "cluster_id": 22,
+    "cluster_id": 23,
     "timesteps": 300,
-    "services_types": 8,
+    "services_types": 1,
     "workloads_var" : {
-        "steps_unit":[[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
-        "max_steps":[[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]
+        "steps_unit":[[0, 0]],
+        "max_steps":[[1, 1]]
     },
     "plot_smoothing":301,
     "seed":42

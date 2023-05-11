@@ -40,10 +40,17 @@
         },
         "kube":{
             "admin_config": "~/.kube/config",
+<<<<<<< HEAD
             "service_image": "sdghafouri/service",
             "namespace": "consolidation",
             "clean_after_exit": true,
             "utilization_image": "sdghafouri/utilization-server"
+=======
+            "service_image": "sdghafouri/service-smart-scheduler",
+            "namespace": "consolidation",
+            "clean_after_exit": true,
+            "utilization_image": "sdghafouri/utilization-server-smart-scheduler"
+>>>>>>> 62114a178315d4000d53500c7103dac6fdf52cc4
         }
     },
     "run_or_experiment": "DQN",

@@ -27,7 +27,7 @@
 open cv and dm_tree, solution -> wait for opencv and upgrade pip for dm_tree
 4. error 2
 ```
->>> import ray.rllib.agents.pg as pg
+>>> import ray.rllib.algorithms.pg as pg
    Traceback (most recent call last):
      File "<stdin>", line 1, in <module>
      File "/homes/sg324/python-envs/development/lib/python3.8/site-packages/ray/rllib/__init__.py", line 5, in <module>

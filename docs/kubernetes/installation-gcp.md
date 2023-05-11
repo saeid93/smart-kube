@@ -43,12 +43,12 @@ Now it needs to configure the `kubectl` to access to our cluster. We can get the
 ![gcloud Connect](../images/gcloud_kubectl.png) 
 copy the command-line access and run it into you terminal to create the config file of your cluster in `~/.kube/config` path.
 
-Opening utilization-server Port in the firewall (gcloud)
+Opening sdghafouri/utilization-server-smart-scheduler Port in the firewall (gcloud)
 ---
-ّImportant step: We need to open to access to port of utilization-server from outside the cluster:
+ّImportant step: We need to open to access to port of sdghafouri/utilization-server-smart-scheduler from outside the cluster:
 ```bash
 UTILIZATION_PORT=30000
-gcloud compute firewall-rules create utilization-server-node-port --allow tcp:${UTILIZATION_PORT}
+gcloud compute firewall-rules create sdghafouri/utilization-server-smart-scheduler-node-port --allow tcp:${UTILIZATION_PORT}
 ```
 
 kubectl

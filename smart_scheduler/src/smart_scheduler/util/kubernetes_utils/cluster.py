@@ -351,7 +351,7 @@ class Action(BaseFunctionalities):
         """
         super().__init__(API, ObjectAPI, namespace, using_auxiliary_server)
 
-        # this variable will be used to get external IP for connecting to the utilization-server
+        # this variable will be used to get external IP for connecting to the sdghafouri/utilization-server-smart-scheduler
         self.node: V1Node = node
 
         self.cleaning_after_exiting: bool = cleaning_after_exiting
@@ -402,7 +402,7 @@ class Action(BaseFunctionalities):
         # firstly clean the cluster
         self.clean(self.namespace)
 
-        name = "utilization-server"
+        name = "utilization-server-smart-scheduler"
 
         # create a container
         pod = V1Pod(
@@ -732,7 +732,7 @@ class Action(BaseFunctionalities):
             previous Service
 
         :param to_node_name: str
-            name of the node which you want to start the pod in
+            name of the node which you want to start the pod inprallel
 
         :param to_node_id: int
             id of the node which you want to start the pod in
@@ -819,7 +819,7 @@ class Action(BaseFunctionalities):
             logger.error('address of node "{}" does not exists.'.format(self.node))
             exit(-1)
 
-        logger.info("Address of node is : '{}', so for connecting to utilization-server we will connect to it.".format(
+        logger.info("Address of node is : '{}', so for connecting to sdghafouri/utilization-server-smart-scheduler we will connect to it.".format(
             address
         ))
 
@@ -894,7 +894,7 @@ class Action(BaseFunctionalities):
                 return True
 
 
-class Cluster:
+class KubeCluster:
     """Kubernetes Cluster"""
 
     def __init__(
@@ -922,7 +922,7 @@ class Cluster:
             path of workloads cluster
 
         :param utilization_server_image: str
-            using this image to start utilization server (default: 'r0ot/utilization-server')
+            using this image to start utilization server (default: 'r0ot/sdghafouri/utilization-server-smart-scheduler')
 
         :param cleaning_after_exiting: bool (default: False)
             clean the cluster after exiting
@@ -951,7 +951,7 @@ class Cluster:
 
         if utilization_server_image is None:
             # set default value for utilization server image
-            utilization_server_image = 'r0ot/utilization-server'
+            utilization_server_image = 'sdghafouri/utilization-server-smart-scheduler'
 
         # define using namespace
         self.namespace = namespace
