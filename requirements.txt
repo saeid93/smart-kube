@@ -14,4 +14,4 @@ colorama==0.4.4
 wget
 ipykernel
 ray
-ray[rllib]
+ray[rllib]==1.8.0

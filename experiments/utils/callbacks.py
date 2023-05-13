@@ -7,10 +7,10 @@ if version.parse(ray.__version__) < version.parse('1.9.0'):
     from ray.rllib.algorithms.callbacks import DefaultCallbacks
 else:
     from ray.rllib.algorithms.callbacks import DefaultCallbacks
-from ray.rllib.env import BaseEnv
+# from ray.rllib.env import BaseEnv
 from typing import Dict, Optional, TYPE_CHECKING
 
-from ray.rllib.env import BaseEnv
+# from ray.rllib.env import BaseEnv
 from ray.rllib.policy import Policy
 from ray.rllib.policy.sample_batch import SampleBatch
 from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker

@@ -4,8 +4,8 @@ from smart_scheduler.envs import (
     KubeSchedulerEnv,
 )
 # dfined by the user
-# DATA_PATH = "/homes/sg324/smart-scheduler/data/"
-DATA_PATH = "/home/user/smart-scheduler/data"
+DATA_PATH = "/homes/sg324/smart-scheduler/data/"
+# DATA_PATH = "/home/user/smart-scheduler/data"
 
 # generated baesd on the users' path
 CLUSTERS_PATH = os.path.join(DATA_PATH, "clusters")
@@ -35,7 +35,7 @@ def _create_dirs():
     if not os.path.exists(PLOTS_PATH):
         os.makedirs(PLOTS_PATH)
 
-_create_dirs()
+# _create_dirs()
 
 ENVS = {
     'sim-scheduler': SimSchedulerEnv,

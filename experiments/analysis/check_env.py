@@ -104,15 +104,9 @@ def check_env(*, config: Dict[str, Any], type_env: str,
               type=click.Choice(['sim-scheduler', 'sim-binpacking',
                                  'kube-scheduler', 'kube-binpacking',
                                  'CartPole-v0', 'Pendulum-v0']),
-<<<<<<< HEAD
               default='sim-scheduler')
 @click.option('--cluster-id', required=True, type=int, default=21)
 @click.option('--workload-id', required=True, type=int, default=2)
-=======
-              default='kube-scheduler')
-@click.option('--cluster-id', required=True, type=int, default=23)
-@click.option('--workload-id', required=True, type=int, default=0)
->>>>>>> 62114a178315d4000d53500c7103dac6fdf52cc4
 def main(type_env: str, cluster_id: int, workload_id: int):
     """[summary]
 
